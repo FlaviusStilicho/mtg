@@ -1,0 +1,64 @@
+import { Request, Response } from "express";
+import { Deck } from '../entity/Deck.entity.ts';
+import { CheckDeckRequest, CreateDeckResponse, DeleteDeckRequest, GetDeckRequest, ListDecksResponse, DeckDTO } from 'mtg-common';
+import { DeckRepository } from '../repository/Deck.repository.ts';
+
+
+export const ListDecks = async (req: Request, res: Response<ListDecksResponse>) => {
+    await DeckRepository.findAndCount().then(result => {
+        const decks = result[0].map(deck => deck.toDTO())
+        const total = result[1]
+        res.send({
+            decks,
+            total
+        })
+    })
+}
+
+export const CreateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Response<CreateDeckResponse>) => {
+    Deck.fromDTO(req.body).then(
+        deck => DeckRepository.save(deck).then(
+            deck => res.send({ id: deck.id })))
+            .catch(err => res.status(400).send(err.toString()))
+}
+
+export const DeleteDeck = async (req: Request<{}, {}, {}, DeleteDeckRequest>, res: Response) => {
+    DeckRepository.findById(req.query.id).then(
+        deck => deck.delete()).then(
+            () => res.sendStatus(200)).catch(
+                () => res.sendStatus(404))
+}
+
+export const ClearDecks = async (req: Request<{}, {}, {}, {}>, res: Response) => {
+    DeckRepository.clear().then(() => res.sendStatus(200))
+}
+
+export const GetDeck = async (req: Request<{}, {}, {}, GetDeckRequest>, res: Response<DeckDTO>) => {
+    DeckRepository.findById(req.query.id).then(
+        deck => res.send(deck.toDTO())).catch(
+            () => res.sendStatus(404))
+}
+
+export const UpdateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Response) => {
+    Deck.fromDTO(req.body).then(
+        deck => DeckRepository.save(deck).then(
+            () => res.sendStatus(200)
+        ))
+}
+
+export const CheckDeck = async (req: Request<{}, {}, {}, CheckDeckRequest>, res: Response) => {
+    const [valid, message] = await DeckRepository.findById(req.query.id).then(deck => deck.isValid())
+    const responseBody = {
+        valid: valid,
+    }
+    if (message) responseBody['message'] = message
+    res.send(responseBody)
+}
+
+// export const ExportDeck = async (req: Request<{}, {}, {}, GetCardsQueryParams>, res: Response) => {
+
+// }
+
+// export const ExportDeckBuyList = async (req: Request<{}, {}, {}, GetCardsQueryParams>, res: Response) => {
+
+// }

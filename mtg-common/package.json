@@ -1,0 +1,14 @@
+{
+  "name": "mtg-common",
+  "version": "0.1.1",
+  "description": "Common classes",
+  "main": "dist/index",
+  "types": "dist/index",
+  "type": "module",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

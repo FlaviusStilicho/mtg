@@ -1,0 +1,13 @@
+{
+    "ignore": [
+        ".git",
+        "node_modules/",
+        "dist/",
+        "coverage/"
+    ],
+    "watch": [
+        "src/*",
+        "../mtg-common/*"
+    ],
+    "ext": "js,json,ts"
+}

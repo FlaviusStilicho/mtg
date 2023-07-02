@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "module": "es6",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    // "sourceRoot": "src",
+    // "sourceMap": true,
+    // "allowJs": true,
+    "outDir": "dist",
+    // "outDir": "./dist/",
+    "strict": true,
+    "declaration": true,
+  },
+  "include": [
+    "src/*"
+, "dist/index.d.ts"  ]
+}

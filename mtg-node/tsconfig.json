@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true, 
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "moduleResolution": "node",
+    "allowImportingTsExtensions": true
+  },
+  "ts-node": {
+      // Tell ts-node CLI to install the --loader automatically
+      "esm": true
+  }
+}

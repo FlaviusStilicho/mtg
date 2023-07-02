@@ -1,0 +1,5 @@
+.VsCodeCounter
+mtg-node/node_modules
+mtg-node/static
+mtg-node/uploads
+mtg-react/node_modules
