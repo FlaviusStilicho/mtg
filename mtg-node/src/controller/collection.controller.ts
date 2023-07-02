@@ -1,13 +1,18 @@
 import { Request, Response } from "express";
-import { MTGCard } from "../entity/MTGCard.entity.js"
+import { MTGCard } from "../entity/MTGCard.entity.ts"
 import { writeFileSync } from "fs";
-import { export_dir } from "../constants.js";
-import { MTGCardRepository } from "../repository/MTGCard.repository.js";
+import { export_dir } from "../constants.ts";
+import { MTGCardRepository } from "../repository/MTGCard.repository.ts";
 
+export const GetCollection = async (req: Request, res: Response) => {
+    const [ownedCards, total] = await MTGCardRepository.findAllOwned()
+    res.send(ownedCards)
+}
 export const ClearCollection = async (req: Request, res: Response) => {
     await MTGCardRepository.clear()
     res.send(200)
 }
+
 export const ExportCollection = async (req: Request, res: Response) => {
     const [ownedCards, total] = await MTGCardRepository.findAllOwned()
     exportToCsv(`export-${Date.now()}`, ownedCards)

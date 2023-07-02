@@ -7,7 +7,7 @@ import { GetTypes } from './controller/type.controller.ts';
 import { GetColors } from './controller/color.controller.ts';
 import { CreateDeck, GetDeck, ListDecks, CheckDeck, ClearDecks } from './controller/deck.controller.ts';
 import { DeleteDeck, UpdateDeck } from './controller/deck.controller.ts';
-import { ClearCollection, ExportCollection } from './controller/collection.controller.ts';
+import { ClearCollection, ExportCollection, GetCollection } from './controller/collection.controller.ts';
 
 export const routes = (router: Router) => {
 
@@ -41,6 +41,7 @@ export const routes = (router: Router) => {
     router.post("/uploads/delver/additive", UploadDelverFileAdditive)
     router.use("/uploads/delver/additive", express.static('./uploads/delver'));
     
-    router.get("/collection", ExportCollection)
+    router.get("/collection/", GetCollection)
+    router.get("/collection/export", ExportCollection)
     router.delete("/collection/clear", ClearCollection)
 }
