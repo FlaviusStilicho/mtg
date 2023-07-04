@@ -8,7 +8,7 @@ import bodyParser from 'body-parser'
 const consoleTransport = new winston.transports.Console()
 const myWinstonOptions = {
     transports: [consoleTransport],
-    level: 'debug'
+    level: 'info'
 }
 export const logger = winston.createLogger(myWinstonOptions)
 

@@ -89,7 +89,7 @@ const SyncCards = async (sets: MTGSet[]): Promise<ParseResult> => {
     const newCards: MTGCard[] = Array.from(cardsMap.values()).filter(entry => entry[1] === CardState.New).map(entry => entry[0])
     return await MTGCardRepository.insert(newCards).then(async () => {
         const updatedCards: MTGCard[] = Array.from(cardsMap.values()).filter(entry => entry[1] === CardState.Updated).map(entry => entry[0])
-        updatedCards.forEach(card => MTGCardRepository.save(card))
+        updatedCards.forEach(card => MTGCardRepository.saveCard(card))
         return {
             totalCardsInDB: cardsMap.keys.length,
             updatedCards: Array.from(cardsMap.values()).filter(entry => entry[1] === CardState.Updated).length,

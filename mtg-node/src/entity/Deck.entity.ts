@@ -33,7 +33,8 @@ export class Deck {
     // @Column()
     @OneToMany(() => DeckCardEntry, entry => entry.deck, {
         eager: true,
-        cascade: true
+        cascade: true,
+        onDelete: 'CASCADE'
     })
     @JoinTable()
     cardEntries: DeckCardEntry[]
@@ -53,6 +54,14 @@ export class Deck {
             return [true, ""]
         } catch (err) {
             return [false, err]
+        }
+    }
+
+    totalCards(): number {
+        if (this.cardEntries.length === 0) {
+            return 0
+        } else {
+            return this.cardEntries.map(entry => entry.copies).reduce((a, b) => a + b)
         }
     }
 

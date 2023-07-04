@@ -9,7 +9,7 @@ export const DB = new DataSource({
     password: "password",
     database: "mtg",
     entities: ["src/entity/*"],
-    logging: true,
+    logging: false,
     synchronize: true
 });
 

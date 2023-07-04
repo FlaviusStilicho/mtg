@@ -56,7 +56,7 @@ export const ProcessdDelverFile = async (req: Request, res: Response, additive: 
                             await MTGCardRepository.findOneByName(cardName).then(
                                 async (card) => {
                                     card.ownedCopies = additive ? card.ownedCopies + cardCopies : cardCopies
-                                    await MTGCardRepository.save(card)
+                                    await MTGCardRepository.saveCard(card)
                                     cards.push(card);
                                     if (additive) {
                                         logger.info(`Increased number of owned copies for card '${cardName}' by ${cardCopies} to ${card.ownedCopies}`)

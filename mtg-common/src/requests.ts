@@ -24,6 +24,17 @@ export interface ListDecksResponse {
     total: number
 }
 
+export interface DeckMetadata {
+    id: number,
+    name: string,
+    totalCards: number
+}
+
+export interface ListDeckNamesResponse {
+    decks: DeckMetadata[]
+    total: number
+}
+
 export interface CreateDeckResponse {
     id: number
 }

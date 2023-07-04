@@ -31,7 +31,7 @@ export const MTGCardRepository = DB.getRepository(MTGCard).extend({
         logger.debug(`Inserted '${cards.length} cards'`)
         return this.save(cards);
     },
-    async save(card: MTGCard): Promise<MTGCard> {
+    async saveCard(card: MTGCard): Promise<MTGCard> {
         logger.debug(`Saved card '${card.name}'`)
         return this.save(card)
     },

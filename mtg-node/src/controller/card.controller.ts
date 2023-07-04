@@ -47,7 +47,7 @@ export const UpdateCard = async (req: Request, res: Response) => {
 export const UpdateCardOwnedCopies = async (req: Request<{}, {}, UpdateCardOwnedCopiesQueryParams, {}>, res: Response) => {
     const card = await MTGCardRepository.findOneById(req.body.cardId)
     card.ownedCopies = req.body.ownedCopies
-    await MTGCardRepository.save(card)
+    await MTGCardRepository.saveCard(card)
 }
 
 export const AddCardCategory = async (req: Request, res: Response) => {
