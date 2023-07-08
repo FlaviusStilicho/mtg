@@ -1,4 +1,4 @@
-import React, {  createRef, useEffect, useState } from "react";
+import React, { createRef, useEffect, useState } from "react";
 
 import { Grid } from '@mui/material';
 import MTGCardComponent, { CardComponentProps } from "./MTGCardComponent";
@@ -9,15 +9,17 @@ import { DeckState } from "../hooks/DeckState";
 
 export interface CardGridProps {
     cards: MTGCardDTO[]
-    handleUpdateCards: React.Dispatch<React.SetStateAction<MTGCardDTO[]>>
     enabledTab: EnabledTab
     deckState: DeckState
     deckManagerOpened?: boolean
+    isLoading: boolean
+    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+    page: number
+    setPage: React.Dispatch<React.SetStateAction<number>>
 }
 
 const CardGrid = (props: CardGridProps) => {
     const divRef: any = createRef()
-
     const [gridMaxWidth, setWidth] = useState(0)
 
     useEffect(() => {
@@ -31,13 +33,12 @@ const CardGrid = (props: CardGridProps) => {
     return (
         <div
             ref={divRef as React.RefObject<HTMLDivElement>}
-            className="SearchGrid" style={{ width: "100%", overflow: 'hidden' }} >
+            className="SearchGrid" style={{ width: "100%", overflow: 'hidden' }}>
             <Grid
                 container
                 direction="row"
                 sx={{ width: gridActualWidth }}
-                spacing={1.5}
-            >
+                spacing={1.5}>
                 {props.cards.map((card: MTGCardDTO) => {
                     if (props.deckState === undefined) {
                         throw Error()

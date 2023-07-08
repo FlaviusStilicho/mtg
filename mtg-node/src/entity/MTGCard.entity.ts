@@ -276,6 +276,7 @@ export class MTGCard {
         var qb = this.repo.createQueryBuilder("card")
             .leftJoinAndSelect("card.versions", "version")
             .leftJoinAndSelect("version.set", "set")
+            .orderBy('card.convertedManaCost', 'ASC')
         FindOptionsUtils.joinEagerRelations(qb, qb.alias, DB.getMetadata(MTGCard));
 
         if (params.cardName) {

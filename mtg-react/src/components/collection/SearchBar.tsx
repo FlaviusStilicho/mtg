@@ -45,12 +45,14 @@ export interface SearchWindowProps {
   selectedManaCost: string;
   setSelectedManaCost: React.Dispatch<React.SetStateAction<string>>;
   handleChangeSelectedManaCost: any;
-  selectedDeckFormat: DeckFormat;
-  setSelectedDeckFormat: React.Dispatch<React.SetStateAction<DeckFormat>>;
+  selectedDeckFormat: string;
+  setSelectedDeckFormat: React.Dispatch<React.SetStateAction<string>>;
   handleChangeSelectedDeckFormat: any;
 }
 
 export default function SearchBar(props: SearchWindowProps) {
+  const formats: DeckFormat[] = [DeckFormat.STANDARD, DeckFormat.COMMANDER]
+
   return (
     <Drawer
       variant="permanent"
@@ -363,8 +365,15 @@ export default function SearchBar(props: SearchWindowProps) {
             sx={{ ...buttonBackgroundStyle }}
             value={props.selectedDeckFormat.toString()}
             // renderValue={props.selectedDeckFormat.toString()}
-            onChange={props.handleChangeSelectedDeckFormat}
-          />
+            onChange={props.handleChangeSelectedDeckFormat}>
+            {formats.map((format) => (
+              <MenuItem key={format.toString()} value={format.toString()}>
+                <ListItemText
+                  primary={format.charAt(0).toUpperCase() + format.slice(1).toLowerCase()}
+                />
+              </MenuItem>
+            ))}
+            </Select>
         </ListItem>
 
         <Divider />

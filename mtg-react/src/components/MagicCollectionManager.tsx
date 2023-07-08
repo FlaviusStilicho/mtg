@@ -55,10 +55,12 @@ const MagicCollectionManager: FC = (props) => {
   const [selectedColorSearchSetting, setSelectedColorSearchSetting] = React.useState<string>("Exact match");
 
   const [selectedManaCost, setSelectedManaCost] = React.useState<string>("");
-  const [selectedDeckFormat, setSelectedDeckFormat] = React.useState<DeckFormat>(DeckFormat.STANDARD);
+  const [selectedDeckFormat, setSelectedDeckFormat] = React.useState<string>(DeckFormat.STANDARD.toString());
 
-  const [cards, handleUpdateCards] = React.useState<MTGCardDTO[]>([]);
-
+  const pageSize = 60;
+  const [page, setPage] = useState(1);
+  const [cards, setCards] = React.useState<MTGCardDTO[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [deckManagerOpened, setDeckManagerOpened] = React.useState(true);
 
@@ -70,9 +72,6 @@ const MagicCollectionManager: FC = (props) => {
       setDeckManagerOpened(true);
     }
   };
-
-  var maxCards = 100
-  var page = 1
 
   useEffect(() => {
     fetchData()
@@ -112,19 +111,26 @@ const MagicCollectionManager: FC = (props) => {
   }
 
   const fetchCards = useConstant(() => debounce((queryParameters: CardQueryParameters) => {
+    setIsLoading(true);
     axios.get(`cards/`, {
       params: {
-        take: maxCards,
+        take: pageSize,
         page: page,
         query: queryParameters
       }
     }).then(response => {
       const cards: MTGCardDTO[] = response.data.cards
-      handleUpdateCards(cards.sort((card1, card2) => card1.convertedManaCost - card2.convertedManaCost));
+      console.log(`loading... page ${page}`)
+      //todo do something with cards
+      setCards(cards);
+      setIsLoading(false);
     })
   }, 1500))
 
-  const updateCards = async () => {
+  const updateCards = async (resetPage: boolean = false) => {
+    if (resetPage) {
+      setPage(1)
+    }
     const queryParameters: CardQueryParameters = {
       cardName: cardNameQuery,
       cardText: cardTextQuery,
@@ -212,12 +218,13 @@ const MagicCollectionManager: FC = (props) => {
 
   const handleChangeSelectedDeckFormat = (event: SelectChangeEvent<typeof selectedDeckFormat>) => {
     const newValue = event.target.value
-    if (typeof newValue === 'string') {
-      console.error("help!")
-    } else {
-      setSelectedDeckFormat(newValue);
-      updateCards();
+    setSelectedDeckFormat(newValue);
+    if (newValue == DeckFormat.STANDARD.toString()) {
+      setSelectedSets(currentStandardSets)
+    } else if (newValue == DeckFormat.COMMANDER.toString()) {
+      setSelectedSets(sets.map(set => set.id))
     }
+    updateCards();
   };
 
   const searchWindowProps: SearchWindowProps = {
@@ -411,17 +418,23 @@ const MagicCollectionManager: FC = (props) => {
 
   const searchGridProps: CardGridProps = {
     cards,
-    handleUpdateCards,
     enabledTab: EnabledTab.COLLECTION,
-    deckState
+    deckState,
+    isLoading,
+    setIsLoading,
+    page,
+    setPage
   }
 
   const deckGridProps: CardGridProps = {
     cards,
-    handleUpdateCards,
     enabledTab: EnabledTab.DECK,
     deckState,
-    deckManagerOpened
+    deckManagerOpened,
+    isLoading,
+    setIsLoading,
+    page,
+    setPage
   }
 
   const navBarProps: NavBarProps = {
@@ -445,7 +458,7 @@ const MagicCollectionManager: FC = (props) => {
           <NavBar {...navBarProps} />
           <TabPanel value={selectedTab} index={0}>
             <Box width="100%">
-              <CardGrid {...searchGridProps} />
+              <CardGrid {...searchGridProps}/>
             </Box>
           </TabPanel>
           <TabPanel value={selectedTab} index={1}>
