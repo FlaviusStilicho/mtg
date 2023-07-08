@@ -4,7 +4,7 @@ import { DB } from "../datasource.ts";
 
 
 export const DeckRepository = DB.getRepository(Deck).extend({
-    async save(deck: Deck): Promise<Deck> {
+    async saveOne(deck: Deck): Promise<Deck> {
         logger.debug(`Saved deck '${deck.name}'`)
         return await this.save(deck);
     },

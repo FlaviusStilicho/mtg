@@ -48,6 +48,13 @@ export class Deck {
                     cardMaximum: 100,
                     maximumCardCopies: 4
                 })
+            } else if (this.format === 'commander') {
+                this.verifyDeckLegal({
+                    formatName: 'commander',
+                    cardMinimum: 100,
+                    cardMaximum: 100,
+                    maximumCardCopies: 1
+                })
             } else {
                 throw Error('Format not supported!')
             }

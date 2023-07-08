@@ -36,7 +36,7 @@ export const ListDeckNames = async (req: Request, res: Response<ListDeckNamesRes
 
 export const CreateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Response<CreateDeckResponse>) => {
     Deck.fromDTO(req.body).then(
-        deck => DeckRepository.save(deck).then(
+        deck => DeckRepository.saveOne(deck).then(
             deck => res.send({ id: deck.id })))
             .catch(err => res.status(400).send(err.toString()))
 }
@@ -63,7 +63,7 @@ export const GetDeck = async (req: Request<{}, {}, {}, GetDeckRequest>, res: Res
 
 export const UpdateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Response) => {
     Deck.fromDTO(req.body).then(
-        deck => DeckRepository.save(deck).then(
+        deck => DeckRepository.saveOne(deck).then(
             () => res.sendStatus(200)
         ))
 }

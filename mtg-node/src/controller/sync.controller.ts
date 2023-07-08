@@ -28,6 +28,7 @@ export const Sync = async (req: Request, res: Response) => {
     await SyncSets().then((sets: MTGSet[]) => {
         SyncCards(sets).then(result => {
             let elapsed = new Date().getTime() - start;
+            logger.info(`Synchronization completed in ${elapsed} seconds!`)
             res.send({
                 "status": "success!",
                 "runtime": elapsed,
@@ -49,14 +50,14 @@ export const SyncSets = async (): Promise<MTGSet[]> => {
                 rawSet['icon_svg_uri'],
                 new Date(rawSet['released_at'])
             )
-            setPromiseArray.push(MTGSetRepository.save(set))
+            setPromiseArray.push(MTGSetRepository.saveOne(set))
         })
         return setPromiseArray
     }).then(async (sets: MTGSet[]) => {
         while (true) {
             const setsFromDb: MTGSet[] = await MTGSetRepository.find()
             if (setsFromDb.length === sets.length) {
-                return setsFromDb
+                return await MTGSetRepository.find()
             }
             Sleep(100)
         }
@@ -114,9 +115,6 @@ async function fetchCardsFromScryfall(sets: MTGSet[], cardsMap: Map<string, [MTG
             });
         })
         Sleep(100);
-        // if (page_num == 20){
-        //     done=true
-        // }
     }
     return
 }
@@ -164,8 +162,8 @@ function ParseCard(rawCard: object, sets: MTGSet[], cardsMap: Map<string, [MTGCa
             cardsMap.set(card.name, [card, CardState.New])
             logger.debug(`inserting card ${card.name}`)
         } else if (!existingCard[0].equals(card)) {
-            card.id = existingCard[0].id
-            cardsMap.set(card.name, [card, CardState.Updated])
+            existingCard[0].update(card)
+            cardsMap.set(card.name, [existingCard[0], CardState.Updated])
             logger.info(`updating card ${card.name}`)
         } else {
             logger.debug(`no changes to card ${card.name}`)

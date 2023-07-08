@@ -73,9 +73,9 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
 
   const getNumberOfCardsAtManaPrice = (price: string): number => {
     var total = 0
-    if (price === '6+') {
+    if (price === '7+') {
       props.selectedDeckEntries.forEach((entry) => {
-        if (entry.card.convertedManaCost >= 6) {
+        if (entry.card.convertedManaCost >= 7) {
           total += entry.copies
         }
       })
@@ -89,7 +89,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     return total
   }
 
-  const manaCurveChartLabels = ['1', '2', '3', '4', '5', '6+']
+  const manaCurveChartLabels = ['1', '2', '3', '4', '5', '6', '7+']
   const manaCurveChartData = {
     labels: manaCurveChartLabels,
     datasets: [

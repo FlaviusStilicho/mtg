@@ -13,11 +13,7 @@ export const MTGSetRepository = DB.getRepository(MTGSet).extend({
         logger.debug(`Inserted set '${set.fullName}'`)
         return this.save(set);
     },
-    async update(set: MTGSet): Promise<UpdateResult> {
-        logger.debug(`Updated set '${set.fullName}'`)
-        return this.update(set.id, set);
-    },
-    async save(set: MTGSet): Promise<MTGSet> {
+    async saveOne(set: MTGSet): Promise<MTGSet> {
         return await this.findOneByScryfallId(
             set.scryfallId,
         ).then(async existingSet => {
@@ -25,7 +21,7 @@ export const MTGSetRepository = DB.getRepository(MTGSet).extend({
                 logger.info(`Set ${set.fullName} already in database. Skipping.`)
             } else {
                 set.id = existingSet.id;
-                await this.update(set)
+                await this.save(set)
                 return this;
             }
         }).catch(async err => {

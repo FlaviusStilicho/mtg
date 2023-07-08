@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, Index, ManyToMany, JoinTable, Repository, UpdateResult, ManyToOne, In, Like, And, Not, MoreThan, LessThan, OneToMany, FindOptionsUtils } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, Index, ManyToMany, JoinTable, Repository, ManyToOne, OneToMany, FindOptionsUtils } from "typeorm";
 import { DB } from "../datasource.ts";
 import { MTGCardTag } from './MTGCardTag.entity.ts';
 import { logger } from "../index.ts"
@@ -6,7 +6,6 @@ import { MTGSet } from './MTGSet.entity.ts';
 import { MTGCardDTO, MTGCardVersionDTO } from "mtg-common";
 import { CardQueryParameters } from 'mtg-common';
 import { colors as allColors } from "../controller/color.controller.ts";
-// import { MTGCardVersion } from "./MTGCardVersion.entity.ts";
 import assert from "node:assert";
 
 @Entity()
@@ -20,13 +19,6 @@ export class MTGCard {
     @Column()
     @Index({ fulltext: true })
     name: string
-    // @Column()
-    // cardMarketId: number
-    // @Index()
-    // @Column()
-    // scryfallId: string
-    // @Column({ default: null })
-    // illustrationId: string
     @Column()
     @Index({ fulltext: true })
     colorIdentity: string
@@ -68,12 +60,6 @@ export class MTGCard {
         nullable: true
     })
     backSideText: string
-    // @Column()
-    // rulingsUri: string
-    // @Column()
-    // scryfallUri: string
-    // @Column()
-    // imageUri: string
     @Index()
     @ManyToOne(() => MTGSet, (set) => set.cards, {
         cascade: true
@@ -147,22 +133,14 @@ export class MTGCard {
         limitedRating: number = -1,
     ) {
         this.name = name
-        // this.scryfallId = scryfallId
-        // this.illustrationId = illustrationId
         this.colorIdentity = color
         this.type = type
         this.rarity = rarity
         this.manaCost = manaCost
         this.convertedManaCost = convertedManaCost
         this.text = text
-        // this.rulingsUri = rulingsUri
-        // this.scryfallUri = scryfallUri
-        // this.imageUri = imageUri
         this.power = power ? power : null
         this.toughness = toughness ? toughness : null
-        // this.standardLegal = standardLegal
-        // this.commanderLegal = commanderLegal
-        // this.price = price
         this.versions = versions
         this.backSideName = backSideName
         this.backSideType = backSideType
@@ -180,30 +158,77 @@ export class MTGCard {
             this.rarity &&
             (this.manaCost || this.manaCost == '') &&
             (this.convertedManaCost || this.convertedManaCost === 0)
-        // this.rulingsUri &&
-        // this.scryfallUri
     }
 
     equals(anotherCard: MTGCard) {
         return this.name === anotherCard.name &&
-            // this.scryfallId === anotherCard.scryfallId &&
-            // this.illustrationId === anotherCard.illustrationId &&
             this.colorIdentity === anotherCard.colorIdentity &&
             this.type === anotherCard.type &&
             this.rarity === anotherCard.rarity &&
             this.manaCost === anotherCard.manaCost &&
             this.convertedManaCost === anotherCard.convertedManaCost &&
             this.text === anotherCard.text &&
-            // this.rulingsUri === anotherCard.rulingsUri &&
-            // this.scryfallUri === anotherCard.scryfallUri &&
             this.power === anotherCard.power &&
             this.toughness === anotherCard.toughness &&
-            // this.otherSide === anotherCard.otherSide &&
             this.set === anotherCard.set &&
-            // this.price === anotherCard.price
             this.backSideName === anotherCard.backSideName &&
             this.backSideType === anotherCard.backSideType &&
             this.backSideText === anotherCard.backSideText
+    }
+
+    update(newVersion: MTGCard) {
+        if(this.name != newVersion.name){
+            logger.debug("updating name")
+            this.name = newVersion.name
+        }
+        if(this.colorIdentity != newVersion.colorIdentity){
+            logger.debug("updating colorIdentity")
+            this.colorIdentity = newVersion.colorIdentity
+        }
+        if(this.type != newVersion.type){
+            logger.debug("updating type")
+            this.type = newVersion.type
+        }
+        if(this.rarity != newVersion.rarity){
+            logger.debug("updating rarity")
+            this.rarity = newVersion.rarity
+        }
+        if(this.manaCost != newVersion.manaCost){
+            logger.debug("updating manaCost")
+            this.manaCost = newVersion.manaCost
+        }
+        if(this.convertedManaCost != newVersion.convertedManaCost){
+            logger.debug("updating convertedManaCost")
+            this.convertedManaCost = newVersion.convertedManaCost
+        }
+        if(this.text != newVersion.text){
+            logger.debug("updating text")
+            this.text = newVersion.text
+        }
+        if(this.power != newVersion.power){
+            logger.debug("updating power")
+            this.power = newVersion.power
+        }
+        if(this.toughness != newVersion.toughness){
+            logger.debug("updating toughness")
+            this.toughness = newVersion.toughness
+        }
+        if(this.set != newVersion.set){
+            logger.debug("updating set")
+            this.set = newVersion.set
+        }
+        if(this.backSideName != newVersion.backSideName){
+            logger.debug("updating backSideName")
+            this.backSideName = newVersion.backSideName
+        }
+        if(this.backSideType != newVersion.backSideType){
+            logger.debug("updating backSideType")
+            this.backSideType = newVersion.backSideType
+        }
+        if(this.backSideText != newVersion.backSideText){
+            logger.debug("updating backSideText")
+            this.backSideText = newVersion.backSideText
+        }
     }
 
     isStandardLegal(): boolean {
@@ -549,16 +574,42 @@ export class MTGCardVersion {
     }
 
     update(newVersion: MTGCardVersion) {
-        this.scryfallId = newVersion.scryfallId
-        this.frontIllustrationId = newVersion.frontIllustrationId
-        this.rulingsUri = newVersion.rulingsUri
-        this.scryfallUri = newVersion.scryfallUri
-        this.frontImageUri = newVersion.frontImageUri
-        this.set = newVersion.set
-        this.isStandardLegal = newVersion.isStandardLegal
-        this.isCommanderLegal = newVersion.isCommanderLegal
-        this.backIllustrationId = newVersion.backIllustrationId
-        this.backImageUri = newVersion.backImageUri
+        if(this.scryfallId != newVersion.scryfallId){
+            logger.debug("updating scryfallId")
+            this.scryfallId = newVersion.scryfallId
+        }
+        if(this.frontIllustrationId != newVersion.frontIllustrationId){
+            logger.debug("updating frontIllustrationId")
+            this.frontIllustrationId = newVersion.frontIllustrationId
+        }
+        if(this.rulingsUri != newVersion.rulingsUri){
+            logger.debug("updating rulingsUri")
+            this.rulingsUri = newVersion.rulingsUri
+        }
+        if(this.frontImageUri != newVersion.frontImageUri){
+            logger.debug("updating frontImageUri")
+            this.frontImageUri = newVersion.frontImageUri
+        }
+        if(this.set != newVersion.set){
+            logger.debug("updating set")
+            this.set = newVersion.set
+        }
+        if(this.isStandardLegal != newVersion.isStandardLegal){
+            logger.debug("updating isStandardLegal")
+            this.isStandardLegal = newVersion.isStandardLegal
+        }
+        if(this.isCommanderLegal != newVersion.isCommanderLegal){
+            logger.debug("updating isCommanderLegal")
+            this.isCommanderLegal = newVersion.isCommanderLegal
+        }
+        if(this.backIllustrationId != newVersion.backIllustrationId){
+            logger.debug("updating backIllustrationId")
+            this.backIllustrationId = newVersion.backIllustrationId
+        }
+        if(this.backImageUri != newVersion.backImageUri){
+            logger.debug("updating backImageUri")
+            this.backImageUri = newVersion.backImageUri
+        }
     }
 
     toDTO() {
