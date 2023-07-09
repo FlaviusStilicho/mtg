@@ -109,7 +109,7 @@ const MagicCollectionManager: FC = (props) => {
 
   }
 
-  const fetchCards = React.useCallback(debounce((queryParameters: CardQueryParameters, incrementPage: boolean = false, delay: number = 0) => {
+  const fetchCards = React.useCallback(debounce((queryParameters: CardQueryParameters, incrementPage: boolean = false) => {
     var currentPage = page
     if (incrementPage) {
       currentPage += 1
@@ -185,7 +185,7 @@ const MagicCollectionManager: FC = (props) => {
       console.error(`Type error while updating query parameters: field=${propName}, type=${typeof newValue}, value=${newValue}`)
     }
     setSelectedQueryParameters(queryParameters)
-    fetchCards(queryParameters, false, 0)
+    fetchCards(queryParameters, false)
   }
 
   const handleChangeSelectedDeck = (event: SelectChangeEvent<typeof selectedDeckId>) => {
@@ -303,10 +303,10 @@ const MagicCollectionManager: FC = (props) => {
       }
     }
   }
-  const handleLoadMore = async () => {
-    fetchCards(selectedQueryParameters, true, 0)
-  }
 
+  const handleLoadMore = async () => {
+    fetchCards(selectedQueryParameters, true)
+  }
 
   const searchWindowProps: SearchWindowProps = {
     selectedQueryParameters,
