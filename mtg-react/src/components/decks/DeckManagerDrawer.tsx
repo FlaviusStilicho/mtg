@@ -11,6 +11,7 @@ import { Button, IconButton, MenuItem, Select } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './CreateDeckWindow';
 import { DeckCardEntryDTO, DeckDTO } from '../../../../mtg-common/src/DTO';
@@ -28,6 +29,7 @@ export interface DeckManagerProps extends MuiAppBarProps {
   selectedDeckEntries: DeckCardEntryDTO[]
   fetchDecks: () => void
   saveDeck: any
+  deleteDeck: any
   handleChangeSelectedDeck: any,
   addCardCopyToDeck: Function,
   subtractCardCopyFromDeck: Function
@@ -249,8 +251,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               onClick={props.saveDeck}
               sx={{
                 ...buttonBackgroundStyle, ...listItemStyle
-                // marginLeft: 'auto',
-                // ...(props.open && { display: 'none' }) 
               }}
             >
               <SaveAltIcon /> Save Changes
@@ -264,11 +264,22 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               onClick={exportDeckToCsv}
               sx={{
                 ...buttonBackgroundStyle, ...listItemStyle
-                // marginLeft: 'auto',
-                // ...(props.open && { display: 'none' }) 
               }}
             >
               <SaveAltIcon /> Download card list
+            </Button>
+          </ListItem>
+          <ListItem>
+            <Button
+              color="inherit"
+              aria-label="delete-deck"
+              variant="contained"
+              onClick={props.deleteDeck}
+              sx={{
+                ...buttonBackgroundStyle, ...listItemStyle
+              }}
+            >
+              <DeleteIcon /> Delete deck
             </Button>
           </ListItem>
         </List>

@@ -214,8 +214,8 @@ const MagicCollectionManager: FC = (props) => {
     })
   }
 
-  const saveDeck = (test: any) => {
-    console.log('save')
+  const saveDeck = () => {
+    console.log('Saving deck')
     const deck = getDeck(selectedDeckId)
     deck.cardEntries = selectedDeckEntries
 
@@ -228,6 +228,16 @@ const MagicCollectionManager: FC = (props) => {
     axios.put(`http://localhost:8000/decks/`, deckClone).then(response => {
       console.log("updated deck!")
     })
+  }
+
+  const deleteDeck = () => {
+    // todo add confirmation popup
+    console.log('Deleting deck')
+
+    axios.delete(`http://localhost:8000/decks/?id=${selectedDeckId}`).then(response => {
+      console.log("Deleted deck!")
+    })
+    setSelectedDeckId(0)
   }
 
   const getDeck = (id: number): DeckDTO => {
@@ -339,6 +349,7 @@ const MagicCollectionManager: FC = (props) => {
     selectedDeckEntries,
     fetchDecks,
     saveDeck,
+    deleteDeck,
     // getCurrentDeckEntries,
     handleChangeSelectedDeck,
     addCardCopyToDeck,

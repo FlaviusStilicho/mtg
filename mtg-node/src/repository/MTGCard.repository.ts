@@ -1,5 +1,4 @@
 import { logger } from "../index.js";
-import { Deck } from "../entity/Deck.entity.js";
 import { DB } from "../datasource.js";
 import { MTGCard } from "../entity/MTGCard.entity.js";
 import { UpdateResult } from "typeorm";

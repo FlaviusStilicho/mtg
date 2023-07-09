@@ -136,6 +136,8 @@ function ParseCard(rawCard: object, sets: MTGSet[], cardsMap: Map<string, [MTGCa
             front['oracle_text'],
             front['power'],
             front['toughness'],
+            true, //todo alex fix this
+            true, //todo alex fix this
             [ParseCardVersion(rawCard, sets, true)],
             back['name'],
             back['type_line'],
@@ -152,6 +154,8 @@ function ParseCard(rawCard: object, sets: MTGSet[], cardsMap: Map<string, [MTGCa
             rawCard['oracle_text'],
             rawCard['power'],
             rawCard['toughness'],
+            true, //todo alex fix this
+            true, //todo alex fix this
             [ParseCardVersion(rawCard, sets, true)]
         )
     }

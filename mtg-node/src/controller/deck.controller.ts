@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { Deck } from '../entity/Deck.entity.ts';
+import { Deck, DeckCardEntry } from '../entity/Deck.entity.ts';
 import { CheckDeckRequest, CreateDeckResponse, DeleteDeckRequest, GetDeckRequest, DeckMetadata, ListDecksResponse, ListDeckNamesResponse, DeckDTO } from 'mtg-common';
 import { DeckRepository } from '../repository/Deck.repository.ts';
 import { logger } from "../index.ts";
+import { DeckCardEntryRepository } from "../repository/DeckCardEntry.repository.ts";
 
 
 export const ListDecks = async (req: Request, res: Response<ListDecksResponse>) => {
@@ -19,13 +20,13 @@ export const ListDecks = async (req: Request, res: Response<ListDecksResponse>) 
 export const ListDeckNames = async (req: Request, res: Response<ListDeckNamesResponse>) => {
     await DeckRepository.findAndCount().then(result => {
         const decks: DeckMetadata[] = result[0].map(deck => {
-        const metaData: DeckMetadata = {
-            id: deck.id, 
-            name: deck.name, 
-            totalCards: deck.totalCards()
-        }
-        return metaData
-    })
+            const metaData: DeckMetadata = {
+                id: deck.id,
+                name: deck.name,
+                totalCards: deck.totalCards()
+            }
+            return metaData
+        })
         const total = result[1]
         res.send({
             decks,
@@ -38,17 +39,40 @@ export const CreateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Respons
     Deck.fromDTO(req.body).then(
         deck => DeckRepository.saveOne(deck).then(
             deck => res.send({ id: deck.id })))
-            .catch(err => res.status(400).send(err.toString()))
+        .catch(err => res.status(400).send(err.toString()))
 }
 
 export const DeleteDeck = async (req: Request<{}, {}, {}, DeleteDeckRequest>, res: Response) => {
-    DeckRepository.findById(req.query.id).then(
-        deck => DeckRepository.remove(deck)).then(
-            () => res.sendStatus(200)).catch(
-                err => {
-                    logger.error(err);
-                    res.sendStatus(404)
-                })
+    const deckId= req.query.id
+    await DeckCardEntryRepository
+    .createQueryBuilder()
+    .delete()
+    .from(DeckCardEntry)
+    .where('deckId = :deckId', { deckId })
+    .execute();
+
+    DeckRepository.delete(deckId).then(
+        _ => res.sendStatus(200)).catch(
+            err => {
+                logger.error(err);
+                res.sendStatus(404)
+            })
+
+    // find the deck
+    // DeckRepository.findById(req.query.id).then(
+    //     // find all entries
+    //     deck => DeckCardEntryRepository.findBy({ deck: deck }).then(
+    //         // delete all entries
+    //         entries => DeckCardEntryRepository.remove(entries).then(
+    //             // find the deck again
+    //             _ => DeckRepository.findById(req.query.id).then(
+    //                 // remove the deck
+    //                 deck => DeckRepository.remove(deck)).then(
+    //                     _ => res.sendStatus(200)).catch(
+    //                         err => {
+    //                             logger.error(err);
+    //                             res.sendStatus(404)
+    //                         }))))
 }
 
 export const ClearDecks = async (req: Request<{}, {}, {}, {}>, res: Response) => {

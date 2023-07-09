@@ -133,9 +133,6 @@ export class Deck {
 
 @Entity()
 export class DeckCardEntry {
-
-    static repo: Repository<DeckCardEntry> = DB.manager.getRepository(DeckCardEntry)
-
     @PrimaryGeneratedColumn()
     id: number
 
