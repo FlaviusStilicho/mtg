@@ -76,6 +76,18 @@ export class MTGCard {
         nullable: true
     })
     toughness: string
+    @Column({
+        default: null,
+        nullable: true
+    })
+    @Index()
+    standardLegal: boolean
+    @Column({
+        default: null,
+        nullable: true
+    })
+    @Index()
+    commanderLegal: boolean
     @Column({ default: 0 })
     @Index()
     ownedCopies: number
@@ -97,9 +109,6 @@ export class MTGCard {
     })
     @JoinTable()
     tags: MTGCardTag[]
-    // @Column()
-    // @Index()
-    // price: number
     @OneToMany(() => MTGCardVersion, (version) => version.card, {
         eager: true,
         cascade: true,
@@ -108,22 +117,16 @@ export class MTGCard {
 
     constructor(
         name: string,
-        // scryfallId: string,
-        // illustrationId: string,
         color: string,
         type: string,
         rarity: string,
         manaCost: string,
         convertedManaCost: number,
         text: string,
-        // rulingsUri: string,
-        // scryfallUri: string,
-        // imageUri: string,
         power: string,
         toughness: string,
-        // standardLegal: boolean,
-        // commanderLegal: boolean,
-        // price: number,
+        standardLegal: boolean,
+        commanderLegal: boolean,
         versions: MTGCardVersion[],
         backSideName: string = null,
         backSideType: string = null,
@@ -141,6 +144,8 @@ export class MTGCard {
         this.text = text
         this.power = power ? power : null
         this.toughness = toughness ? toughness : null
+        this.standardLegal = standardLegal
+        this.commanderLegal = commanderLegal
         this.versions = versions
         this.backSideName = backSideName
         this.backSideType = backSideType
