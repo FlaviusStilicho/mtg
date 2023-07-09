@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import SearchBar, { SearchWindowProps } from './collection/SearchBar';
+import SearchBar, { SearchWindowProps } from './SearchBar';
 import NavBar, { NavBarProps } from './NavBar';
 import CardGrid from './collection/CardGrid';
 import { theme } from '../style/theme';
@@ -13,7 +13,6 @@ import { CardGridProps } from './collection/CardGrid';
 import { FC, useEffect, useState } from 'react';
 import { CardQueryParameters, ListDecksResponse } from '../../../mtg-common/src/requests';
 import { debounce } from "lodash";
-import useConstant from 'use-constant';
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { maximumCardCopiesStandard, searchBarDrawerWidth } from '../constants';
 import { DeckState } from './hooks/DeckState';
@@ -39,32 +38,31 @@ const MagicCollectionManager: FC = (props) => {
     setSelectedTab(newValue);
   };
 
-  // search state
-  const [cardNameQuery, setCardNameQuery] = React.useState<string>("");
-  const [cardTextQuery, setCardTextQuery] = React.useState<string>("");
-
+  // search options
   const [sets, setSets] = React.useState<MTGSetDTO[]>([]);
-  const [selectedSets, setSelectedSets] = React.useState<number[]>([]);
-
   const rarities = React.useState<string[]>(raritiesList)[0];
-  const [selectedRarities, setSelectedRarities] = React.useState<string[]>(raritiesList);
-
   const [types, setTypes] = React.useState<string[]>([]);
-  const [selectedTypes, setSelectedTypes] = React.useState<string[]>([]);
-  const [selectedSubType, setSelectedSubType] = React.useState<string>("");
-
   const [colors, setColors] = React.useState<Color[]>([]);
-  const [selectedColors, setSelectedColors] = React.useState<string[]>([]);
+  const colorSearchSettings = React.useState<string[]>(colorSearchOptions)[0];
 
-  const [colorSearchSettings, setColorSearchSettings] = React.useState<string[]>(colorSearchOptions);
-  const [selectedColorSearchSetting, setSelectedColorSearchSetting] = React.useState<string>("Exact match");
-
-  const [selectedManaCost, setSelectedManaCost] = React.useState<string>("");
-  const [selectedDeckFormat, setSelectedDeckFormat] = React.useState<string>(DeckFormat.STANDARD.toString());
+  // search state
+  const [selectedQueryParameters, setSelectedQueryParameters] = React.useState<CardQueryParameters>({
+    cardName: "",
+    cardText: "",
+    sets: currentStandardSets,
+    rarities: raritiesList,
+    types: [],
+    subType: "",
+    colors: [],
+    colorSearchSetting: "Exact match",
+    manaCost: "",
+    format: DeckFormat.STANDARD.toString()
+  })
 
   // card state
   const pageSize = 60;
   const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1)
   const [cards, setCards] = React.useState<MTGCardDTO[]>([]);
 
   // deck state
@@ -84,15 +82,21 @@ const MagicCollectionManager: FC = (props) => {
 
   useEffect(() => {
     fetchData()
+    fetchCards({
+      ...selectedQueryParameters,
+      sets: currentStandardSets
+    }, false)
     fetchDecks()
-    updateCards()
   }, []);
 
   const fetchData = () => {
     axios.get(`http://localhost:8000/sets`).then(response => {
       const setsFromApi: MTGSetDTO[] = response.data.data
       setSets(setsFromApi)
-      setSelectedSets(currentStandardSets)
+      setSelectedQueryParameters({
+        ...selectedQueryParameters,
+        sets: currentStandardSets
+      })
     })
     axios.get('http://localhost:8000/types').then(response => {
       const types: string[] = response.data.data
@@ -105,7 +109,7 @@ const MagicCollectionManager: FC = (props) => {
 
   }
 
-  const fetchCards = (incrementPage: boolean) => {
+  const fetchCards = React.useCallback(debounce((queryParameters: CardQueryParameters, incrementPage: boolean = false, delay: number = 0) => {
     var currentPage = page
     if (incrementPage) {
       currentPage += 1
@@ -113,19 +117,6 @@ const MagicCollectionManager: FC = (props) => {
     } else {
       currentPage = 1
       setPage(currentPage)
-    }
-
-    const queryParameters: CardQueryParameters = {
-      cardName: cardNameQuery,
-      cardText: cardTextQuery,
-      sets: selectedSets.length != 0 ? selectedSets : currentStandardSets,
-      rarities: selectedRarities,
-      types: selectedTypes,
-      subType: selectedSubType,
-      colors: selectedColors,
-      colorSearchSetting: selectedColorSearchSetting,
-      manaCost: selectedManaCost,
-      format: selectedDeckFormat
     }
 
     console.log(`fetchcards: currentPage: ${currentPage}`)
@@ -145,104 +136,57 @@ const MagicCollectionManager: FC = (props) => {
         // todo alex do something with total pages
       }
     })
-  }
-
-  
-  const updateCards = React.useCallback(debounce((incrementPage: boolean = false) => {
-    fetchCards(incrementPage);
   }, 1500), [
-    page, 
+    page,
     cards,
-    cardNameQuery,
-    cardTextQuery,
-    selectedSets,
-    selectedRarities,
-    selectedTypes,
-    selectedSubType,
-    selectedColors,
-    selectedColorSearchSetting,
-    selectedManaCost,
-    selectedDeckFormat
+    selectedQueryParameters
   ]);
 
-  const handleChangeCardNameQuery = (event: SelectChangeEvent<typeof cardNameQuery>) => {
-    setCardNameQuery(event.target.value);
-    updateCards();
-  };
-
-  const handleChangeCardTextQuery = (event: SelectChangeEvent<typeof cardTextQuery>) => {
-    setCardTextQuery(event.target.value);
-    updateCards();
-  };
-
-  const handleChangeSelectedSets = (event: SelectChangeEvent<typeof selectedSets>) => {
-    const newValue = event.target.value
-    if (typeof newValue === 'string') {
-      console.error("help!")
-    } else if (newValue[newValue.length - 1] === 99999) {
-      setSelectedSets(selectedSets.length > 0 ? [] : sets.map(set => set.id));
-      updateCards();
-    } else {
-      setSelectedSets(newValue);
-      updateCards();
+  const handleChangeSelectedQueryParameters = (event: SelectChangeEvent<typeof selectedQueryParameters>) => {
+    const propName = event.target.name;
+    const newValue = event.target.value;
+    var queryParameters = selectedQueryParameters
+    if (propName == "cardName" && typeof newValue === 'string') {
+      queryParameters = { ...selectedQueryParameters, cardName: newValue }
+    } else if (propName == "cardText" && typeof newValue === 'string') {
+      queryParameters = { ...selectedQueryParameters, cardText: newValue }
+    } else if (propName == "sets" && Array.isArray(newValue) && newValue.every(item => typeof item === 'number')) {
+      var newSets: number[] = []
+      if (newValue[newValue.length - 1] === 99999) {
+        newSets = queryParameters.sets.length > 0 ? [] : sets.map(set => set.id);
+      } else {
+        newSets = newValue;
+      }
+      queryParameters = { ...selectedQueryParameters, sets: newSets }
+    } else if (propName == "rarities" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+      queryParameters = { ...selectedQueryParameters, rarities: newValue }
+    } else if (propName == "types" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+      queryParameters = { ...selectedQueryParameters, types: newValue }
+    } else if (propName == "subType" && typeof newValue === 'string') {
+      queryParameters = { ...selectedQueryParameters, subType: newValue }
+    } else if (propName == "colors" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+      queryParameters = { ...selectedQueryParameters, colors: newValue }
+    } else if (propName == "colorSearchSetting" && typeof newValue === 'string') {
+      queryParameters = { ...selectedQueryParameters, colorSearchSetting: newValue }
+    } else if (propName == "manaCost" && typeof newValue === 'string') {
+      queryParameters = { ...selectedQueryParameters, manaCost: newValue }
+    } else if (propName == "format" && typeof newValue === 'string') {
+      var newSets: number[] = []
+      if (newValue == DeckFormat.STANDARD.toString()) {
+        newSets = currentStandardSets
+      } else if (newValue == DeckFormat.COMMANDER.toString()) {
+        newSets = sets.map(set => set.id)
+      } else {
+        console.error("Unknown format!")
+      }
+      queryParameters = { ...selectedQueryParameters, format: newValue, sets: newSets }
     }
-  };
-
-  const handleChangeSelectedRarities = (event: SelectChangeEvent<typeof selectedRarities>) => {
-    const newValue = event.target.value
-    if (typeof newValue === 'string') {
-      console.error("help!")
-    } else {
-      setSelectedRarities(newValue);
-      updateCards();
+    else {
+      console.error(`Type error while updating query parameters: field=${propName}, type=${typeof newValue}, value=${newValue}`)
     }
-  };
-
-  const handleChangeSelectedTypes = (event: SelectChangeEvent<typeof selectedTypes>) => {
-    const newValue = event.target.value
-    if (typeof newValue === 'string') {
-      console.error("help!")
-    } else {
-      setSelectedTypes(newValue);
-      updateCards();
-    }
-  };
-
-  const handleChangeSelectedSubType = (event: SelectChangeEvent<typeof selectedSubType>) => {
-    setSelectedSubType(event.target.value);
-    updateCards();
-  };
-
-  const handleChangeSelectedColors = (event: SelectChangeEvent<typeof selectedColors>) => {
-    const newValue = event.target.value
-    if (typeof newValue === 'string') {
-      console.error("help!")
-    } else {
-      setSelectedColors(newValue);
-      updateCards();
-    }
-  };
-
-  const handleChangeSelectedColorSearchSetting = (event: SelectChangeEvent<typeof selectedColorSearchSetting>) => {
-    setSelectedColorSearchSetting(event.target.value);
-    updateCards();
-  };
-
-  const handleChangeSelectedManaCost = (event: SelectChangeEvent<typeof selectedManaCost>) => {
-    setSelectedManaCost(event.target.value);
-    updateCards();
-  };
-
-  const handleChangeSelectedDeckFormat = (event: SelectChangeEvent<typeof selectedDeckFormat>) => {
-    const newValue = event.target.value
-    setSelectedDeckFormat(newValue);
-    if (newValue == DeckFormat.STANDARD.toString()) {
-      setSelectedSets(currentStandardSets)
-    } else if (newValue == DeckFormat.COMMANDER.toString()) {
-      setSelectedSets(sets.map(set => set.id))
-    }
-    updateCards();
-  };
+    setSelectedQueryParameters(queryParameters)
+    fetchCards(queryParameters, false, 0)
+  }
 
   const handleChangeSelectedDeck = (event: SelectChangeEvent<typeof selectedDeckId>) => {
     const newValue = event.target.value
@@ -359,46 +303,19 @@ const MagicCollectionManager: FC = (props) => {
       }
     }
   }
-
   const handleLoadMore = async () => {
-    updateCards(true)
+    fetchCards(selectedQueryParameters, true, 0)
   }
 
+
   const searchWindowProps: SearchWindowProps = {
-    cardNameQuery,
-    handleChangeCardNameQuery,
-    cardTextQuery,
-    handleChangeCardTextQuery,
+    selectedQueryParameters,
+    handleChangeSelectedQueryParameters,
     sets,
-    selectedSets,
-    setSelectedSets,
-    handleChangeSelectedSets,
     rarities,
-    selectedRarities,
-    setSelectedRarities,
-    handleChangeSelectedRarities,
     types,
-    selectedTypes,
-    setSelectedTypes,
-    handleChangeSelectedTypes,
-    selectedSubType,
-    setSelectedSubType,
-    handleChangeSelectedSubType,
     colors,
-    selectedColors,
-    setSelectedColors,
-    handleChangeSelectedColors,
     colorSearchSettings,
-    setColorSearchSetting: setColorSearchSettings,
-    selectedColorSearchSetting,
-    setSelectedColorSearchSetting,
-    handleChangeSelectedColorSearchSetting,
-    selectedManaCost,
-    setSelectedManaCost,
-    handleChangeSelectedManaCost,
-    selectedDeckFormat,
-    setSelectedDeckFormat,
-    handleChangeSelectedDeckFormat
   }
 
   const deckState: DeckState = {

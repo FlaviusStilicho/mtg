@@ -7,47 +7,50 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import SearchIcon from '@mui/icons-material/Search';
 import TextField from '@mui/material/TextField';
-import { buttonBackgroundStyle, searchBarListItemStyle, searchTextFieldStyle } from '../../style/styles';
+import { buttonBackgroundStyle, searchBarListItemStyle, searchTextFieldStyle } from '../style/styles';
 import { CardMedia, Checkbox, Divider, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { Color, MTGSetDTO } from '../../../../mtg-common/src/DTO';
-import { searchBarDrawerWidth } from '../../constants';
-import { DeckFormat } from "../../enum";
+import { Color, MTGSetDTO } from '../../../mtg-common/src/DTO';
+import { searchBarDrawerWidth } from '../constants';
+import { DeckFormat } from "../enum";
+import { CardQueryParameters } from '../../../mtg-common/dist/requests';
 
 export interface SearchWindowProps {
-  cardNameQuery: string;
-  handleChangeCardNameQuery: any;
-  cardTextQuery: string;
-  handleChangeCardTextQuery: any;
+  selectedQueryParameters: CardQueryParameters,
+  handleChangeSelectedQueryParameters: any,
+  // cardNameQuery: string;
+  // handleChangeCardNameQuery: any;
+  // cardTextQuery: string;
+  // handleChangeCardTextQuery: any;
   sets: MTGSetDTO[];
-  selectedSets: number[];
-  setSelectedSets: React.Dispatch<React.SetStateAction<number[]>>;
-  handleChangeSelectedSets: (event: SelectChangeEvent<number[]>) => void;
+  // selectedSets: number[];
+  // setSelectedSets: React.Dispatch<React.SetStateAction<number[]>>;
+  // handleChangeSelectedSets: (event: SelectChangeEvent<number[]>) => void;
   rarities: string[];
-  selectedRarities: string[];
-  setSelectedRarities: React.Dispatch<React.SetStateAction<string[]>>;
-  handleChangeSelectedRarities: (event: SelectChangeEvent<string[]>) => void;
+  // selectedRarities: string[];
+  // setSelectedRarities: React.Dispatch<React.SetStateAction<string[]>>;
+  // handleChangeSelectedRarities: (event: SelectChangeEvent<string[]>) => void;
   types: string[];
-  selectedTypes: string[];
-  setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
-  handleChangeSelectedTypes: (event: SelectChangeEvent<string[]>) => void;
-  selectedSubType: string;
-  setSelectedSubType: React.Dispatch<React.SetStateAction<string>>;
-  handleChangeSelectedSubType: any;
+  // selectedTypes: string[];
+  // setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
+  // handleChangeSelectedTypes: (event: SelectChangeEvent<string[]>) => void;
+  // selectedSubType: string;
+  // setSelectedSubType: React.Dispatch<React.SetStateAction<string>>;
+  // handleChangeSelectedSubType: any;
   colors: Color[];
-  selectedColors: string[];
-  setSelectedColors: React.Dispatch<React.SetStateAction<string[]>>;
-  handleChangeSelectedColors: (event: SelectChangeEvent<string[]>) => void;
+  // selectedColors: string[];
+  // setSelectedColors: React.Dispatch<React.SetStateAction<string[]>>;
+  // handleChangeSelectedColors: (event: SelectChangeEvent<string[]>) => void;
   colorSearchSettings: string[];
-  setColorSearchSetting: React.Dispatch<React.SetStateAction<string[]>>;
-  selectedColorSearchSetting: string;
-  setSelectedColorSearchSetting: React.Dispatch<React.SetStateAction<string>>;
-  handleChangeSelectedColorSearchSetting: (event: SelectChangeEvent<string>) => void;
-  selectedManaCost: string;
-  setSelectedManaCost: React.Dispatch<React.SetStateAction<string>>;
-  handleChangeSelectedManaCost: any;
-  selectedDeckFormat: string;
-  setSelectedDeckFormat: React.Dispatch<React.SetStateAction<string>>;
-  handleChangeSelectedDeckFormat: any;
+  // setColorSearchSetting: React.Dispatch<React.SetStateAction<string[]>>;
+  // selectedColorSearchSetting: string;
+  // setSelectedColorSearchSetting: React.Dispatch<React.SetStateAction<string>>;
+  // handleChangeSelectedColorSearchSetting: (event: SelectChangeEvent<string>) => void;
+  // selectedManaCost: string;
+  // setSelectedManaCost: React.Dispatch<React.SetStateAction<string>>;
+  // handleChangeSelectedManaCost: any;
+  // selectedDeckFormat: string;
+  // setSelectedDeckFormat: React.Dispatch<React.SetStateAction<string>>;
+  // handleChangeSelectedDeckFormat: any;
 }
 
 export default function SearchBar(props: SearchWindowProps) {
@@ -85,12 +88,12 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <TextField
-            name="search-card-name"
+            name="cardName"
             defaultValue=""
             variant="standard"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            onChange={props.handleChangeCardNameQuery}
+            onChange={props.handleChangeSelectedQueryParameters}
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
@@ -104,12 +107,12 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <TextField
-            name="search-card-name"
+            name="cardText"
             defaultValue=""
             variant="standard"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            onChange={props.handleChangeCardTextQuery}
+            onChange={props.handleChangeSelectedQueryParameters}
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
@@ -123,24 +126,25 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <Select
+            name="sets"
             labelId="search-set-label"
             id="search-set"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            value={props.selectedSets}
+            value={props.selectedQueryParameters.sets}
             renderValue={
-              (selected) => props.selectedSets.map(
+              (selected) => props.selectedQueryParameters.sets.map(
                 setId => props.sets.filter(set => setId == set.id).map(set => set.fullName))
                 .join(", ")
             }
-            onChange={props.handleChangeSelectedSets}
+            onChange={props.handleChangeSelectedQueryParameters}
             multiple
           >
             <MenuItem value={99999}>
               <ListItemIcon>
                 <Checkbox
-                  checked={props.selectedSets.length > 0 && props.selectedSets.length === props.selectedSets.length}
-                  indeterminate={props.selectedSets.length > 0 && props.selectedSets.length < props.selectedSets.length}
+                  checked={props.selectedQueryParameters.sets.length > 0 && props.selectedQueryParameters.sets.length === props.selectedQueryParameters.sets.length}
+                  indeterminate={props.selectedQueryParameters.sets.length > 0 && props.selectedQueryParameters.sets.length < props.selectedQueryParameters.sets.length}
                 />
               </ListItemIcon>
               <ListItemText
@@ -154,7 +158,7 @@ export default function SearchBar(props: SearchWindowProps) {
             {props.sets.map((set) => (
               <MenuItem key={set.id} value={set.id}>
                 <Checkbox
-                  checked={props.selectedSets.indexOf(set.id) > -1} />
+                  checked={props.selectedQueryParameters.sets.indexOf(set.id) > -1} />
                 <ListItemText
                   primary={set.fullName}
                   disableTypography
@@ -175,12 +179,13 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <Select
+            name="rarities"
             labelId="search-rarity-label"
             id="search-rarity"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            value={props.selectedRarities}
-            onChange={props.handleChangeSelectedRarities}
+            value={props.selectedQueryParameters.rarities}
+            onChange={props.handleChangeSelectedQueryParameters}
             multiple
             renderValue={(selected) =>
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
@@ -205,7 +210,7 @@ export default function SearchBar(props: SearchWindowProps) {
             {props.rarities.map((rarity) => (
               <MenuItem key={rarity} value={rarity}>
                 <Checkbox
-                  checked={props.selectedRarities.indexOf(rarity) > -1} />
+                  checked={props.selectedQueryParameters.rarities.indexOf(rarity) > -1} />
                 <Box
                   component="img"
                   sx={{
@@ -232,17 +237,18 @@ export default function SearchBar(props: SearchWindowProps) {
           <Select
             labelId="search-type-label"
             id="search-type"
+            name="types"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
 
-            value={props.selectedTypes}
-            onChange={props.handleChangeSelectedTypes}
+            value={props.selectedQueryParameters.types}
+            onChange={props.handleChangeSelectedQueryParameters}
             multiple
             renderValue={(selected) => selected.join(', ')}
           >
             {props.types.map((type) => (
               <MenuItem key={type} value={type}>
-                <Checkbox checked={props.selectedTypes.indexOf(type) > -1} />
+                <Checkbox checked={props.selectedQueryParameters.types.indexOf(type) > -1} />
                 <ListItemText primary={type} />
               </MenuItem>
             ))}
@@ -255,12 +261,12 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <TextField
-            name="search-subtype"
+            name="subType"
             defaultValue=""
             variant="standard"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            onChange={props.handleChangeSelectedSubType}
+            onChange={props.handleChangeSelectedQueryParameters}
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
@@ -274,12 +280,13 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <Select
+            name="colorSearchSetting"
             labelId="search-color-settinglabel"
             id="search-color-setting"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            value={props.selectedColorSearchSetting}
-            onChange={props.handleChangeSelectedColorSearchSetting}
+            value={props.selectedQueryParameters.colorSearchSetting}
+            onChange={props.handleChangeSelectedQueryParameters}
           >
             {props.colorSearchSettings.map((setting) => (
               <MenuItem key={setting} value={setting}>
@@ -292,11 +299,11 @@ export default function SearchBar(props: SearchWindowProps) {
           <Select
             labelId="search-color-label"
             id="search-color"
+            name="colors"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-
-            value={props.selectedColors}
-            onChange={props.handleChangeSelectedColors}
+            value={props.selectedQueryParameters.colors}
+            onChange={props.handleChangeSelectedQueryParameters}
             multiple
             label="Any"
             renderValue={(selected) =>
@@ -319,7 +326,7 @@ export default function SearchBar(props: SearchWindowProps) {
             {props.colors.map((color) => (
               <MenuItem key={color.name} value={color.name}>
                 <Checkbox
-                  checked={props.selectedColors.indexOf(color.name) > -1} />
+                  checked={props.selectedQueryParameters.colors.indexOf(color.name) > -1} />
                 <Box
                   component="img"
                   sx={{
@@ -341,12 +348,12 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <TextField
-            name="search-mana-cost"
+            name="manaCost"
             defaultValue=""
             variant="standard"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            onChange={props.handleChangeSelectedManaCost}
+            onChange={props.handleChangeSelectedQueryParameters}
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
@@ -359,13 +366,14 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <Select
+            name="format"
             labelId="search-format-label"
             id="search-format"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-            value={props.selectedDeckFormat.toString()}
+            value={props.selectedQueryParameters.format.toString()}
             // renderValue={props.selectedDeckFormat.toString()}
-            onChange={props.handleChangeSelectedDeckFormat}>
+            onChange={props.handleChangeSelectedQueryParameters}>
             {formats.map((format) => (
               <MenuItem key={format.toString()} value={format.toString()}>
                 <ListItemText
