@@ -20,8 +20,11 @@ import { DeckState } from './hooks/DeckState';
 import { isBasicLand } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersAsString } from '../functions/magicers';
 import { DeckFormat } from '../enum';
+import TabPanel from './TabPanel';
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
+const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
+const colorSearchOptions = ["Exact match", "Includes at least", "Includes at most"]
 
 export enum EnabledTab {
   COLLECTION,
@@ -29,20 +32,22 @@ export enum EnabledTab {
 }
 
 const MagicCollectionManager: FC = (props) => {
+  // tab state
   const [selectedTab, setSelectedTab] = React.useState(0);
 
   const handleChangeSelectedTab = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
   };
 
+  // search state
   const [cardNameQuery, setCardNameQuery] = React.useState<string>("");
   const [cardTextQuery, setCardTextQuery] = React.useState<string>("");
 
   const [sets, setSets] = React.useState<MTGSetDTO[]>([]);
   const [selectedSets, setSelectedSets] = React.useState<number[]>([]);
 
-  const rarities = React.useState<string[]>(["Common", "Uncommon", "Rare", "Mythic"])[0];
-  const [selectedRarities, setSelectedRarities] = React.useState<string[]>(["Common", "Uncommon", "Rare", "Mythic"]);
+  const rarities = React.useState<string[]>(raritiesList)[0];
+  const [selectedRarities, setSelectedRarities] = React.useState<string[]>(raritiesList);
 
   const [types, setTypes] = React.useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = React.useState<string[]>([]);
@@ -51,19 +56,23 @@ const MagicCollectionManager: FC = (props) => {
   const [colors, setColors] = React.useState<Color[]>([]);
   const [selectedColors, setSelectedColors] = React.useState<string[]>([]);
 
-  const [colorSearchSettings, setColorSearchSettings] = React.useState<string[]>(["Exact match", "Includes at least", "Includes at most"]);
+  const [colorSearchSettings, setColorSearchSettings] = React.useState<string[]>(colorSearchOptions);
   const [selectedColorSearchSetting, setSelectedColorSearchSetting] = React.useState<string>("Exact match");
 
   const [selectedManaCost, setSelectedManaCost] = React.useState<string>("");
   const [selectedDeckFormat, setSelectedDeckFormat] = React.useState<string>(DeckFormat.STANDARD.toString());
 
+  // card state
   const pageSize = 60;
   const [page, setPage] = useState(1);
   const [cards, setCards] = React.useState<MTGCardDTO[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
+  // deck state
   const [deckManagerOpened, setDeckManagerOpened] = React.useState(true);
-
+  const [decks, setDecks] = useState<DeckDTO[]>([]);
+  const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
+  const [selectedDeckEntries, setSelectedDeckEntries] = useState<DeckCardEntryDTO[]>([])
+  const [deckChanged, setDeckChanged] = useState<boolean>(false);
 
   const handleDeckManagerOpenClose = () => {
     if (deckManagerOpened) {
@@ -76,22 +85,8 @@ const MagicCollectionManager: FC = (props) => {
   useEffect(() => {
     fetchData()
     fetchDecks()
-  }, []);
-
-  useEffect(() => {
     updateCards()
-    // eslint-disable-next-line
-  }, [
-    cardNameQuery,
-    cardTextQuery,
-    selectedSets,
-    selectedRarities,
-    selectedTypes,
-    selectedSubType,
-    selectedColors,
-    selectedColorSearchSetting,
-    selectedManaCost
-  ]);
+  }, []);
 
   const fetchData = () => {
     axios.get(`http://localhost:8000/sets`).then(response => {
@@ -110,31 +105,20 @@ const MagicCollectionManager: FC = (props) => {
 
   }
 
-  const fetchCards = useConstant(() => debounce((queryParameters: CardQueryParameters) => {
-    setIsLoading(true);
-    axios.get(`cards/`, {
-      params: {
-        take: pageSize,
-        page: page,
-        query: queryParameters
-      }
-    }).then(response => {
-      const cards: MTGCardDTO[] = response.data.cards
-      console.log(`loading... page ${page}`)
-      //todo do something with cards
-      setCards(cards);
-      setIsLoading(false);
-    })
-  }, 1500))
-
-  const updateCards = async (resetPage: boolean = false) => {
-    if (resetPage) {
-      setPage(1)
+  const fetchCards = (incrementPage: boolean) => {
+    var currentPage = page
+    if (incrementPage) {
+      currentPage += 1
+      setPage(currentPage)
+    } else {
+      currentPage = 1
+      setPage(currentPage)
     }
+
     const queryParameters: CardQueryParameters = {
       cardName: cardNameQuery,
       cardText: cardTextQuery,
-      sets: selectedSets,
+      sets: selectedSets.length != 0 ? selectedSets : currentStandardSets,
       rarities: selectedRarities,
       types: selectedTypes,
       subType: selectedSubType,
@@ -144,9 +128,42 @@ const MagicCollectionManager: FC = (props) => {
       format: selectedDeckFormat
     }
 
-    fetchCards(queryParameters)
-    // setLastPage(data.meta.last_page);
+    console.log(`fetchcards: currentPage: ${currentPage}`)
+    axios.get(`cards/`, {
+      params: {
+        take: pageSize,
+        page: currentPage,
+        query: queryParameters
+      }
+    }).then(response => {
+      const newCards: MTGCardDTO[] = response.data.cards
+      if (currentPage === 1) {
+        setCards(newCards)
+      } else {
+        const newCardsList = cards.concat(newCards)
+        setCards(newCardsList)
+        // todo alex do something with total pages
+      }
+    })
   }
+
+  
+  const updateCards = React.useCallback(debounce((incrementPage: boolean = false) => {
+    fetchCards(incrementPage);
+  }, 1500), [
+    page, 
+    cards,
+    cardNameQuery,
+    cardTextQuery,
+    selectedSets,
+    selectedRarities,
+    selectedTypes,
+    selectedSubType,
+    selectedColors,
+    selectedColorSearchSetting,
+    selectedManaCost,
+    selectedDeckFormat
+  ]);
 
   const handleChangeCardNameQuery = (event: SelectChangeEvent<typeof cardNameQuery>) => {
     setCardNameQuery(event.target.value);
@@ -163,7 +180,7 @@ const MagicCollectionManager: FC = (props) => {
     if (typeof newValue === 'string') {
       console.error("help!")
     } else if (newValue[newValue.length - 1] === 99999) {
-      setSelectedSets(newValue.length >= sets.length ? [] : sets.map(set => set.id));
+      setSelectedSets(selectedSets.length > 0 ? [] : sets.map(set => set.id));
       updateCards();
     } else {
       setSelectedSets(newValue);
@@ -226,52 +243,6 @@ const MagicCollectionManager: FC = (props) => {
     }
     updateCards();
   };
-
-  const searchWindowProps: SearchWindowProps = {
-    cardNameQuery,
-    handleChangeCardNameQuery,
-    cardTextQuery,
-    handleChangeCardTextQuery,
-    sets,
-    selectedSets,
-    setSelectedSets,
-    handleChangeSelectedSets,
-    rarities,
-    selectedRarities,
-    setSelectedRarities,
-    handleChangeSelectedRarities,
-    types,
-    selectedTypes,
-    setSelectedTypes,
-    handleChangeSelectedTypes,
-    selectedSubType,
-    setSelectedSubType,
-    handleChangeSelectedSubType,
-    colors,
-    selectedColors,
-    setSelectedColors,
-    handleChangeSelectedColors,
-    colorSearchSettings,
-    setColorSearchSetting: setColorSearchSettings,
-    selectedColorSearchSetting,
-    setSelectedColorSearchSetting,
-    handleChangeSelectedColorSearchSetting,
-    selectedManaCost,
-    setSelectedManaCost,
-    handleChangeSelectedManaCost,
-    selectedDeckFormat,
-    setSelectedDeckFormat,
-    handleChangeSelectedDeckFormat
-  }
-
-  //
-  //
-  //
-
-  const [decks, setDecks] = useState<DeckDTO[]>([]);
-  const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
-  const [selectedDeckEntries, setSelectedDeckEntries] = useState<DeckCardEntryDTO[]>([])
-  const [deckChanged, setDeckChanged] = useState<boolean>(false);
 
   const handleChangeSelectedDeck = (event: SelectChangeEvent<typeof selectedDeckId>) => {
     const newValue = event.target.value
@@ -389,6 +360,47 @@ const MagicCollectionManager: FC = (props) => {
     }
   }
 
+  const handleLoadMore = async () => {
+    updateCards(true)
+  }
+
+  const searchWindowProps: SearchWindowProps = {
+    cardNameQuery,
+    handleChangeCardNameQuery,
+    cardTextQuery,
+    handleChangeCardTextQuery,
+    sets,
+    selectedSets,
+    setSelectedSets,
+    handleChangeSelectedSets,
+    rarities,
+    selectedRarities,
+    setSelectedRarities,
+    handleChangeSelectedRarities,
+    types,
+    selectedTypes,
+    setSelectedTypes,
+    handleChangeSelectedTypes,
+    selectedSubType,
+    setSelectedSubType,
+    handleChangeSelectedSubType,
+    colors,
+    selectedColors,
+    setSelectedColors,
+    handleChangeSelectedColors,
+    colorSearchSettings,
+    setColorSearchSetting: setColorSearchSettings,
+    selectedColorSearchSetting,
+    setSelectedColorSearchSetting,
+    handleChangeSelectedColorSearchSetting,
+    selectedManaCost,
+    setSelectedManaCost,
+    handleChangeSelectedManaCost,
+    selectedDeckFormat,
+    setSelectedDeckFormat,
+    handleChangeSelectedDeckFormat
+  }
+
   const deckState: DeckState = {
     decks,
     fetchDecks,
@@ -420,10 +432,7 @@ const MagicCollectionManager: FC = (props) => {
     cards,
     enabledTab: EnabledTab.COLLECTION,
     deckState,
-    isLoading,
-    setIsLoading,
-    page,
-    setPage
+    handleLoadMore
   }
 
   const deckGridProps: CardGridProps = {
@@ -431,10 +440,7 @@ const MagicCollectionManager: FC = (props) => {
     enabledTab: EnabledTab.DECK,
     deckState,
     deckManagerOpened,
-    isLoading,
-    setIsLoading,
-    page,
-    setPage
+    handleLoadMore
   }
 
   const navBarProps: NavBarProps = {
@@ -450,15 +456,14 @@ const MagicCollectionManager: FC = (props) => {
         <CssBaseline />
         <Box
           component="nav"
-          sx={{ width: { sm: searchBarDrawerWidth }, flexShrink: { sm: 0 } }}
-        >
+          sx={{ width: { sm: searchBarDrawerWidth }, flexShrink: { sm: 0 } }}>
           <SearchBar {...searchWindowProps} />
         </Box>
         <Box width="100%">
           <NavBar {...navBarProps} />
           <TabPanel value={selectedTab} index={0}>
             <Box width="100%">
-              <CardGrid {...searchGridProps}/>
+              <CardGrid {...searchGridProps} />
             </Box>
           </TabPanel>
           <TabPanel value={selectedTab} index={1}>
@@ -474,29 +479,3 @@ const MagicCollectionManager: FC = (props) => {
 }
 
 export default MagicCollectionManager
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          {children}
-        </Box>
-      )}
-    </div>
-  );
-}

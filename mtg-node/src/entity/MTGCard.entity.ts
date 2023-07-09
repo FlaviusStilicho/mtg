@@ -373,10 +373,10 @@ export class MTGCard {
             }
         }
 
-        const data = await qb.take(take)
-            // .skip(skip)
-            .getMany();
-        const total = data.length
+        const skip = (page - 1) * take
+        const [data, total] = await qb.take(take)
+            .skip(skip)
+            .getManyAndCount();
         logger.info(`Found ${total} cards.`)
         logger.debug(`Query: 
         name=${params.cardName};

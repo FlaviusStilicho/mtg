@@ -24,6 +24,7 @@ export const GetCards = async (req: Request<{}, {}, {}, GetCardsQueryParams>, re
             return card.toDTO()
         })
 
+        logger.info(`cards found: ${cards.length}, page: ${page}, total: ${total}`)
         res.send({
             cards: cards,
             page,

@@ -1,21 +1,20 @@
 import React, { createRef, useEffect, useState } from "react";
 
-import { Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import MTGCardComponent, { CardComponentProps } from "./MTGCardComponent";
 import { gridCardSizeFactor, imageWidth, deckManagerDrawerWidth } from '../../constants';
 import { MTGCardDTO } from "../../../../mtg-common/src/DTO";
 import { EnabledTab } from "../MagicCollectionManager";
 import { DeckState } from "../hooks/DeckState";
+import { staticButtonStyle } from "../../style/styles";
+import RemoveIcon from '@mui/icons-material/Remove';
 
 export interface CardGridProps {
     cards: MTGCardDTO[]
     enabledTab: EnabledTab
     deckState: DeckState
     deckManagerOpened?: boolean
-    isLoading: boolean
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
-    page: number
-    setPage: React.Dispatch<React.SetStateAction<number>>
+    handleLoadMore: any
 }
 
 const CardGrid = (props: CardGridProps) => {
@@ -33,7 +32,7 @@ const CardGrid = (props: CardGridProps) => {
     return (
         <div
             ref={divRef as React.RefObject<HTMLDivElement>}
-            className="SearchGrid" style={{ width: "100%", overflow: 'hidden' }}>
+            style={{ width: "100%", overflowY: "auto" }}>
             <Grid
                 container
                 direction="row"
@@ -55,6 +54,17 @@ const CardGrid = (props: CardGridProps) => {
                     )
                 })}
             </Grid>
+            <Button
+                aria-label="load"
+                name="load-button"
+                variant="contained"
+                style={{
+                    backgroundColor: "3C00E0"
+                }}
+                sx={{ borderRadius: '20%' }}
+                onClick={props.handleLoadMore}>
+                Load more
+            </Button>
         </div>
     )
 }
