@@ -129,6 +129,17 @@ export class Deck {
             return [false, err]
         }
     }
+
+    copy(newName: string): Deck{
+        const deck = new Deck(
+            null,
+            newName,
+            this.format,
+            this.cardEntries.map(entry => entry.copy())
+        )
+        deck.cardEntries.map(entry => entry.deck = deck)
+        return deck
+    }
 }
 
 @Entity()
@@ -167,6 +178,14 @@ export class DeckCardEntry {
             entry.id,
             await MTGCardRepository.findOneById(entry.card.id),
             entry.copies,
+        )
+    }
+
+    copy(): DeckCardEntry {
+        return new DeckCardEntry(
+            null,
+            this.card,
+            this.copies
         )
     }
 }

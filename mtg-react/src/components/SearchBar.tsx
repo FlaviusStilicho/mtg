@@ -1,4 +1,3 @@
-import React from "react";
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Box from '@mui/material/Box';
@@ -8,49 +7,22 @@ import ListItemText from '@mui/material/ListItemText';
 import SearchIcon from '@mui/icons-material/Search';
 import TextField from '@mui/material/TextField';
 import { buttonBackgroundStyle, searchBarListItemStyle, searchTextFieldStyle } from '../style/styles';
-import { CardMedia, Checkbox, Divider, MenuItem, Select, SelectChangeEvent } from '@mui/material';
+import { CardMedia, Checkbox, Divider, MenuItem, Select } from '@mui/material';
 import { Color, MTGSetDTO } from '../../../mtg-common/src/DTO';
 import { searchBarDrawerWidth } from '../constants';
 import { DeckFormat } from "../enum";
 import { CardQueryParameters } from '../../../mtg-common/dist/requests';
+import { firstCharUpper } from '../functions/util';
 
 export interface SearchWindowProps {
   selectedQueryParameters: CardQueryParameters,
   handleChangeSelectedQueryParameters: any,
-  // cardNameQuery: string;
-  // handleChangeCardNameQuery: any;
-  // cardTextQuery: string;
-  // handleChangeCardTextQuery: any;
   sets: MTGSetDTO[];
-  // selectedSets: number[];
-  // setSelectedSets: React.Dispatch<React.SetStateAction<number[]>>;
-  // handleChangeSelectedSets: (event: SelectChangeEvent<number[]>) => void;
   rarities: string[];
-  // selectedRarities: string[];
-  // setSelectedRarities: React.Dispatch<React.SetStateAction<string[]>>;
-  // handleChangeSelectedRarities: (event: SelectChangeEvent<string[]>) => void;
   types: string[];
-  // selectedTypes: string[];
-  // setSelectedTypes: React.Dispatch<React.SetStateAction<string[]>>;
-  // handleChangeSelectedTypes: (event: SelectChangeEvent<string[]>) => void;
-  // selectedSubType: string;
-  // setSelectedSubType: React.Dispatch<React.SetStateAction<string>>;
-  // handleChangeSelectedSubType: any;
+  typeSearchSettings: string[];
   colors: Color[];
-  // selectedColors: string[];
-  // setSelectedColors: React.Dispatch<React.SetStateAction<string[]>>;
-  // handleChangeSelectedColors: (event: SelectChangeEvent<string[]>) => void;
   colorSearchSettings: string[];
-  // setColorSearchSetting: React.Dispatch<React.SetStateAction<string[]>>;
-  // selectedColorSearchSetting: string;
-  // setSelectedColorSearchSetting: React.Dispatch<React.SetStateAction<string>>;
-  // handleChangeSelectedColorSearchSetting: (event: SelectChangeEvent<string>) => void;
-  // selectedManaCost: string;
-  // setSelectedManaCost: React.Dispatch<React.SetStateAction<string>>;
-  // handleChangeSelectedManaCost: any;
-  // selectedDeckFormat: string;
-  // setSelectedDeckFormat: React.Dispatch<React.SetStateAction<string>>;
-  // handleChangeSelectedDeckFormat: any;
 }
 
 export default function SearchBar(props: SearchWindowProps) {
@@ -235,6 +207,23 @@ export default function SearchBar(props: SearchWindowProps) {
         </ListItem>
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <Select
+            name="typeSearchSetting"
+            labelId="search-type-settinglabel"
+            id="search-type-setting"
+            style={searchTextFieldStyle}
+            sx={{ ...buttonBackgroundStyle }}
+            value={props.selectedQueryParameters.typeSearchSetting}
+            onChange={props.handleChangeSelectedQueryParameters}
+          >
+            {props.typeSearchSettings.map((setting) => (
+              <MenuItem key={setting} value={setting}>
+                <ListItemText primary={setting} />
+              </MenuItem>
+            ))}
+          </Select>
+        </ListItem>
+        <ListItem sx={{ ...searchBarListItemStyle }}>
+          <Select
             labelId="search-type-label"
             id="search-type"
             name="types"
@@ -377,7 +366,7 @@ export default function SearchBar(props: SearchWindowProps) {
             {formats.map((format) => (
               <MenuItem key={format.toString()} value={format.toString()}>
                 <ListItemText
-                  primary={format.charAt(0).toUpperCase() + format.slice(1).toLowerCase()}
+                  primary={firstCharUpper(format)}
                 />
               </MenuItem>
             ))}

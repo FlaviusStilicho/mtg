@@ -182,55 +182,55 @@ export class MTGCard {
     }
 
     update(newVersion: MTGCard) {
-        if(this.name != newVersion.name){
+        if (this.name != newVersion.name) {
             logger.debug("updating name")
             this.name = newVersion.name
         }
-        if(this.colorIdentity != newVersion.colorIdentity){
+        if (this.colorIdentity != newVersion.colorIdentity) {
             logger.debug("updating colorIdentity")
             this.colorIdentity = newVersion.colorIdentity
         }
-        if(this.type != newVersion.type){
+        if (this.type != newVersion.type) {
             logger.debug("updating type")
             this.type = newVersion.type
         }
-        if(this.rarity != newVersion.rarity){
+        if (this.rarity != newVersion.rarity) {
             logger.debug("updating rarity")
             this.rarity = newVersion.rarity
         }
-        if(this.manaCost != newVersion.manaCost){
+        if (this.manaCost != newVersion.manaCost) {
             logger.debug("updating manaCost")
             this.manaCost = newVersion.manaCost
         }
-        if(this.convertedManaCost != newVersion.convertedManaCost){
+        if (this.convertedManaCost != newVersion.convertedManaCost) {
             logger.debug("updating convertedManaCost")
             this.convertedManaCost = newVersion.convertedManaCost
         }
-        if(this.text != newVersion.text){
+        if (this.text != newVersion.text) {
             logger.debug("updating text")
             this.text = newVersion.text
         }
-        if(this.power != newVersion.power){
+        if (this.power != newVersion.power) {
             logger.debug("updating power")
             this.power = newVersion.power
         }
-        if(this.toughness != newVersion.toughness){
+        if (this.toughness != newVersion.toughness) {
             logger.debug("updating toughness")
             this.toughness = newVersion.toughness
         }
-        if(this.set != newVersion.set){
+        if (this.set != newVersion.set) {
             logger.debug("updating set")
             this.set = newVersion.set
         }
-        if(this.backSideName != newVersion.backSideName){
+        if (this.backSideName != newVersion.backSideName) {
             logger.debug("updating backSideName")
             this.backSideName = newVersion.backSideName
         }
-        if(this.backSideType != newVersion.backSideType){
+        if (this.backSideType != newVersion.backSideType) {
             logger.debug("updating backSideType")
             this.backSideType = newVersion.backSideType
         }
-        if(this.backSideText != newVersion.backSideText){
+        if (this.backSideText != newVersion.backSideText) {
             logger.debug("updating backSideText")
             this.backSideText = newVersion.backSideText
         }
@@ -329,11 +329,23 @@ export class MTGCard {
                     qb.andWhere(`(card.type like "%${words[0]}%" or card.backSideType like "%${words[0]}%")`)
                 }
             } else {
-                // fix OR queries by splitting into two qb.andWhere's
-                words.filter(word => !word.startsWith("!")).map(word => qb.andWhere(`(card.type like "%${word}%" or card.backSideType like "%${word}%")`))
-                words.filter(word => word.startsWith("!")).map(word => qb.andWhere(`(card.type not like "%${word.substring(1)}%" and card.backSideType not like "%${word.substring(1)}%")`))
+                if (params.typeSearchSetting == "Includes at least") {
+                    // fix OR queries by splitting into two qb.andWhere's
+                    words.filter(word => !word.startsWith("!")).map(word => qb.andWhere(`(card.type like "%${word}%" or card.backSideType like "%${word}%")`))
+                    words.filter(word => word.startsWith("!")).map(word => qb.andWhere(`(card.type not like "%${word.substring(1)}%" and card.backSideType not like "%${word.substring(1)}%")`))
+                } else if (params.typeSearchSetting == "Includes any of") {
+                    var querySubstrings = []
+                    words.filter(word => !word.startsWith("!")).map(word => {querySubstrings.push(`card.type like "%${word}%" or card.backSideType like "%${word}%"`)})
+                    if (querySubstrings){
+                        qb.andWhere(`(${querySubstrings.join(' or ')})`) 
+                    }
+                    words.filter(word => word.startsWith("!")).map(word => qb.andWhere(`(card.type not like "%${word.substring(1)}%" and card.backSideType not like "%${word.substring(1)}%")`))
+                } else {
+                    throw new Error("Illegal search setting")
+                }
             }
         }
+
         if (params.colors) {
             if (params.colorSearchSetting == "Exact match") {
                 params.colors.map(color => qb.andWhere(`card.colorIdentity like "%${color}%"`))
@@ -346,7 +358,6 @@ export class MTGCard {
                 }
             } else if (params.colorSearchSetting == "Includes at most") {
                 allColors.filter(color => params.colors.indexOf(color.name) === -1).map(color => {
-                    logger.info(color.name)
                     qb.andWhere(`card.colorIdentity not like "%${color.name}%"`)
                 })
             } else {
@@ -580,39 +591,39 @@ export class MTGCardVersion {
     }
 
     update(newVersion: MTGCardVersion) {
-        if(this.scryfallId != newVersion.scryfallId){
+        if (this.scryfallId != newVersion.scryfallId) {
             logger.debug("updating scryfallId")
             this.scryfallId = newVersion.scryfallId
         }
-        if(this.frontIllustrationId != newVersion.frontIllustrationId){
+        if (this.frontIllustrationId != newVersion.frontIllustrationId) {
             logger.debug("updating frontIllustrationId")
             this.frontIllustrationId = newVersion.frontIllustrationId
         }
-        if(this.rulingsUri != newVersion.rulingsUri){
+        if (this.rulingsUri != newVersion.rulingsUri) {
             logger.debug("updating rulingsUri")
             this.rulingsUri = newVersion.rulingsUri
         }
-        if(this.frontImageUri != newVersion.frontImageUri){
+        if (this.frontImageUri != newVersion.frontImageUri) {
             logger.debug("updating frontImageUri")
             this.frontImageUri = newVersion.frontImageUri
         }
-        if(this.set != newVersion.set){
+        if (this.set != newVersion.set) {
             logger.debug("updating set")
             this.set = newVersion.set
         }
-        if(this.isStandardLegal != newVersion.isStandardLegal){
+        if (this.isStandardLegal != newVersion.isStandardLegal) {
             logger.debug("updating isStandardLegal")
             this.isStandardLegal = newVersion.isStandardLegal
         }
-        if(this.isCommanderLegal != newVersion.isCommanderLegal){
+        if (this.isCommanderLegal != newVersion.isCommanderLegal) {
             logger.debug("updating isCommanderLegal")
             this.isCommanderLegal = newVersion.isCommanderLegal
         }
-        if(this.backIllustrationId != newVersion.backIllustrationId){
+        if (this.backIllustrationId != newVersion.backIllustrationId) {
             logger.debug("updating backIllustrationId")
             this.backIllustrationId = newVersion.backIllustrationId
         }
-        if(this.backImageUri != newVersion.backImageUri){
+        if (this.backImageUri != newVersion.backImageUri) {
             logger.debug("updating backImageUri")
             this.backImageUri = newVersion.backImageUri
         }

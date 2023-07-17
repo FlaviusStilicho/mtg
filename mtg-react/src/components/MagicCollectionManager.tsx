@@ -24,6 +24,7 @@ import TabPanel from './TabPanel';
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
 const colorSearchOptions = ["Exact match", "Includes at least", "Includes at most"]
+const typeSearchOptions = ["Includes at least", "Includes any of"]
 
 export enum EnabledTab {
   COLLECTION,
@@ -43,6 +44,7 @@ const MagicCollectionManager: FC = (props) => {
   const rarities = React.useState<string[]>(raritiesList)[0];
   const [types, setTypes] = React.useState<string[]>([]);
   const [colors, setColors] = React.useState<Color[]>([]);
+  const typeSearchSettings = React.useState<string[]>(typeSearchOptions)[0];
   const colorSearchSettings = React.useState<string[]>(colorSearchOptions)[0];
 
   // search state
@@ -52,6 +54,7 @@ const MagicCollectionManager: FC = (props) => {
     sets: currentStandardSets,
     rarities: raritiesList,
     types: [],
+    typeSearchSetting: "Includes any of",
     subType: "",
     colors: [],
     colorSearchSetting: "Exact match",
@@ -69,6 +72,7 @@ const MagicCollectionManager: FC = (props) => {
   const [deckManagerOpened, setDeckManagerOpened] = React.useState(true);
   const [decks, setDecks] = useState<DeckDTO[]>([]);
   const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
+  const [selectedDeck, setSelectedDeck] = useState<DeckDTO | null>(null);
   const [selectedDeckEntries, setSelectedDeckEntries] = useState<DeckCardEntryDTO[]>([])
   const [deckChanged, setDeckChanged] = useState<boolean>(false);
 
@@ -162,6 +166,8 @@ const MagicCollectionManager: FC = (props) => {
       queryParameters = { ...selectedQueryParameters, rarities: newValue }
     } else if (propName == "types" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
       queryParameters = { ...selectedQueryParameters, types: newValue }
+    } else if (propName == "typeSearchSetting" && typeof newValue === 'string') {
+      queryParameters = { ...selectedQueryParameters, typeSearchSetting: newValue }
     } else if (propName == "subType" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, subType: newValue }
     } else if (propName == "colors" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
@@ -189,13 +195,14 @@ const MagicCollectionManager: FC = (props) => {
   }
 
   const handleChangeSelectedDeck = (event: SelectChangeEvent<typeof selectedDeckId>) => {
-    const newValue = event.target.value
-    if (typeof newValue === 'string') {
+    const newDeckId = event.target.value
+    if (typeof newDeckId === 'string') {
       console.error("help!")
     } else {
-      setSelectedDeckId(newValue);
-
-      Promise.all(getDeck(newValue).cardEntries.map(entry => {
+      setSelectedDeckId(newDeckId);
+      setSelectedDeck(decks.filter(deck => deck.id === newDeckId)[0])
+      
+      Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
         return fetchCardBuyPriceFromMagicersAsString(entry.card).then(price => {
           entry.buyPrice = price
           return entry
@@ -324,6 +331,7 @@ const MagicCollectionManager: FC = (props) => {
     sets,
     rarities,
     types,
+    typeSearchSettings,
     colors,
     colorSearchSettings,
   }
@@ -331,6 +339,7 @@ const MagicCollectionManager: FC = (props) => {
   const deckState: DeckState = {
     decks,
     fetchDecks,
+    selectedDeck,
     selectedDeckId,
     handleChangeSelectedDeck,
     deckChanged,
@@ -346,6 +355,7 @@ const MagicCollectionManager: FC = (props) => {
     handleDeckManagerOpenClose,
     decks,
     selectedDeckId,
+    selectedDeck,
     selectedDeckEntries,
     fetchDecks,
     saveDeck,

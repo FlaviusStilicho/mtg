@@ -2,16 +2,16 @@ import { Alert, Button, Dialog, List, ListItem, MenuItem, Snackbar, TextField } 
 import { useState } from "react";
 import axios from "axios";
 
-export interface CreateDeckWindowProps {
+export interface UploadDeckWindowProps {
     opened: boolean;
     onClose: () => void;
     fetchDecks: any;
 }
 
-export const CreateDeckWindow: React.FC<CreateDeckWindowProps> = (props) => {
+export const UploadDeckWindow: React.FC<UploadDeckWindowProps> = (props) => {
     const [name, setName] = useState<string>("")
     const formats = ["Standard", "Commander"]
-    const [selectedFormat, setSelectedFormat] = useState<string>("Commander")
+    const [selectedFormat, setSelectedFormat] = useState<string>("")
 
     const [snackbarMessage, setSnackbarMessage] = useState<string>("")
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
@@ -34,11 +34,15 @@ export const CreateDeckWindow: React.FC<CreateDeckWindowProps> = (props) => {
     return (
         <Dialog
             open={props.opened}
-            onClose={props.onClose}>
+            onClose={props.onClose}
+            PaperProps={{
+                style: {
+
+                },
+            }}
+        >
             <List>
-                <ListItem 
-                style={{justifyContent:'center'}}
-                sx={{ py: 1.5, fontSize: 20 }}>
+                <ListItem sx={{ py: 1.5, fontSize: 20 }}>
                     Create new deck
                 </ListItem>
 
@@ -69,18 +73,11 @@ export const CreateDeckWindow: React.FC<CreateDeckWindowProps> = (props) => {
                     </TextField>
                 </ListItem>
 
-                <ListItem style={{justifyContent:'center'}}>
+                <ListItem>
                     <Button
                         variant="contained"
-                        onClick={submitNewDeck}
-                        sx={{ margin: "10px"}}>
+                        onClick={submitNewDeck}>
                         Create Deck
-                    </Button>
-                    <Button
-                        variant="contained"
-                        onClick={props.onClose}
-                        sx={{ margin: "10px"}}>
-                        Cancel
                     </Button>
                 </ListItem>
             </List>

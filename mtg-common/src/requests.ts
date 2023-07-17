@@ -7,6 +7,7 @@ export interface CardQueryParameters {
     sets: number[]
     rarities: string[]
     types: string[]
+    typeSearchSetting: string
     subType: string
     colors: string[]
     colorSearchSetting: string
@@ -22,6 +23,11 @@ export interface UpdateCardOwnedCopiesQueryParams {
 export interface ListDecksResponse {
     decks: DeckDTO[],
     total: number
+}
+
+export interface CopyDeckRequest {
+    deckId: number;
+    name: string;
 }
 
 export interface DeckMetadata {

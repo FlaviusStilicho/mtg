@@ -12,20 +12,26 @@ import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './CreateDeckWindow';
 import { DeckCardEntryDTO, DeckDTO } from '../../../../mtg-common/src/DTO';
-import { filterCreatures, filterLands, filterNoncreatureSpells, getNumberOfCreatures, getNumberOfLands, getNumberOfNoncreatureSpells } from '../../functions/util';
+import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
-import { DeckEntryComponentWithTooltip } from './DeckEntryCardWithTooltip';
 import 'chart.js/auto';
+import DeckCardTypeCounter from './DeckCardTypeCounter';
+import { CopyDeckWindow, CopyDeckWindowProps } from './CopyDeckWindow';
+import { DeleteDeckWindow, DeleteDeckWindowProps } from './DeleteDeckWindow';
+import { EditDeckWindow, EditDeckWindowProps } from './EditDeckWindow';
+// import { EditDeckWindowProps } from './EditDeckWindow';
 
 export interface DeckManagerProps extends MuiAppBarProps {
   deckManagerOpened?: boolean;
   handleDeckManagerOpenClose: any
   decks: DeckDTO[]
   selectedDeckId: number
+  selectedDeck: DeckDTO | null
   selectedDeckEntries: DeckCardEntryDTO[]
   fetchDecks: () => void
   saveDeck: any
@@ -38,25 +44,71 @@ export interface DeckManagerProps extends MuiAppBarProps {
 export default function DeckManagerDrawer(props: DeckManagerProps) {
   const [createDeckWindowOpened, setCreateDeckWindowOpened] = useState<boolean>(false);
   const [editDeckWindowOpened, setEditDeckWindowOpened] = useState<boolean>(false);
+  const [copyDeckWindowOpened, setCopyDeckWindowOpened] = useState<boolean>(false);
+  const [deleteDeckWindowOpened, setDeleteDeckWindowOpened] = useState<boolean>(false);
 
   const closeCreateDeckWindow = () => {
     setCreateDeckWindowOpened(false);
   };
 
-  const closeEditDeckWindow = () => {
-    setEditDeckWindowOpened(false);
+  const createDeckWindowProps: CreateDeckWindowProps = {
+    opened: createDeckWindowOpened,
+    onClose: closeCreateDeckWindow,
+    fetchDecks: props.fetchDecks
+  }
+
+
+  const closeDeleteDeckWindow = () => {
+    setDeleteDeckWindowOpened(false);
   };
+
+
+  const windows = []
+  windows.push(<CreateDeckWindow {...createDeckWindowProps} />)
+
+  if (props.selectedDeck != null) {
+    const closeEditDeckWindow = () => {
+      setEditDeckWindowOpened(false);
+    };
+
+    const closeCopyDeckWindow = () => {
+      setCopyDeckWindowOpened(false);
+    };
+
+
+    const editDeckWindowProps: EditDeckWindowProps = {
+      opened: editDeckWindowOpened,
+      onClose: closeEditDeckWindow,
+      deck: props.selectedDeck,
+      fetchDecks: props.fetchDecks
+    }
+
+    const copyDeckWindowProps: CopyDeckWindowProps = {
+      opened: copyDeckWindowOpened,
+      onClose: closeCopyDeckWindow,
+      deck: props.selectedDeck,
+      fetchDecks: props.fetchDecks
+    }
+
+    const deleteDeckWindowProps: DeleteDeckWindowProps = {
+      opened: deleteDeckWindowOpened,
+      onClose: closeDeleteDeckWindow,
+      deck: props.selectedDeck,
+      fetchDecks: props.fetchDecks
+    }
+
+    if (props.selectedDeck != null) {
+      windows.push(<EditDeckWindow {...editDeckWindowProps} />)
+      windows.push(<CopyDeckWindow {...copyDeckWindowProps} />)
+      windows.push(<DeleteDeckWindow {...deleteDeckWindowProps} />)
+    }
+
+  }
 
   useEffect(() => {
     console.log("rerendering deck manager")
   }, [props.decks])
 
-
-  const createDeckWindowProps: CreateDeckWindowProps = {
-    createDeckWindowOpened,
-    closeCreateDeckWindow: closeCreateDeckWindow,
-    fetchDecks: props.fetchDecks
-  }
 
   const calculateMissingCopies = (entry: DeckCardEntryDTO): number => {
     const missingCopies = entry.copies - entry.card.ownedCopies
@@ -66,7 +118,9 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
   const exportDeckToCsv = () => {
     if (props.selectedDeckId !== 0) {
       const deckName = props.decks.filter(deck => deck.id === props.selectedDeckId)[0].name
-      const cardsMap: string[][] = props.selectedDeckEntries.map(entry => [entry.card.name, entry.copies.toString(), calculateMissingCopies(entry).toString()])
+      var cardsMap: string[][] = props.selectedDeckEntries.map(entry => [entry.card.name, entry.copies.toString(), calculateMissingCopies(entry).toString()])
+      // filter out entries that are not missing
+      cardsMap = cardsMap.filter(entry => parseInt(entry[2]) > 0)
       exportToCsv(deckName, cardsMap, ["Card name", "copies", "missing copies"])
     } else {
       console.error("No deck selected")
@@ -102,7 +156,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
       }
     ],
   };
-
 
   return (
     <Box sx={{
@@ -152,14 +205,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               style={searchTextFieldStyle}
               sx={{ ...buttonBackgroundStyle }}
               value={props.selectedDeckId}
-              displayEmpty={true}
-              renderValue={selectedDeckId => {
-                if (selectedDeckId !== 0) {
-                  return props.decks.filter(deck => deck.id === selectedDeckId)[0].name
-                } else {
-                  return "Select a deck"
-                }
-              }}
+              renderValue={selectedDeckId => props.selectedDeck !== null ? props.selectedDeck.name : "Select a deck"}
               onChange={props.handleChangeSelectedDeck}
             >
               {
@@ -176,58 +222,111 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               disabled={props.selectedDeckId === 0}
               onClick={() => setEditDeckWindowOpened(true)}
               sx={{
-                marginLeft: 'auto',
+                marginLeft: '5px',
                 // ...(props.open && { display: 'none' }) 
               }}
             >
               <SettingsIcon />
             </IconButton>
+            <IconButton
+              color="inherit"
+              aria-label="copy-deck-metadata"
+              edge="end"
+              disabled={props.selectedDeckId === 0}
+              onClick={() => setCopyDeckWindowOpened(true)}
+              sx={{
+                marginLeft: '5px',
+                // ...(props.open && { display: 'none' }) 
+              }}
+            >
+              <ContentCopyIcon />
+            </IconButton>
+            <IconButton
+              color="inherit"
+              aria-label="delete-deck"
+              edge="end"
+              disabled={props.selectedDeckId === 0}
+              onClick={() => setDeleteDeckWindowOpened(true)}
+              sx={{
+                marginLeft: '5px',
+              }}
+            >
+              <DeleteIcon />
+            </IconButton>
           </ListItem>
           <Divider />
 
-          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            Lands ({getNumberOfLands(props.selectedDeckEntries)})
-          </Box>
-          {filterLands(props.selectedDeckEntries).map(entry => {
-            const deckEntryProps = {
-              entry,
-              addCardCopyToDeck: props.addCardCopyToDeck,
-              subtractCardCopyFromDeck: props.subtractCardCopyFromDeck
-            }
-            return (
-              < DeckEntryComponentWithTooltip
-                {...deckEntryProps} />
-            )
-          })
-          }
+          <DeckCardTypeCounter
+            label="Lands"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfLands}
+            filterFn={filterLands}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
 
-          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            Creatures ({getNumberOfCreatures(props.selectedDeckEntries)})
-          </Box>
-          {filterCreatures(props.selectedDeckEntries).map(entry => {
-            const deckEntryProps = {
-              entry,
-              addCardCopyToDeck: props.addCardCopyToDeck,
-              subtractCardCopyFromDeck: props.subtractCardCopyFromDeck
-            }
-            return (
-              <DeckEntryComponentWithTooltip {...deckEntryProps} />
-            )
-          })}
+          <DeckCardTypeCounter
+            label="Creatures"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfCreatures}
+            filterFn={filterCreatures}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
 
-          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            Noncreature spells ({getNumberOfNoncreatureSpells(props.selectedDeckEntries)})
-          </Box>
-          {filterNoncreatureSpells(props.selectedDeckEntries).map(entry => {
-            const deckEntryProps = {
-              entry,
-              addCardCopyToDeck: props.addCardCopyToDeck,
-              subtractCardCopyFromDeck: props.subtractCardCopyFromDeck
-            }
-            return (
-              <DeckEntryComponentWithTooltip {...deckEntryProps} />
-            )
-          })}
+          <DeckCardTypeCounter
+            label="Planeswalkers"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfPlaneswalkers}
+            filterFn={filterPlaneswalkers}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
+
+          <DeckCardTypeCounter
+            label="Noncreature artifacts"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfNoncreatureArtifacts}
+            filterFn={filterNoncreatureArtifacts}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
+
+          <DeckCardTypeCounter
+            label="Sorceries"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfSorceries}
+            filterFn={filterSorceries}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
+
+          <DeckCardTypeCounter
+            label="Instants"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfInstants}
+            filterFn={filterInstants}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
+
+          <DeckCardTypeCounter
+            label="Enchantments"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfNoncreatureEnchantment}
+            filterFn={filterNoncreatureEnchantments}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
+
+          <DeckCardTypeCounter
+            label="Battles"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfBattles}
+            filterFn={filterBattles}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+          />
 
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
             Total: {props.selectedDeckEntries.length > 0 ? props.selectedDeckEntries.map(entry => entry.copies).reduce((a, b) => a + b) : 0} cards
@@ -269,22 +368,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               <SaveAltIcon /> Download card list
             </Button>
           </ListItem>
-          <ListItem>
-            <Button
-              color="inherit"
-              aria-label="delete-deck"
-              variant="contained"
-              onClick={props.deleteDeck}
-              sx={{
-                ...buttonBackgroundStyle, ...listItemStyle
-              }}
-            >
-              <DeleteIcon /> Delete deck
-            </Button>
-          </ListItem>
         </List>
-        <CreateDeckWindow {...createDeckWindowProps}
-        />
+        {windows}
       </Drawer>
     </Box>
   );

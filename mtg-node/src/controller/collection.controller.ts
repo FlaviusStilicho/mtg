@@ -19,8 +19,14 @@ export const ClearCollection = async (req: Request, res: Response) => {
 
 export const ExportCollection = async (req: Request, res: Response) => {
     const [ownedCards, total] = await MTGCardRepository.findAllOwned()
-    exportToCsv(`export-${Date.now()}`, ownedCards)
-    res.send(ownedCards)
+    const fileName = `export-${Date.now()}`
+    exportToCsv(fileName, ownedCards)
+    logger.info
+    res.send({
+        result: "success",
+        fileName: fileName,
+        totalCards: ownedCards.map(cards => cards.ownedCopies).reduce((a,b) => a + b)
+    })
 }
 
 export interface ExportDecksParams{

@@ -47,6 +47,7 @@ export const UpdateCard = async (req: Request, res: Response) => {
 
 export const UpdateCardOwnedCopies = async (req: Request<{}, {}, UpdateCardOwnedCopiesQueryParams, {}>, res: Response) => {
     const card = await MTGCardRepository.findOneById(req.body.cardId)
+    logger.info(`Updating ownedCopies of card ${card.name} from ${card.ownedCopies} to ${req.body.ownedCopies}`)
     card.ownedCopies = req.body.ownedCopies
     await MTGCardRepository.saveCard(card)
 }

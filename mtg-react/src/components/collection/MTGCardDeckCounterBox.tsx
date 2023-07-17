@@ -6,8 +6,8 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import { CardState } from '../hooks/CardState';
 import { DeckState } from '../hooks/DeckState';
 import { useState } from "react";
-import { maximumCardCopiesStandard } from '../../constants';
 import { isBasicLand } from '../../functions/util';
+import { DeckFormat } from '../../enum';
 
 export interface MTGCardCollectionCounterBoxProps {
     cardState: CardState
@@ -21,12 +21,33 @@ const MTGCardCollectionCounterBox: React.FC<MTGCardCollectionCounterBoxProps> = 
     const [copiesInDeck, setCopiesInDeck] = useState<number>(
         deckState.getCurrentNumberOfCopiesForCard(cardState.card))
 
+    const checkCanAddCopy = () => {
+        if (deckState.selectedDeck === null) {
+            return false
+        } else if (deckState.selectedDeck.format === DeckFormat.STANDARD) {
+            if (isBasicLand(cardState.card)) {
+                return true
+            } else {
+                return copiesInDeck >= 4 ? true : false
+            }
+        } else if (deckState.selectedDeck.format === DeckFormat.COMMANDER) {
+            if (isBasicLand(cardState.card)) {
+                return true
+            } else {
+                return copiesInDeck === 0 ? true : false
+            }
+        } else {
+            return false
+        }
+    }
+
+    const canAddCopy: boolean = checkCanAddCopy()
+
     const addCopy = () => {
         deckState.addCardCopyToDeck(cardState.card, setCopiesInDeck)
     }
     const removeCopy = () => {
         deckState.subtractCardCopyFromDeck(cardState.card, setCopiesInDeck)
-        // cardState.subtractOwnedCopy()
     }
 
     return (
@@ -61,7 +82,7 @@ const MTGCardCollectionCounterBox: React.FC<MTGCardCollectionCounterBoxProps> = 
                 name="add-button"
                 variant="contained"
                 style={staticButtonStyle}
-                disabled={deckState.selectedDeckId === 0 || (copiesInDeck >= maximumCardCopiesStandard && !isBasicLand(cardState.card))}
+                disabled={!canAddCopy}
                 onClick={addCopy}
             >
                 <AddIcon fontSize="small" />

@@ -17,7 +17,7 @@ export const UploadDelverFileAdditive = async (req: Request, res: Response) => {
 }
 
 export const ProcessdDelverFile = async (req: Request, res: Response, additive: boolean) => {
-    logger.info("Processing uploaded Delver file!")
+    logger.info(`Processing uploaded Delver file! additive=${additive}`)
 
     const storage = multer.diskStorage({
         destination: './uploads/delver/',
@@ -50,7 +50,10 @@ export const ProcessdDelverFile = async (req: Request, res: Response, additive: 
                     } else {
                         const cardCopies = parseInt(row[quantityRow]);
                         // const scryfallId = row[scryfallIdRow]
-                        const cardName = row[cardNameRow]
+                        var cardName = row[cardNameRow]
+                        if (cardName.includes(" //")){
+                            cardName = cardName.substring(cardName.indexOf(" //") - 1);
+                        }
                         try {
                             // await MTGCard.findOneByScryfallIdAndName(scryfallId, cardName).then(
                             await MTGCardRepository.findOneByName(cardName).then(

@@ -8,17 +8,17 @@ export const exportToCsv = (filename: string, rows: string[][], headers?: string
 
   const keys: string[] = Object.keys(rows[0]);
 
-  let columHearders: string[];
+  let columnHeaders: string[];
 
   if (headers) {
-    columHearders = headers;
+    columnHeaders = headers;
   } else {
-    columHearders = keys;
+    columnHeaders = keys;
   }
 
   const csvContent =
     // "sep=,\n" +
-    columHearders.join(separator) + '\n' +
+    columnHeaders.join(separator) + '\n' +
     rows.map(row => {
       return row.map(cell => {
         return cell.replace(/"/g, '""');
