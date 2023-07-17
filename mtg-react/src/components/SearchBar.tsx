@@ -373,6 +373,25 @@ export default function SearchBar(props: SearchWindowProps) {
             </Select>
         </ListItem>
 
+        <ListItem sx={{ ...searchBarListItemStyle }}>
+          <ListItemText>Owned copies</ListItemText>
+        </ListItem>
+        <ListItem sx={{ ...searchBarListItemStyle }}>
+          <TextField
+            name="minOwnedCopies"
+            type="number"
+            defaultValue={0}
+            variant="standard"
+            style={searchTextFieldStyle}
+            sx={{ ...buttonBackgroundStyle }}
+            onChange={props.handleChangeSelectedQueryParameters}
+            InputProps={{
+              inputProps: {
+                style: { textAlign: "center" },
+              }
+            }} />
+        </ListItem>
+
         <Divider />
 
       </List>

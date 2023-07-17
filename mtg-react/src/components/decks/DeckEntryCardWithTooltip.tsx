@@ -5,7 +5,7 @@ import { deckEntryTextBoxStyle } from '../../style/styles';
 import { Button, CardMedia, Tooltip } from '@mui/material';
 import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
 import { v4 as uuidv4 } from 'uuid';
-import { isBasicLand } from '../../functions/util';
+import { isBasicLand, isCommanderEligible } from '../../functions/util';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -14,6 +14,9 @@ export interface DeckEntryComponent {
   addCardCopyToDeck: Function
   subtractCardCopyFromDeck: Function
 }
+
+const iconWidth = 12
+const iconHeight = 15
 
 export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
   const entry: DeckCardEntryDTO = props.entry
@@ -27,6 +30,7 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
     props.subtractCardCopyFromDeck(entry.card)
   }
 
+  const missingCards = entry.card.ownedCopies - entry.copies < 0
   return (
     <ListItem key={`entry-listitem-${entry.card.name}-${Date.now()}`} sx={{ py: 0.2 }}>
       <Tooltip
@@ -39,12 +43,12 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
             width: imageWidth * 0.5
           }}
           style={{
-            backgroundColor: "White",
+            backgroundColor: "White"
           }}
           image={entry.card.versions[0].frontImageUri}
         >
         </CardMedia></>}>
-        <Box bgcolor={"white"} sx={{
+        <Box bgcolor={missingCards ? "#e3c2c2" : "White"} sx={{
           width: "100%",
           border: '1px solid',
           borderRadius: "7px",
@@ -70,42 +74,68 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
                 }}
                 src={`http://localhost:3000/mana/${manaCost}.png`} />))}
           </Box>
-          <Box style={{ textAlign: "right", marginRight: 4, width: "25%" }} sx={deckEntryTextBoxStyle}>
-          <Button
-                variant="contained"
-                // style={staticButtonStyle}
-                sx={{ 
-                  borderRadius: '30%',                 
-                  height: 15,
-                  width: 15,
-                  minHeight: { xs: 15, md: 15 },
-                  minWidth: { xs: 15, md: 15 },
-                  maxHeight: { xs: 15, md: 15 },
-                  maxWidth: { xs: 15, md: 15 },
-                }}
-                onClick={removeCopy}
+          { isCommanderEligible(entry) ? 
+          (<Box style={{ textAlign: "right", marginRight: 0, width: "5%" }} sx={deckEntryTextBoxStyle}>
+            <Button
+              variant="contained"
+              // style={staticButtonStyle}
+              sx={{
+                borderRadius: '30%',
+                marginTop: "5px",
+
+                minWidth: { xs: iconWidth * 1.5, md: iconWidth * 1.5 },
+                maxHeight: { xs: iconHeight * 1.5, md: iconHeight * 1.5 },
+                maxWidth: { xs: iconWidth * 1.5, md: iconWidth * 1.5 },
+              }}
+            // onClick={makeCommander}
             >
-                <RemoveIcon fontSize="small" />
+              <Box
+                component="img"
+                sx={{
+                  borderRadius: '30%',
+                  maxWidth: { xs: iconWidth * 1.5, md: iconWidth * 1.5 },
+                }}
+                src={`http://localhost:3000/commander.png`}
+              />
+            </Button>
+          </Box>) : (<></>)
+         }
+          <Box style={{ textAlign: "right", marginRight: 4, width: "20%" }} sx={deckEntryTextBoxStyle}>
+            <Button
+              variant="contained"
+              // style={staticButtonStyle}
+              sx={{
+                borderRadius: '30%',
+                height: iconHeight,
+                width: iconWidth,
+                // minHeight: { xs: iconHeight, md: iconHeight },
+                minWidth: { xs: iconWidth, md: iconWidth },
+                // maxHeight: { xs: iconHeight, md: iconHeight },
+                // maxWidth: { xs: iconWidth, md: iconWidth },
+              }}
+              onClick={removeCopy}
+            >
+              <RemoveIcon fontSize="small" />
             </Button>
             <Button
-                variant="contained"
-                sx={{ 
-                  borderRadius: '30%',                 
-                  height: 15,
-                  width: 12,
-                  minHeight: { xs: 15, md: 15 },
-                  minWidth: { xs: 15, md: 15 },
-                  maxHeight: { xs: 15, md: 15 },
-                  maxWidth: { xs: 15, md: 15 },
-                }}
-                disabled={entry.copies >= maximumCardCopiesStandard && !isBasicLand(entry.card)}
-                onClick={addCopy}
+              variant="contained"
+              sx={{
+                borderRadius: '30%',
+                height: iconHeight,
+                width: iconWidth,
+                // minHeight: { xs: iconHeight, md: iconHeight },
+                minWidth: { xs: iconWidth, md: iconWidth },
+                // maxHeight: { xs: iconHeight, md: iconHeight },
+                // maxWidth: { xs: iconWidth, md: iconWidth },
+              }}
+              disabled={entry.copies >= maximumCardCopiesStandard && !isBasicLand(entry.card)}
+              onClick={addCopy}
             >
-                <AddIcon fontSize="small" />
+              <AddIcon fontSize="small" />
             </Button>
           </Box>
           <Box style={{ textAlign: "right", marginRight: 4, width: "6%" }} sx={deckEntryTextBoxStyle}>
-            {entry.copies}x
+            {Math.min(entry.copies, entry.card.ownedCopies)}/{entry.copies}
           </Box>
         </Box>
       </Tooltip>

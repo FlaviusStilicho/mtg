@@ -1,6 +1,4 @@
 import { Column, Entity, JoinTable, ManyToOne, OneToMany, PrimaryGeneratedColumn, Repository } from "typeorm"
-import { DB } from "../datasource.ts"
-import { logger } from "../index.ts"
 import { MTGCard } from "./MTGCard.entity.ts"
 import { DeckDTO, DeckCardEntryDTO } from "mtg-common"
 import { MTGCardRepository } from '../repository/MTGCard.repository.ts';
@@ -13,7 +11,6 @@ interface DeckRules {
     cardMaximum: number
     maximumCardCopies: number
 }
-
 
 
 @Entity()
@@ -30,7 +27,6 @@ export class Deck {
         default: DeckFormat.STANDARD
     })
     format: DeckFormat
-    // @Column()
     @OneToMany(() => DeckCardEntry, entry => entry.deck, {
         eager: true,
         cascade: true,
@@ -153,22 +149,27 @@ export class DeckCardEntry {
     card: MTGCard
     @Column()
     copies: number
+    @Column()
+    isCommander: boolean
     @ManyToOne(() => Deck, deck => deck.cardEntries)
     deck: Deck
 
     constructor(
         id: number,
         card: MTGCard,
-        copies: number) {
+        copies: number,
+        isCommander: boolean) {
         this.id = id
         this.card = card
         this.copies = copies
+        this.isCommander = isCommander
     }
     toDTO(): DeckCardEntryDTO {
         const dto: DeckCardEntryDTO = {
             id: this.id,
             card: this.card.toDTO(),
-            copies: this.copies
+            copies: this.copies,
+            isCommander: this.isCommander
         }
         return dto
     }
@@ -178,6 +179,7 @@ export class DeckCardEntry {
             entry.id,
             await MTGCardRepository.findOneById(entry.card.id),
             entry.copies,
+            entry.isCommander
         )
     }
 
@@ -185,7 +187,8 @@ export class DeckCardEntry {
         return new DeckCardEntry(
             null,
             this.card,
-            this.copies
+            this.copies,
+            this.isCommander
         )
     }
 }

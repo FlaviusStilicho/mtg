@@ -13,6 +13,7 @@ export interface CardQueryParameters {
     colorSearchSetting: string
     manaCost: string
     format: String
+    minOwnedCopies: number
 }
 
 export interface UpdateCardOwnedCopiesQueryParams {

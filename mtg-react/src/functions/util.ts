@@ -113,8 +113,17 @@ export const getNumberOfBattles = (entries: DeckCardEntryDTO[]): number => {
     return getTotalCardCopies(filterBattles(entries))
 }
 
-
+export const isCommanderEligible = (entry: DeckCardEntryDTO): boolean => {
+    if (entry.isCommander === true){
+        return false
+    } else if (entry.card.type.includes("Legendary") && entry.card.type.includes("Creature")) {
+        return true
+    } else {
+        return false
+    }
+}
 
 export const firstCharUpper = (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
+

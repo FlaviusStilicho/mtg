@@ -59,7 +59,8 @@ const MagicCollectionManager: FC = (props) => {
     colors: [],
     colorSearchSetting: "Exact match",
     manaCost: "",
-    format: DeckFormat.STANDARD.toString()
+    format: DeckFormat.STANDARD.toString(),
+    minOwnedCopies: 0
   })
 
   // card state
@@ -150,11 +151,12 @@ const MagicCollectionManager: FC = (props) => {
     const propName = event.target.name;
     const newValue = event.target.value;
     var queryParameters = selectedQueryParameters
-    if (propName == "cardName" && typeof newValue === 'string') {
+
+    if (propName === "cardName" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, cardName: newValue }
-    } else if (propName == "cardText" && typeof newValue === 'string') {
+    } else if (propName === "cardText" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, cardText: newValue }
-    } else if (propName == "sets" && Array.isArray(newValue) && newValue.every(item => typeof item === 'number')) {
+    } else if (propName === "sets" && Array.isArray(newValue) && newValue.every(item => typeof item === 'number')) {
       var newSets: number[] = []
       if (newValue[newValue.length - 1] === 99999) {
         newSets = queryParameters.sets.length > 0 ? [] : sets.map(set => set.id);
@@ -162,32 +164,33 @@ const MagicCollectionManager: FC = (props) => {
         newSets = newValue;
       }
       queryParameters = { ...selectedQueryParameters, sets: newSets }
-    } else if (propName == "rarities" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+    } else if (propName === "rarities" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
       queryParameters = { ...selectedQueryParameters, rarities: newValue }
-    } else if (propName == "types" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+    } else if (propName === "types" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
       queryParameters = { ...selectedQueryParameters, types: newValue }
-    } else if (propName == "typeSearchSetting" && typeof newValue === 'string') {
+    } else if (propName === "typeSearchSetting" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, typeSearchSetting: newValue }
-    } else if (propName == "subType" && typeof newValue === 'string') {
+    } else if (propName === "subType" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, subType: newValue }
-    } else if (propName == "colors" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+    } else if (propName === "colors" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
       queryParameters = { ...selectedQueryParameters, colors: newValue }
-    } else if (propName == "colorSearchSetting" && typeof newValue === 'string') {
+    } else if (propName === "colorSearchSetting" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, colorSearchSetting: newValue }
-    } else if (propName == "manaCost" && typeof newValue === 'string') {
+    } else if (propName === "manaCost" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, manaCost: newValue }
-    } else if (propName == "format" && typeof newValue === 'string') {
+    } else if (propName === "format" && typeof newValue === 'string') {
       var newSets: number[] = []
-      if (newValue == DeckFormat.STANDARD.toString()) {
+      if (newValue === DeckFormat.STANDARD.toString()) {
         newSets = currentStandardSets
-      } else if (newValue == DeckFormat.COMMANDER.toString()) {
+      } else if (newValue === DeckFormat.COMMANDER.toString()) {
         newSets = sets.map(set => set.id)
       } else {
         console.error("Unknown format!")
       }
       queryParameters = { ...selectedQueryParameters, format: newValue, sets: newSets }
-    }
-    else {
+    } else if (propName === "minOwnedCopies" && typeof newValue === 'string') {
+      queryParameters = { ...selectedQueryParameters, minOwnedCopies: parseInt(newValue) }
+    } else {
       console.error(`Type error while updating query parameters: field=${propName}, type=${typeof newValue}, value=${newValue}`)
     }
     setSelectedQueryParameters(queryParameters)
@@ -284,6 +287,7 @@ const MagicCollectionManager: FC = (props) => {
           id: undefined,
           card: newCard,
           copies: 1,
+          isCommander: false,
           buyPrice
         }
       } else {

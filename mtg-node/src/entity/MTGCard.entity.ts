@@ -389,6 +389,10 @@ export class MTGCard {
             }
         }
 
+        if (params.minOwnedCopies && params.minOwnedCopies > 0){
+            qb.andWhere("card.ownedCopies >= :copies", { copies: params.minOwnedCopies })
+        }
+
         const skip = (page - 1) * take
         const [data, total] = await qb.take(take)
             .skip(skip)
