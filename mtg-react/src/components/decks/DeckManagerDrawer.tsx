@@ -5,9 +5,9 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
-import { navBarHeight, deckManagerDrawerWidth, manaCurveChartOptions } from '../../constants';
+import { navBarHeight, deckManagerDrawerWidth, manaCurveChartOptions, imageHeight, imageWidth } from '../../constants';
 import { buttonBackgroundStyle, deckEntryTextBoxStyle, listItemStyle, searchTextFieldStyle } from '../../style/styles';
-import { Button, IconButton, MenuItem, Select } from '@mui/material';
+import { Button, CardMedia, IconButton, MenuItem, Select } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
@@ -40,6 +40,12 @@ export interface DeckManagerProps extends MuiAppBarProps {
   addCardCopyToDeck: Function,
   subtractCardCopyFromDeck: Function
 }
+
+function useForceUpdate() {
+  const [value, setValue] = useState(0);
+  return () => setValue(value => value + 1);
+}
+
 
 export default function DeckManagerDrawer(props: DeckManagerProps) {
   const [createDeckWindowOpened, setCreateDeckWindowOpened] = useState<boolean>(false);
@@ -157,6 +163,46 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     ],
   };
 
+  const forceUpdate = useForceUpdate();
+
+  const setNewCommander = (entry: DeckCardEntryDTO): void => {
+    if (props.selectedDeck === null) {
+      return
+    }
+    const currentCommanderEntries: DeckCardEntryDTO[] = props.selectedDeck.cardEntries.filter(entry => entry.isCommander)
+    if (currentCommanderEntries.length > 1) {
+      console.error(`Deck ${props.selectedDeck.name} has multiple commanders!`)
+      return
+    } else if (currentCommanderEntries.length === 0) {
+      // console.log(`Deck ${props.selectedDeck.name} has no commander yet.`)
+    }
+    else if (currentCommanderEntries[0] === entry) {
+      console.log(`${entry.card.name} is already commander of deck ${props.selectedDeck.name}!`)
+      return
+    } else if (currentCommanderEntries[0] !== entry) {
+      console.log(`${currentCommanderEntries[0].card.name} is already commander of deck ${props.selectedDeck.name}! Unassigning!`)
+      currentCommanderEntries[0].isCommander = false
+    }
+    console.log(`Assigning ${entry.card.name} as new commander of deck ${props.selectedDeck.name}!`)
+    entry.isCommander = true
+    // console.log(`Current number of commanders in deck ${props.selectedDeck.name}: ${props.selectedDeck.cardEntries.filter(entry => entry.isCommander).length}`)
+    forceUpdate();
+  }
+
+  const getCommander = () => {
+    if (props.selectedDeck === null) {
+      return null
+    }
+    const currentCommanderEntries: DeckCardEntryDTO[] = props.selectedDeck.cardEntries.filter(entry => entry.isCommander)
+    if (currentCommanderEntries.length !== 1) {
+      return null
+    } else {
+      return currentCommanderEntries[0].card
+    }
+  }
+
+  const currentCommander = getCommander()
+
   return (
     <Box sx={{
       display: 'flex',
@@ -254,6 +300,31 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               <DeleteIcon />
             </IconButton>
           </ListItem>
+
+          {currentCommander !== null ? (
+            <List>
+              <ListItem sx={{ ...listItemStyle, fontSize: 18 }}>
+                <Box>Commander: {currentCommander.name}</Box>
+                <Divider />
+              </ListItem>
+              <ListItem sx={{ ...listItemStyle, fontSize: 18 }}
+                style={{ display: 'flex', justifyContent: 'center' }}>
+                <CardMedia
+                  sx={{
+                    height: imageHeight * 0.4,
+                    width: imageWidth * 0.4
+                  }}
+                  style={{
+                    padding: 5,
+                    backgroundColor: "White",
+                    borderRadius: '10px'
+                  }}
+                  image={currentCommander.versions.filter(version => version.isPrimaryVersion)[0].frontImageUri}
+                />
+              </ListItem>
+            </List>
+          ) : (<></>)
+          }
           <Divider />
 
           <DeckCardTypeCounter
@@ -263,6 +334,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterLands}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <DeckCardTypeCounter
@@ -272,6 +344,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterCreatures}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <DeckCardTypeCounter
@@ -281,6 +354,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterPlaneswalkers}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <DeckCardTypeCounter
@@ -290,6 +364,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterNoncreatureArtifacts}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <DeckCardTypeCounter
@@ -299,6 +374,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterSorceries}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <DeckCardTypeCounter
@@ -308,6 +384,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterInstants}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <DeckCardTypeCounter
@@ -317,6 +394,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterNoncreatureEnchantments}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <DeckCardTypeCounter
@@ -326,6 +404,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterBattles}
             addCardCopyToDeck={props.addCardCopyToDeck}
             subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
           />
 
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>

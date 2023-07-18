@@ -10,6 +10,7 @@ export interface DeckCardTypeCounterProps {
   filterFn: (entries: DeckCardEntryDTO[]) => DeckCardEntryDTO[]
   addCardCopyToDeck: Function,
   subtractCardCopyFromDeck: Function
+  setNewCommander: (entry: DeckCardEntryDTO) => void
 }
 
 export default function DeckCardTypeCounter(props: DeckCardTypeCounterProps) {
@@ -24,7 +25,8 @@ export default function DeckCardTypeCounter(props: DeckCardTypeCounterProps) {
           const deckEntryProps = {
             entry,
             addCardCopyToDeck: props.addCardCopyToDeck,
-            subtractCardCopyFromDeck: props.subtractCardCopyFromDeck
+            subtractCardCopyFromDeck: props.subtractCardCopyFromDeck,
+            setNewCommander: props.setNewCommander
           }
           return (
             <DeckEntryComponentWithTooltip {...deckEntryProps} />

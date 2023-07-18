@@ -22,7 +22,7 @@ const MTGCardImage: React.FC<CardImageProps> = (props) => {
             borderRadius: '10px'
         }}
         image={props.cardState.primaryImage}
-        onClick={() => props.handleOpenPopup? props.handleOpenPopup() : null }
+        onClick={() => props.handleOpenPopup ? props.handleOpenPopup() : null }
     />
     )
 }

@@ -13,6 +13,7 @@ export interface DeckEntryComponent {
   entry: DeckCardEntryDTO
   addCardCopyToDeck: Function
   subtractCardCopyFromDeck: Function
+  setNewCommander: (entry: DeckCardEntryDTO) => void
 }
 
 const iconWidth = 12
@@ -87,7 +88,7 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
                 maxHeight: { xs: iconHeight * 1.5, md: iconHeight * 1.5 },
                 maxWidth: { xs: iconWidth * 1.5, md: iconWidth * 1.5 },
               }}
-            // onClick={makeCommander}
+            onClick={() => props.setNewCommander(entry)}
             >
               <Box
                 component="img"
