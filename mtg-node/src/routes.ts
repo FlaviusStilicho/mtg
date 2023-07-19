@@ -5,7 +5,7 @@ import { UploadDelverFile, UploadDelverFileAdditive } from './controller/fileUpl
 import { GetSets } from './controller/set.controller.ts';
 import { GetTypes } from './controller/type.controller.ts';
 import { GetColors } from './controller/color.controller.ts';
-import { CreateDeck, GetDeck, ListDecks, CheckDeck, ClearDecks, ListDeckNames, CopyDeck } from './controller/deck.controller.ts';
+import { CreateDeck, GetDeck, ListDecks, CheckDeck, ClearDecks, ListDeckNames, CopyDeck, UploadDeck } from './controller/deck.controller.ts';
 import { DeleteDeck, UpdateDeck } from './controller/deck.controller.ts';
 import { ClearCollection, CreateBuylistMultipleDecks, ExportCollection, GetCollection } from './controller/collection.controller.ts';
 
@@ -27,6 +27,7 @@ export const routes = (router: Router) => {
     router.get("/decks", GetDeck)
     router.get("/decks/check", CheckDeck)
     router.post("/decks", CreateDeck)
+    router.post("/decks/upload", UploadDeck)
     router.post("/decks/copy", CopyDeck)
     router.put("/decks", UpdateDeck)
     router.delete("/decks", DeleteDeck)

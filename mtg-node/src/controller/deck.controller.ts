@@ -5,6 +5,8 @@ import { DeckRepository } from '../repository/Deck.repository.ts';
 import { logger } from "../index.ts";
 import { DeckCardEntryRepository } from "../repository/DeckCardEntry.repository.ts";
 import { CopyDeckRequest } from '../../../mtg-common/dist/requests';
+import { UploadDeckDTO } from '../../../mtg-common/src/DTO';
+import { MTGCardRepository } from '../repository/MTGCard.repository.ts';
 
 
 export const ListDecks = async (req: Request, res: Response<ListDecksResponse>) => {
@@ -83,7 +85,6 @@ export const GetDeck = async (req: Request<{}, {}, {}, GetDeckRequest>, res: Res
             () => res.sendStatus(404))
 }
 
-
 export const UpdateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Response) => {
     Deck.fromDTO(req.body).then(deck =>
         DeckRepository.save(deck).then(
@@ -98,9 +99,6 @@ export const UpdateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Respons
 export const CopyDeck = async (req: Request<{}, CopyDeckRequest, {}>, res: Response<CreateDeckResponse>) => {
     DeckRepository.findOneByOrFail({ id: req.body['deckId'] }).then(
         deckInDb => {
-            // TODO FIX THIS MESS
-            // WHY does only first cardentry get an id?
-            // Also why is adding cards to deck broken?
             const deckCopy = deckInDb.copy(req.body['name'])
             DeckRepository.save(deckCopy).then(
                 newDeck => {
@@ -126,10 +124,29 @@ export const CheckDeck = async (req: Request<{}, {}, {}, CheckDeckRequest>, res:
     res.send(responseBody)
 }
 
-// export const ExportDeck = async (req: Request<{}, {}, {}, GetCardsQueryParams>, res: Response) => {
+export const UploadDeck = async (req: Request<{}, {}, UploadDeckDTO, {}>, res: Response<CreateDeckResponse>) => {
+    const dto: UploadDeckDTO = req.body
+    const entries: DeckCardEntry[] = await Promise.all(dto.entries.map(entry => MTGCardRepository.findOneByName(entry.cardName).then(card => new DeckCardEntry(
+        null,
+        card,
+        entry.quantity,
+        false
+    ))))
 
-// }
+    const deck = new Deck(
+        null,
+        dto.name,
+        dto.format,
+        entries
+    )
+    DeckRepository.save(deck).then(
+        newDeck => {
+            deck.cardEntries.map(entry => entry.deck = newDeck)
+            DeckCardEntryRepository.save(deck.cardEntries).then(result => {
+                logger.info(`Created new deck ${deck.name} with id ${deck.id}`)
+                res.send({ id: deck.id })
+            })
+        }
+    ).catch(err => res.status(400).send(err.toString()))
+}
 
-// export const ExportDeckBuyList = async (req: Request<{}, {}, {}, GetCardsQueryParams>, res: Response) => {
-
-// }

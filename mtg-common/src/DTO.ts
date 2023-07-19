@@ -46,3 +46,13 @@ export interface Color {
     iconUrl: string
 }
 
+export interface UploadDeckDTO {
+    name: string
+    format: string
+    entries: NewDeckEntryDTO[]
+}
+
+export interface NewDeckEntryDTO {
+    quantity: number,
+    cardName: string
+  }
