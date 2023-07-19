@@ -17,7 +17,7 @@ import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { maximumCardCopiesStandard, searchBarDrawerWidth } from '../constants';
 import { DeckState } from './hooks/DeckState';
 import { isBasicLand } from '../functions/util';
-import { fetchCardBuyPriceFromMagicersAsString } from '../functions/magicers';
+import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
 
@@ -206,12 +206,11 @@ const MagicCollectionManager: FC = (props) => {
       setSelectedDeck(decks.filter(deck => deck.id === newDeckId)[0])
       
       Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
-        return fetchCardBuyPriceFromMagicersAsString(entry.card).then(price => {
+        return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
           entry.buyPrice = price
           return entry
         })
       })).then(entries => setSelectedDeckEntries(entries))
-
     }
   }
 
@@ -281,7 +280,7 @@ const MagicCollectionManager: FC = (props) => {
 
   const addCardCopyToDeck = (newCard: MTGCardDTO, setCopiesInDeck?: Function) => {
     var cardEntry: DeckCardEntryDTO | null = getExistingEntry(newCard)
-    fetchCardBuyPriceFromMagicersAsString(newCard).then(buyPrice => {
+    fetchCardBuyPriceFromMagicersSingle(newCard).then(buyPrice => {
       if (!cardEntry) {
         cardEntry = {
           id: undefined,

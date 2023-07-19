@@ -55,23 +55,17 @@ export const fetchCardBuyPriceFromMagicers = async (card: MTGCardDTO): Promise<n
     });
 };
 
-export const fetchCardBuyPriceFromMagicersAsString = async (card: MTGCardDTO): Promise<string> => {
+export const fetchCardBuyPriceFromMagicersSingle = async (card: MTGCardDTO): Promise<number | undefined> => {
     if (card.name === 'Island' || card.name === 'Swamp' || card.name === 'Forest' || card.name === 'Plains' || card.name === 'Mountain') {
-        return numberFormat.format(0)
+        return 0
     }
     return await fetchCardBuyPriceFromMagicers(card).then((prices: number[]) => {
         if (prices.length === 0) {
-            return ("NA")
+            return (undefined)
         } else if (prices.length === 1) {
-            return (`${numberFormat.format(prices[0])}`)
+            return prices[0]
         } else {
-            const lowest = numberFormat.format(Math.min(...prices))
-            // const highest = numberFormat.format(Math.max(...prices))
-            // if (lowest === highest) {
-            return lowest
-            // } else {
-            // return (`${lowest} - ${highest}`)
-            // }
+            return Math.min(...prices)
         }
     })
 }

@@ -4,7 +4,7 @@ import { CheckDeckRequest, CreateDeckResponse, DeleteDeckRequest, GetDeckRequest
 import { DeckRepository } from '../repository/Deck.repository.ts';
 import { logger } from "../index.ts";
 import { DeckCardEntryRepository } from "../repository/DeckCardEntry.repository.ts";
-import { CopyDeckRequest } from '../../../mtg-common/dist/requests';
+import { CopyDeckRequest } from '../../../mtg-common/src/requests';
 import { UploadDeckDTO } from '../../../mtg-common/src/DTO';
 import { MTGCardRepository } from '../repository/MTGCard.repository.ts';
 

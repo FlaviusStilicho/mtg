@@ -37,7 +37,7 @@ export interface DeckCardEntryDTO {
     card: MTGCardDTO 
     copies: number
     isCommander: boolean
-    buyPrice?: string
+    buyPrice?: number | undefined
 }
 
 export interface Color {

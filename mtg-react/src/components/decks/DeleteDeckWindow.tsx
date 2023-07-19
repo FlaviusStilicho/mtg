@@ -1,7 +1,7 @@
 import { Alert, Button, Dialog, List, ListItem, Snackbar } from "@mui/material";
 import { useState } from "react";
 import axios from "axios";
-import { DeckDTO } from '../../../../mtg-common/dist/DTO';
+import { DeckDTO } from '../../../../mtg-common/src/DTO';
 
 export interface DeleteDeckWindowProps {
     opened: boolean;

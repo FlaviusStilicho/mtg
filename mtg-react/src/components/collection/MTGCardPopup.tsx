@@ -11,7 +11,7 @@ export interface MTGCardPopupProps {
     cardState: CardState
     opened: boolean;
     onClose: () => void;
-    buyPrice: string
+    buyPrice: number | undefined
     sellPrice: string
 }
 
@@ -100,7 +100,7 @@ const MTGCardPopup: React.FC<MTGCardPopupProps> = (props) => {
                         onClick={() => {
                             console.log("buy")
                         }}>
-                        {props.buyPrice}
+                        {`€ ${props.buyPrice}`}
                     </Button>
                     <Button
                         variant="contained"

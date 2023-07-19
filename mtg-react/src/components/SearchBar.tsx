@@ -11,7 +11,7 @@ import { CardMedia, Checkbox, Divider, MenuItem, Select } from '@mui/material';
 import { Color, MTGSetDTO } from '../../../mtg-common/src/DTO';
 import { searchBarDrawerWidth } from '../constants';
 import { DeckFormat } from "../enum";
-import { CardQueryParameters } from '../../../mtg-common/dist/requests';
+import { CardQueryParameters } from '../../../mtg-common/src/requests';
 import { firstCharUpper } from '../functions/util';
 
 export interface SearchWindowProps {

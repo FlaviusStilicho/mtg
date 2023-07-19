@@ -18,6 +18,7 @@ export interface DeckEntryComponent {
 
 const iconWidth = 12
 const iconHeight = 15
+const commIconSizeFactor = 1
 
 export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
   const entry: DeckCardEntryDTO = props.entry
@@ -59,11 +60,16 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
           <Box style={{ width: "44%" }} sx={deckEntryTextBoxStyle}>
             {entry.card.name}
           </Box>
-          <Box style={{ textAlign: "right", marginRight: 4, width: "25%" }} sx={deckEntryTextBoxStyle}>
-            {entry.buyPrice}
+          <Box style={{ textAlign: "right", marginRight: 4, width: "15%" }} sx={deckEntryTextBoxStyle}>
+            { entry.buyPrice !== undefined ? `€ ${entry.buyPrice}`: 'N/A'}
           </Box>
           <Box style={{ textAlign: "right", marginRight: 4, width: "25%" }} sx={deckEntryTextBoxStyle}>
-            {manaCostArray.map(manaCost => (
+            {manaCostArray.map(manaCost => {
+              var fileName = manaCost
+              if (fileName.includes('/')) {
+                fileName = fileName.replace('/', '');
+              }
+              return (
               <Box
                 component="img"
                 key={`deck-entry-${manaCost}-${uuidv4()}`}
@@ -73,35 +79,34 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
                   maxHeight: { xs: 15, md: 15 },
                   maxWidth: { xs: 15, md: 15 },
                 }}
-                src={`http://localhost:3000/mana/${manaCost}.png`} />))}
+                src={`http://localhost:3000/mana/${fileName}.png`} />)})}
           </Box>
-          { isCommanderEligible(entry) ? 
-          (<Box style={{ textAlign: "right", marginRight: 0, width: "5%" }} sx={deckEntryTextBoxStyle}>
-            <Button
-              variant="contained"
-              // style={staticButtonStyle}
-              sx={{
-                borderRadius: '30%',
-                marginTop: "5px",
-
-                minWidth: { xs: iconWidth * 1.5, md: iconWidth * 1.5 },
-                maxHeight: { xs: iconHeight * 1.5, md: iconHeight * 1.5 },
-                maxWidth: { xs: iconWidth * 1.5, md: iconWidth * 1.5 },
-              }}
-            onClick={() => props.setNewCommander(entry)}
-            >
-              <Box
-                component="img"
-                sx={{
-                  borderRadius: '30%',
-                  maxWidth: { xs: iconWidth * 1.5, md: iconWidth * 1.5 },
-                }}
-                src={`http://localhost:3000/commander.png`}
-              />
-            </Button>
-          </Box>) : (<></>)
-         }
-          <Box style={{ textAlign: "right", marginRight: 4, width: "20%" }} sx={deckEntryTextBoxStyle}>
+          <Box style={{ textAlign: "right", marginRight: 0, width: "8%" }} sx={deckEntryTextBoxStyle}>
+            {isCommanderEligible(entry) ?
+              (
+                <Button
+                  variant="contained"
+                  sx={{
+                    borderRadius: '30%',
+                    minWidth: { xs: iconWidth * commIconSizeFactor, md: iconWidth * commIconSizeFactor },
+                    maxHeight: { xs: iconHeight * commIconSizeFactor, md: iconHeight * commIconSizeFactor },
+                    maxWidth: { xs: iconWidth * commIconSizeFactor, md: iconWidth * commIconSizeFactor },
+                  }}
+                  onClick={() => props.setNewCommander(entry)}
+                >
+                  <Box
+                    component="img"
+                    sx={{
+                      borderRadius: '30%',
+                      maxWidth: { xs: iconWidth * commIconSizeFactor, md: iconWidth * commIconSizeFactor },
+                    }}
+                    src={`http://localhost:3000/commander.png`}
+                  />
+                </Button>
+              ) : (<></>)
+            }
+          </Box>
+          <Box style={{ textAlign: "right", marginRight: 2, width: "25%" }} sx={deckEntryTextBoxStyle}>
             <Button
               variant="contained"
               // style={staticButtonStyle}
@@ -135,7 +140,7 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
               <AddIcon fontSize="small" />
             </Button>
           </Box>
-          <Box style={{ textAlign: "right", marginRight: 4, width: "6%" }} sx={deckEntryTextBoxStyle}>
+          <Box style={{ textAlign: "right", width: "6%" }} sx={deckEntryTextBoxStyle}>
             {Math.min(entry.copies, entry.card.ownedCopies)}/{entry.copies}
           </Box>
         </Box>

@@ -49,11 +49,11 @@ export const filterPlaneswalkers = (entries: DeckCardEntryDTO[]): DeckCardEntryD
 }
 
 export const filterNoncreatureArtifacts = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isArtifact(entry) && !isCreature(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => isArtifact(entry) && !isCreature(entry) && !isLand(entry)).sort(sortDeckEntriesFn)
 }
 
 export const filterNoncreatureEnchantments = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isEnchantment(entry) && !isCreature(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => isEnchantment(entry) && !isCreature(entry) && !isLand(entry)).sort(sortDeckEntriesFn)
 }
 
 export const filterSorceries = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {

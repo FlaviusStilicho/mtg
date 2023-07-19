@@ -11,7 +11,7 @@ import MTGCardImage, { CardImageProps } from './MTGCardImage';
 import { EnabledTab } from '../MagicCollectionManager';
 import { DeckState } from '../hooks/DeckState';
 import MTGCardDeckCounterBox, { MTGCardCollectionCounterBoxProps } from './MTGCardDeckCounterBox';
-import { fetchCardBuyPriceFromMagicersAsString } from '../../functions/magicers';
+import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
 
 
 
@@ -27,12 +27,12 @@ const MTGCardComponent: React.FC<CardComponentProps> = (props) => {
     const cardState = new CardState(card, primaryVersion, primaryImage, variantImages, flipCard, ownedCopies, subtractOwnedCopy, addOwnedCopy)
 
     const [cardPopupOpened, setCardPopupOpened] = React.useState<boolean>(false);
-    const [buyPrice, setBuyPrice] = React.useState<string>("");
+    const [buyPrice, setBuyPrice] = React.useState<number | undefined>(undefined);
     const [sellPrice, setSellPrice] = React.useState<string>("");
 
     const fetchBuyPrice = (): void => {
-        if (buyPrice === "") {
-            fetchCardBuyPriceFromMagicersAsString(card).then(price => setBuyPrice(price))
+        if (buyPrice === undefined) {
+            fetchCardBuyPriceFromMagicersSingle(card).then(price => setBuyPrice(price))
         }
     }
 
