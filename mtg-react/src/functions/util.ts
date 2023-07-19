@@ -57,7 +57,6 @@ export const filterNoncreatureEnchantments = (entries: DeckCardEntryDTO[]): Deck
 }
 
 export const filterSorceries = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    console.log(entries)
     return entries.filter(entry => isSorcery(entry)).sort(sortDeckEntriesFn)
 }
 

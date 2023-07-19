@@ -14,7 +14,7 @@ export const numberFormat = new Intl.NumberFormat('nl-NL', {
     style: 'currency',
     currency: 'EUR',
     minimumSignificantDigits: 2,
-    maximumSignificantDigits: 2
+    maximumSignificantDigits: 3
 })
 
 export const manaCurveChartOptions = {

@@ -29,7 +29,7 @@ export default function DeckCardTypeCounter(props: DeckCardTypeCounterProps) {
             setNewCommander: props.setNewCommander
           }
           return (
-            <DeckEntryComponentWithTooltip {...deckEntryProps} />
+            <DeckEntryComponentWithTooltip key={entry.card.id} {...deckEntryProps} />
           )
         })}
     </div>
