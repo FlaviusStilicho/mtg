@@ -33,7 +33,7 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
   }
 
   const missingCards = numberOfMissingCards(entry) > 0
-  
+
   return (
     <ListItem key={`entry-listitem-${entry.card.name}-${Date.now()}`} sx={{ py: 0.2 }}>
       <Tooltip
@@ -110,15 +110,11 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
           <Box style={{ textAlign: "right", marginRight: 2, width: "25%" }} sx={deckEntryTextBoxStyle}>
             <Button
               variant="contained"
-              // style={staticButtonStyle}
               sx={{
                 borderRadius: '30%',
                 height: iconHeight,
                 width: iconWidth,
-                // minHeight: { xs: iconHeight, md: iconHeight },
                 minWidth: { xs: iconWidth, md: iconWidth },
-                // maxHeight: { xs: iconHeight, md: iconHeight },
-                // maxWidth: { xs: iconWidth, md: iconWidth },
               }}
               onClick={removeCopy}
             >
@@ -130,10 +126,7 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
                 borderRadius: '30%',
                 height: iconHeight,
                 width: iconWidth,
-                // minHeight: { xs: iconHeight, md: iconHeight },
                 minWidth: { xs: iconWidth, md: iconWidth },
-                // maxHeight: { xs: iconHeight, md: iconHeight },
-                // maxWidth: { xs: iconWidth, md: iconWidth },
               }}
               disabled={entry.copies >= maximumCardCopiesStandard && !isBasicLand(entry.card)}
               onClick={addCopy}

@@ -391,9 +391,7 @@ export default function SearchBar(props: SearchWindowProps) {
               }
             }} />
         </ListItem>
-
         <Divider />
-
       </List>
     </Drawer>
   );

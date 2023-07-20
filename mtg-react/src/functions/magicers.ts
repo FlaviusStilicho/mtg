@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { MTGCardDTO } from '../../../mtg-common/src/DTO';
 import HTMLParser from 'node-html-parser';
-import { numberFormat } from '../constants';
 
 interface MagicersProduct {
     name: string
@@ -47,7 +46,6 @@ export const fetchCardBuyPriceFromMagicers = async (card: MTGCardDTO): Promise<n
             })
         }
 
-        // console.log(parsedProducts)
         return parsedProducts.filter(product => product.name.startsWith(card.name))
             .filter(product => product.stock > 1)
             .map(product => product.price)

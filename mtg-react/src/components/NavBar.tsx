@@ -1,4 +1,3 @@
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -6,10 +5,11 @@ import { IconButton, Toolbar, Typography } from '@mui/material';
 
 import { navBarHeight } from '../constants';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import { SyntheticEvent } from 'react';
 
 export interface NavBarProps {
   selectedTab: number
-  handleChangeSelectedTab: (event: React.SyntheticEvent, newValue: number) => void
+  handleChangeSelectedTab: (event: SyntheticEvent, newValue: number) => void
   open: boolean
   handleDeckManagerOpenClose: any
 }

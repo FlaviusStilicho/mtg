@@ -11,7 +11,6 @@ export interface DeleteDeckWindowProps {
 }
 
 export const DeleteDeckWindow: React.FC<DeleteDeckWindowProps> = (props) => {
-
     const [snackbarMessage, setSnackbarMessage] = useState<string>("")
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
 
@@ -30,11 +29,6 @@ export const DeleteDeckWindow: React.FC<DeleteDeckWindowProps> = (props) => {
         <Dialog
             open={props.opened}
             onClose={props.onClose}
-            PaperProps={{
-                style: {
-
-                },
-            }}
         >
             <List>
                 <ListItem 
@@ -68,7 +62,6 @@ export const DeleteDeckWindow: React.FC<DeleteDeckWindowProps> = (props) => {
                 autoHideDuration={6000}>
                 <Alert severity="error" sx={{ width: '100%' }}>{snackbarMessage}</Alert>
             </Snackbar>
-
         </Dialog>
     )
 }

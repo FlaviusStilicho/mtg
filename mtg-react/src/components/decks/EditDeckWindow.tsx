@@ -98,7 +98,6 @@ export const EditDeckWindow: React.FC<EditDeckWindowProps> = (props) => {
                 autoHideDuration={6000}>
                 <Alert severity="error" sx={{ width: '100%' }}>{snackbarMessage}</Alert>
             </Snackbar>
-
         </Dialog>
     )
 }

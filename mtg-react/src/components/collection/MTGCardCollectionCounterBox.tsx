@@ -5,7 +5,6 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { CardState } from '../hooks/CardState';
 
-
 const MTGCardCollectionCounterBox: React.FC<CardState> = (cardState) => {
 
     return (
@@ -24,7 +23,6 @@ const MTGCardCollectionCounterBox: React.FC<CardState> = (cardState) => {
                 value={cardState.ownedCopies}
                 variant="standard"
                 style={cardTextFieldStyle}
-                // size="small"
                 sx={{ borderRadius: '20%' }}
                 InputProps={{
                     readOnly: true,

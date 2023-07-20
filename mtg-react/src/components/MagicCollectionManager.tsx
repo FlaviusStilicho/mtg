@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -10,7 +9,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO } from '../../../mtg-common/src/DTO';
 import axios from 'axios';
 import { CardGridProps } from './collection/CardGrid';
-import { FC, useEffect, useState } from 'react';
+import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { CardQueryParameters, ListDecksResponse } from '../../../mtg-common/src/requests';
 import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
@@ -33,22 +32,22 @@ export enum EnabledTab {
 
 const MagicCollectionManager: FC = (props) => {
   // tab state
-  const [selectedTab, setSelectedTab] = React.useState(0);
+  const [selectedTab, setSelectedTab] = useState(0);
 
-  const handleChangeSelectedTab = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChangeSelectedTab = (event: SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
   };
 
   // search options
-  const [sets, setSets] = React.useState<MTGSetDTO[]>([]);
-  const rarities = React.useState<string[]>(raritiesList)[0];
-  const [types, setTypes] = React.useState<string[]>([]);
-  const [colors, setColors] = React.useState<Color[]>([]);
-  const typeSearchSettings = React.useState<string[]>(typeSearchOptions)[0];
-  const colorSearchSettings = React.useState<string[]>(colorSearchOptions)[0];
+  const [sets, setSets] = useState<MTGSetDTO[]>([]);
+  const rarities = useState<string[]>(raritiesList)[0];
+  const [types, setTypes] = useState<string[]>([]);
+  const [colors, setColors] = useState<Color[]>([]);
+  const typeSearchSettings = useState<string[]>(typeSearchOptions)[0];
+  const colorSearchSettings = useState<string[]>(colorSearchOptions)[0];
 
   // search state
-  const [selectedQueryParameters, setSelectedQueryParameters] = React.useState<CardQueryParameters>({
+  const [selectedQueryParameters, setSelectedQueryParameters] = useState<CardQueryParameters>({
     cardName: "",
     cardText: "",
     sets: currentStandardSets,
@@ -67,10 +66,10 @@ const MagicCollectionManager: FC = (props) => {
   const pageSize = 60;
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1)
-  const [cards, setCards] = React.useState<MTGCardDTO[]>([]);
+  const [cards, setCards] = useState<MTGCardDTO[]>([]);
 
   // deck state
-  const [deckManagerOpened, setDeckManagerOpened] = React.useState(true);
+  const [deckManagerOpened, setDeckManagerOpened] = useState(true);
   const [decks, setDecks] = useState<DeckDTO[]>([]);
   const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
   const [selectedDeck, setSelectedDeck] = useState<DeckDTO | null>(null);
@@ -114,7 +113,7 @@ const MagicCollectionManager: FC = (props) => {
 
   }
 
-  const fetchCards = React.useCallback(debounce((queryParameters: CardQueryParameters, incrementPage: boolean = false) => {
+  const fetchCards = useCallback(debounce((queryParameters: CardQueryParameters, incrementPage: boolean = false) => {
     var currentPage = page
     if (incrementPage) {
       currentPage += 1
@@ -235,14 +234,11 @@ const MagicCollectionManager: FC = (props) => {
     }
 
     axios.put(`http://localhost:8000/decks/`, deckClone).then(response => {
-      console.log("updated deck!")
+      console.log(`updated deck ${deckClone.name}!`)
     })
   }
 
   const deleteDeck = () => {
-    // todo add confirmation popup
-    console.log('Deleting deck')
-
     axios.delete(`http://localhost:8000/decks/?id=${selectedDeckId}`).then(response => {
       console.log("Deleted deck!")
     })
@@ -351,7 +347,6 @@ const MagicCollectionManager: FC = (props) => {
     addCardCopyToDeck,
     subtractCardCopyFromDeck,
     getCurrentNumberOfCopiesForCard,
-    // getCurrentDeckEntries
   }
 
   const deckManagerProps: DeckManagerProps = {
@@ -364,7 +359,6 @@ const MagicCollectionManager: FC = (props) => {
     fetchDecks,
     saveDeck,
     deleteDeck,
-    // getCurrentDeckEntries,
     handleChangeSelectedDeck,
     addCardCopyToDeck,
     subtractCardCopyFromDeck

@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useState } from "react";
+import { createRef, useEffect, useState } from "react";
 
 import { Button, Grid } from '@mui/material';
 import MTGCardComponent, { CardComponentProps } from "./MTGCardComponent";
@@ -6,8 +6,6 @@ import { gridCardSizeFactor, imageWidth, deckManagerDrawerWidth } from '../../co
 import { MTGCardDTO } from "../../../../mtg-common/src/DTO";
 import { EnabledTab } from "../MagicCollectionManager";
 import { DeckState } from "../hooks/DeckState";
-import { staticButtonStyle } from "../../style/styles";
-import RemoveIcon from '@mui/icons-material/Remove';
 
 export interface CardGridProps {
     cards: MTGCardDTO[]

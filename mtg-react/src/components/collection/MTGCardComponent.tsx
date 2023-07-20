@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Box } from '@mui/material';
 import { MTGCardDTO } from '../../../../mtg-common/src/DTO';
 import MTGCardPopup from './MTGCardPopup';
@@ -12,8 +11,7 @@ import { EnabledTab } from '../MagicCollectionManager';
 import { DeckState } from '../hooks/DeckState';
 import MTGCardDeckCounterBox, { MTGCardCollectionCounterBoxProps } from './MTGCardDeckCounterBox';
 import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
-
-
+import { FC, useState } from 'react';
 
 export interface CardComponentProps {
     card: MTGCardDTO,
@@ -21,14 +19,14 @@ export interface CardComponentProps {
     deckState: DeckState
 }
 
-const MTGCardComponent: React.FC<CardComponentProps> = (props) => {
+const MTGCardComponent: FC<CardComponentProps> = (props) => {
     const card = props.card
     const { primaryVersion, primaryImage, variantImages, flipCard, ownedCopies, subtractOwnedCopy, addOwnedCopy } = useCardState(card)
     const cardState = new CardState(card, primaryVersion, primaryImage, variantImages, flipCard, ownedCopies, subtractOwnedCopy, addOwnedCopy)
 
-    const [cardPopupOpened, setCardPopupOpened] = React.useState<boolean>(false);
-    const [buyPrice, setBuyPrice] = React.useState<number | undefined>(undefined);
-    const [sellPrice, setSellPrice] = React.useState<string>("");
+    const [cardPopupOpened, setCardPopupOpened] = useState<boolean>(false);
+    const [buyPrice, setBuyPrice] = useState<number | undefined>(undefined);
+    const [sellPrice, setSellPrice] = useState<string>("");
 
     const fetchBuyPrice = (): void => {
         if (buyPrice === undefined) {
@@ -113,7 +111,6 @@ const MTGCardComponent: React.FC<CardComponentProps> = (props) => {
             {props.enabledTab === EnabledTab.DECK &&
                 <MTGCardDeckCounterBox {...deckCounterBoxProps} />
             }
-
             {
                 <MTGCardPopup
                     cardState={cardState}

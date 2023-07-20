@@ -16,7 +16,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './CreateDeckWindow';
 import { DeckCardEntryDTO, DeckDTO } from '../../../../mtg-common/src/DTO';
-import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfMissingCards, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards } from '../../functions/util';
+import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -24,7 +24,6 @@ import DeckCardTypeCounter from './DeckCardTypeCounter';
 import { CopyDeckWindow, CopyDeckWindowProps } from './CopyDeckWindow';
 import { DeleteDeckWindow, DeleteDeckWindowProps } from './DeleteDeckWindow';
 import { EditDeckWindow, EditDeckWindowProps } from './EditDeckWindow';
-// import { EditDeckWindowProps } from './EditDeckWindow';
 
 export interface DeckManagerProps extends MuiAppBarProps {
   deckManagerOpened?: boolean;
@@ -45,7 +44,6 @@ function useForceUpdate() {
   const [value, setValue] = useState(0);
   return () => setValue(value => value + 1);
 }
-
 
 export default function DeckManagerDrawer(props: DeckManagerProps) {
   const [createDeckWindowOpened, setCreateDeckWindowOpened] = useState<boolean>(false);
@@ -463,5 +461,3 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     </Box>
   );
 }
-
-

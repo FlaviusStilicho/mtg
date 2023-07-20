@@ -22,6 +22,5 @@ export async function parseMTGGoldfishFile(file: File): Promise<NewDeckEntryDTO[
         }
       }
     }
-
     return deckEntries;
 }

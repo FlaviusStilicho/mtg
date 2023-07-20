@@ -15,7 +15,6 @@ export const exportToCsv = (filename: string, rows: string[][], headers?: string
   }
 
   const csvContent =
-    // "sep=,\n" +
     columnHeaders.join(separator) + '\n' +
     rows.map(row => {
       return row.map(cell => {
