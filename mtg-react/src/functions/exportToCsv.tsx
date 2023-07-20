@@ -1,5 +1,3 @@
-
-
 export const exportToCsv = (filename: string, rows: string[][], headers?: string[]): void => {
   if (!rows || !rows.length) {
     return;

@@ -48,7 +48,7 @@ const CardGrid = (props: CardGridProps) => {
                         deckState: props.deckState
                     }
                     return (
-                        <Grid key={card.id} item xs={cardWidth}>
+                        <Grid key={`${card.id}-${Date.now()}`} item xs={cardWidth}>
                             <MTGCardComponent {...cardComponentProps} />
                         </Grid>
                     )

@@ -16,7 +16,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './CreateDeckWindow';
 import { DeckCardEntryDTO, DeckDTO } from '../../../../mtg-common/src/DTO';
-import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments } from '../../functions/util';
+import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfMissingCards, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -202,6 +202,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
   }
 
   const currentCommander = getCommander()
+  const [availableMissingCards, unavailableMissingCards] = numberOfCardsAvailable(props.selectedDeckEntries)
 
   return (
     <Box sx={{
@@ -213,14 +214,12 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             width: deckManagerDrawerWidth,
-          }
+          },
         }}
         PaperProps={{
           sx: {
             height: `calc(100% - ${navBarHeight}px)`,
             top: navBarHeight,
-            // backgroundColor: '#7adeff'
-            // bgcolor: "#cc4839"
             bgcolor: "#4bb5f2",
             overflowX: "hidden"
           },
@@ -237,10 +236,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               aria-label="create-deck"
               edge="end"
               onClick={() => setCreateDeckWindowOpened(true)}
-              sx={{
-                marginLeft: 'auto',
-                // ...(props.open && { display: 'none' }) 
-              }}
             >
               <AddIcon />
             </IconButton>
@@ -326,6 +321,16 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           ) : (<></>)
           }
           <Divider />
+          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            Total: {props.selectedDeckEntries.length > 0 ? props.selectedDeckEntries.map(entry => entry.copies).reduce((a, b) => a + b) : 0} cards
+          </Box>
+          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            {availableMissingCards > 0 || unavailableMissingCards > 0 ? `Missing cards: ${availableMissingCards} available, ${unavailableMissingCards} unavailable` : ``}
+          </Box>
+          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            {availableMissingCards > 0 || unavailableMissingCards > 0 ? `Cost to complete: € ${costToFinishDeck(props.selectedDeckEntries)}` : ``}
+          </Box>
+          <Divider />
 
           <DeckCardTypeCounter
             label="Lands"
@@ -407,11 +412,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             setNewCommander={setNewCommander}
           />
 
-          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            Total: {props.selectedDeckEntries.length > 0 ? props.selectedDeckEntries.map(entry => entry.copies).reduce((a, b) => a + b) : 0} cards
-          </Box>
-          <Divider />
-
           <Bar style={{
             paddingLeft: 30,
             paddingRight: 30,
@@ -420,6 +420,16 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             options={manaCurveChartOptions}
             data={manaCurveChartData} />
           <Divider />
+          <DeckCardTypeCounter
+            label="Sideboard"
+            selectedDeckEntries={props.selectedDeckEntries}
+            countFn={getNumberOfSideboardCards}
+            filterFn={filterSideboard}
+            addCardCopyToDeck={props.addCardCopyToDeck}
+            subtractCardCopyFromDeck={props.subtractCardCopyFromDeck}
+            setNewCommander={setNewCommander}
+          />
+          <Divider/>
           <ListItem>
             <Button
               color="inherit"

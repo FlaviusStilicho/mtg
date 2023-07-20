@@ -130,6 +130,7 @@ export const UploadDeck = async (req: Request<{}, {}, UploadDeckDTO, {}>, res: R
         null,
         card,
         entry.quantity,
+        false, 
         false
     ))))
 

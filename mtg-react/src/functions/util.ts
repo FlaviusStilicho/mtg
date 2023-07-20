@@ -5,7 +5,7 @@ export const isBasicLand = (card: MTGCardDTO): boolean => {
 }
 
 export const isLand = (entry: DeckCardEntryDTO): boolean => {
-    return entry.card.type.includes('Land') // && !card.type.includes('Creature')
+    return entry.card.type.includes('Land')
 }
 
 export const isCreature = (entry: DeckCardEntryDTO): boolean => {
@@ -37,48 +37,73 @@ export const isBattle = (entry: DeckCardEntryDTO): boolean => {
 }
 
 export const filterLands = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isLand(entry) && !isCreature(entry))
+    return entries.filter(entry => !entry.isSideboard)
+        .filter(entry => isLand(entry) && !isCreature(entry))
 }
 
 export const filterCreatures = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isCreature(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => !entry.isSideboard)
+        .filter(entry => isCreature(entry))
+        .sort(sortDeckEntriesFn)
 }
 
 export const filterPlaneswalkers = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isPlaneswalker(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => !entry.isSideboard)
+        .filter(entry => isPlaneswalker(entry))
+        .sort(sortDeckEntriesFn)
 }
 
 export const filterNoncreatureArtifacts = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isArtifact(entry) && !isCreature(entry) && !isLand(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => !entry.isSideboard)
+        .filter(entry => isArtifact(entry) && !isCreature(entry) && !isLand(entry))
+        .sort(sortDeckEntriesFn)
 }
 
 export const filterNoncreatureEnchantments = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isEnchantment(entry) && !isCreature(entry) && !isLand(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => !entry.isSideboard)
+        .filter(entry => isEnchantment(entry) && !isCreature(entry) && !isLand(entry))
+        .sort(sortDeckEntriesFn)
 }
 
 export const filterSorceries = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isSorcery(entry)).sort(sortDeckEntriesFn)
+    return entries
+        .filter(entry => !entry.isSideboard)
+        .filter(entry => isSorcery(entry))
+        .sort(sortDeckEntriesFn)
 }
 
 export const filterInstants = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isInstant(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => !entry.isSideboard)
+        .filter(entry => isInstant(entry))
+        .sort(sortDeckEntriesFn)
 }
 
 export const filterBattles = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
-    return entries.filter(entry => isBattle(entry)).sort(sortDeckEntriesFn)
+    return entries.filter(entry => !entry.isSideboard)
+        .filter(entry => isBattle(entry))
+        .sort(sortDeckEntriesFn)
+}
+
+export const filterSideboard = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
+    return entries.filter(entry => !entry.isSideboard)
+        .sort(sortDeckEntriesFn)
 }
 
 const sortDeckEntriesFn = (entry1: DeckCardEntryDTO, entry2: DeckCardEntryDTO) => {
     const result = entry1.card.convertedManaCost - entry2.card.convertedManaCost
-    if (result !== 0) { 
-        return result 
-    } else { 
+    if (result !== 0) {
+        return result
+    } else {
         return entry1.card.name.localeCompare(entry2.card.name)
     }
 }
 
 export const getTotalCardCopies = (entries: DeckCardEntryDTO[]): number => {
-    return entries.length > 0 ? entries.map(entry => entry.copies).reduce((a, b) => a + b) : 0
+    return entries.length > 0 ? entries
+        .filter(entry => !entry.isSideboard)
+        .filter(entry => !entry.isSideboard)
+        .map(entry => entry.copies)
+        .reduce((a, b) => a + b) : 0
 }
 export const getNumberOfLands = (entries: DeckCardEntryDTO[]): number => {
     return getTotalCardCopies(filterLands(entries))
@@ -112,8 +137,12 @@ export const getNumberOfBattles = (entries: DeckCardEntryDTO[]): number => {
     return getTotalCardCopies(filterBattles(entries))
 }
 
+export const getNumberOfSideboardCards = (entries: DeckCardEntryDTO[]): number => {
+    return getTotalCardCopies(filterSideboard(entries))
+}
+
 export const isCommanderEligible = (entry: DeckCardEntryDTO): boolean => {
-    if (entry.isCommander === true){
+    if (entry.isCommander === true || entry.isSideboard) {
         return false
     } else if (entry.card.type.includes("Legendary") && entry.card.type.includes("Creature")) {
         return true
@@ -126,3 +155,39 @@ export const firstCharUpper = (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
+export const numberOfMissingCards = (entry: DeckCardEntryDTO): number => {
+    const missingCards = entry.copies - entry.card.ownedCopies
+    return missingCards > 0 ? missingCards : 0
+}
+
+export const numberOfCardsAvailable = (entries: DeckCardEntryDTO[]): [number, number] => {
+    if (entries.length === 0) {
+        return [0, 0]
+    }
+    const available = entries
+        .filter(entry => !entry.isSideboard)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.buyPrice !== undefined)
+        .map(entry => numberOfMissingCards(entry))
+        .reduce((a, b) => a + b, 0)
+    const unavailable = entries
+        .filter(entry => !entry.isSideboard)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.buyPrice === undefined)
+        .map(entry => numberOfMissingCards(entry))
+        .reduce((a, b) => a + b, 0)
+    return [available, unavailable]
+}
+
+export const costToFinishDeck = (entries: DeckCardEntryDTO[]): number => {
+    if (entries.length === 0) {
+        return 0
+    }
+    const result = entries
+        .filter(entry => !entry.isSideboard)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.buyPrice !== undefined)
+        .map(entry => {
+            return entry.buyPrice === undefined ? 0 :
+                numberOfMissingCards(entry) * entry.buyPrice
+        })
+        .reduce((a, b) => a + b, 0)
+    return result
+}

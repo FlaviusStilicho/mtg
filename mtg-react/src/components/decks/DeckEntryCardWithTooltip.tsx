@@ -5,7 +5,7 @@ import { deckEntryTextBoxStyle } from '../../style/styles';
 import { Button, CardMedia, Tooltip } from '@mui/material';
 import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
 import { v4 as uuidv4 } from 'uuid';
-import { isBasicLand, isCommanderEligible } from '../../functions/util';
+import { isBasicLand, isCommanderEligible, numberOfMissingCards } from '../../functions/util';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -32,7 +32,8 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
     props.subtractCardCopyFromDeck(entry.card)
   }
 
-  const missingCards = entry.card.ownedCopies - entry.copies < 0
+  const missingCards = numberOfMissingCards(entry) > 0
+  
   return (
     <ListItem key={`entry-listitem-${entry.card.name}-${Date.now()}`} sx={{ py: 0.2 }}>
       <Tooltip

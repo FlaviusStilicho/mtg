@@ -287,6 +287,7 @@ const MagicCollectionManager: FC = (props) => {
           card: newCard,
           copies: 1,
           isCommander: false,
+          isSideboard: false,
           buyPrice
         }
       } else {
