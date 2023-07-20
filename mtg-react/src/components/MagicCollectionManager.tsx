@@ -19,6 +19,7 @@ import { isBasicLand } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
+import { error } from 'console';
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
@@ -139,6 +140,9 @@ const MagicCollectionManager: FC = (props) => {
         setCards(newCardsList)
         // todo alex do something with total pages
       }
+    }).catch(error => {
+      console.error(error)
+      setCards([])
     })
   }, 1500), [
     page,
@@ -203,7 +207,7 @@ const MagicCollectionManager: FC = (props) => {
     } else {
       setSelectedDeckId(newDeckId);
       setSelectedDeck(decks.filter(deck => deck.id === newDeckId)[0])
-      
+
       Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
         return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
           entry.buyPrice = price
