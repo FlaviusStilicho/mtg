@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { isBasicLand, isCommanderEligible, numberOfMissingCards } from '../../functions/util';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
+import { memo } from 'react';
 
 export interface DeckEntryComponent {
   entry: DeckCardEntryDTO
@@ -20,7 +21,7 @@ const iconWidth = 12
 const iconHeight = 15
 const commIconSizeFactor = 1
 
-export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
+export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponent) => {
   const entry: DeckCardEntryDTO = props.entry
   var manaCostArray = entry.card.manaCost.split("}").map(mc => mc.substring(1)).filter(mc => mc !== '');
 
@@ -141,4 +142,4 @@ export function DeckEntryComponentWithTooltip(props: DeckEntryComponent) {
       </Tooltip>
     </ListItem>
   );
-}
+})

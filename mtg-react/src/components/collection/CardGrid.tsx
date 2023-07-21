@@ -1,7 +1,7 @@
 import { createRef, useEffect, useState } from "react";
 
 import { Button, Grid } from '@mui/material';
-import MTGCardComponent, { CardComponentProps } from "./MTGCardComponent";
+import { MTGCardComponent, CardComponentProps } from "./MTGCardComponent";
 import { gridCardSizeFactor, imageWidth, deckManagerDrawerWidth } from '../../constants';
 import { MTGCardDTO } from "../../../../mtg-common/src/DTO";
 import { EnabledTab } from "../MagicCollectionManager";

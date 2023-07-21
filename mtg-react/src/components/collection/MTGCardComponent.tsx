@@ -11,7 +11,7 @@ import { EnabledTab } from '../MagicCollectionManager';
 import { DeckState } from '../hooks/DeckState';
 import MTGCardDeckCounterBox, { MTGCardCollectionCounterBoxProps } from './MTGCardDeckCounterBox';
 import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
-import { FC, useState } from 'react';
+import { FC, memo, useState } from 'react';
 
 export interface CardComponentProps {
     card: MTGCardDTO,
@@ -19,7 +19,7 @@ export interface CardComponentProps {
     deckState: DeckState
 }
 
-const MTGCardComponent: FC<CardComponentProps> = (props) => {
+export const MTGCardComponent = memo((props: CardComponentProps) => {
     const card = props.card
     const { primaryVersion, primaryImage, variantImages, flipCard, ownedCopies, subtractOwnedCopy, addOwnedCopy } = useCardState(card)
     const cardState = new CardState(card, primaryVersion, primaryImage, variantImages, flipCard, ownedCopies, subtractOwnedCopy, addOwnedCopy)
@@ -121,5 +121,4 @@ const MTGCardComponent: FC<CardComponentProps> = (props) => {
                 />}
         </Box>
     );
-};
-export default MTGCardComponent;
+});
