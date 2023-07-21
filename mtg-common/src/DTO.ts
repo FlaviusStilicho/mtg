@@ -36,8 +36,8 @@ export interface DeckCardEntryDTO {
     id: number | undefined
     card: MTGCardDTO 
     copies: number
+    sideboardCopies: number
     isCommander: boolean
-    isSideboard: boolean
     buyPrice?: number | undefined
 }
 

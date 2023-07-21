@@ -150,9 +150,9 @@ export class DeckCardEntry {
     @Column()
     copies: number
     @Column()
-    isCommander: boolean
+    sideboardCopies: number
     @Column()
-    isSideboard: boolean
+    isCommander: boolean
     @ManyToOne(() => Deck, deck => deck.cardEntries)
     deck: Deck
 
@@ -160,21 +160,21 @@ export class DeckCardEntry {
         id: number,
         card: MTGCard,
         copies: number,
-        isCommander: boolean,
-        isSideboard: boolean) {
+        sideboardCopies: number,
+        isCommander: boolean) {
         this.id = id
         this.card = card
         this.copies = copies
+        this.sideboardCopies = sideboardCopies
         this.isCommander = isCommander
-        this.isSideboard = isSideboard
     }
     toDTO(): DeckCardEntryDTO {
         const dto: DeckCardEntryDTO = {
             id: this.id,
             card: this.card.toDTO(),
             copies: this.copies,
+            sideboardCopies: this.sideboardCopies,
             isCommander: this.isCommander,
-            isSideboard: this.isSideboard
         }
         return dto
     }
@@ -184,8 +184,8 @@ export class DeckCardEntry {
             entry.id,
             await MTGCardRepository.findOneById(entry.card.id),
             entry.copies,
-            entry.isCommander,
-            entry.isSideboard
+            entry.sideboardCopies,
+            entry.isCommander
         )
     }
 
@@ -194,8 +194,8 @@ export class DeckCardEntry {
             null,
             this.card,
             this.copies,
-            this.isCommander,
-            this.isSideboard
+            this.sideboardCopies,
+            this.isCommander
         )
     }
 }
