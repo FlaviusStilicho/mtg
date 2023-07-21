@@ -1,5 +1,5 @@
 import { Box, Button, CardMedia, Dialog, IconButton, List, ListItem } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 import { largeFlipButtonStyle } from "../../style/styles";
 import AutorenewIcon from '@mui/icons-material/Autorenew';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -15,7 +15,7 @@ export interface MTGCardPopupProps {
     sellPrice: string
 }
 
-const MTGCardPopup: React.FC<MTGCardPopupProps> = (props) => {
+export const MTGCardPopup = memo((props: MTGCardPopupProps) => {
     const cardState = props.cardState
 
     const listStyle: any = {
@@ -43,7 +43,7 @@ const MTGCardPopup: React.FC<MTGCardPopupProps> = (props) => {
         >
             <List style={listStyle}>
                 {
-                    cardState.variantImages.map(variantImage => (
+                    Array.from(new Set(cardState.variantImages)).map(variantImage => (
                         <ListItem key={`listitem-${variantImage}-${Date.now()}`}>
                             <CardMedia
                                 key={`cardmedia-${variantImage}-${Date.now()}`}
@@ -100,7 +100,7 @@ const MTGCardPopup: React.FC<MTGCardPopupProps> = (props) => {
                         onClick={() => {
                             console.log("buy")
                         }}>
-                        {`€ ${props.buyPrice}`}
+                        {`${props.buyPrice ? "€ " + props.buyPrice : 'Not available'}`}
                     </Button>
                     <Button
                         variant="contained"
@@ -117,5 +117,4 @@ const MTGCardPopup: React.FC<MTGCardPopupProps> = (props) => {
             </Box>
         </Dialog >
     );
-}
-export default MTGCardPopup;
+});

@@ -1,6 +1,7 @@
 import { CardMedia } from "@mui/material";
 import { imageHeight, imageWidth } from "../../constants";
 import { CardState } from "../hooks/CardState";
+import { memo } from "react";
 
 export interface CardImageProps {
     cardState: CardState,
@@ -8,7 +9,7 @@ export interface CardImageProps {
     handleOpenPopup? : Function
 }
 
-const MTGCardImage: React.FC<CardImageProps> = (props) => {
+export const MTGCardImage = memo((props: CardImageProps) => {
     return (
         <CardMedia
         key={Date.now()}
@@ -25,6 +26,4 @@ const MTGCardImage: React.FC<CardImageProps> = (props) => {
         onClick={() => props.handleOpenPopup ? props.handleOpenPopup() : null }
     />
     )
-}
-
-export default MTGCardImage
+});

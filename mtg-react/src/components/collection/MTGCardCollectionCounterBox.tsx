@@ -4,9 +4,9 @@ import { cardTextFieldStyle, flipButtonStyle, staticButtonStyle } from '../../st
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { CardState } from '../hooks/CardState';
+import { memo } from 'react';
 
-const MTGCardCollectionCounterBox: React.FC<CardState> = (cardState) => {
-
+export const MTGCardCollectionCounterBox = memo((cardState: CardState) => {
     return (
         <Box style={{alignItems: "center"}}>
             <Button
@@ -50,6 +50,4 @@ const MTGCardCollectionCounterBox: React.FC<CardState> = (cardState) => {
             }
         </Box>
     )
-}
-
-export default MTGCardCollectionCounterBox
+})

@@ -5,16 +5,16 @@ import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { CardState } from '../hooks/CardState';
 import { DeckState } from '../hooks/DeckState';
-import { useState } from "react";
+import { useState, memo } from 'react';
 import { isBasicLand } from '../../functions/util';
 import { DeckFormat } from '../../enum';
 
-export interface MTGCardCollectionCounterBoxProps {
+export interface MTGCardDeckCounterBoxProps {
     cardState: CardState
     deckState: DeckState
 }
 
-const MTGCardCollectionCounterBox: React.FC<MTGCardCollectionCounterBoxProps> = (props) => {
+export const MTGCardDeckCounterBox = memo((props: MTGCardDeckCounterBoxProps) => {
     const cardState = props.cardState
     const deckState = props.deckState
 
@@ -98,6 +98,4 @@ const MTGCardCollectionCounterBox: React.FC<MTGCardCollectionCounterBoxProps> = 
             }
         </Box>
     )
-}
-
-export default MTGCardCollectionCounterBox
+});

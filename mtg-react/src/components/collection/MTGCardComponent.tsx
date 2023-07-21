@@ -1,17 +1,17 @@
 import { Box } from '@mui/material';
 import { MTGCardDTO } from '../../../../mtg-common/src/DTO';
-import MTGCardPopup from './MTGCardPopup';
 import axios from 'axios';
 import HTMLParser from 'node-html-parser';
 import { imageWidth, gridCardSizeFactor, imageHeight, numberFormat } from '../../constants';
-import MTGCardCollectionCounterBox from './MTGCardCollectionCounterBox';
 import { CardState, useCardState } from '../hooks/CardState';
-import MTGCardImage, { CardImageProps } from './MTGCardImage';
+import { CardImageProps, MTGCardImage } from './MTGCardImage';
 import { EnabledTab } from '../MagicCollectionManager';
 import { DeckState } from '../hooks/DeckState';
-import MTGCardDeckCounterBox, { MTGCardCollectionCounterBoxProps } from './MTGCardDeckCounterBox';
+import { MTGCardDeckCounterBox, MTGCardDeckCounterBoxProps } from './MTGCardDeckCounterBox';
 import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
-import { FC, memo, useState } from 'react';
+import { memo, useState } from 'react';
+import { MTGCardCollectionCounterBox } from './MTGCardCollectionCounterBox';
+import { MTGCardPopup } from './MTGCardPopup';
 
 export interface CardComponentProps {
     card: MTGCardDTO,
@@ -92,7 +92,7 @@ export const MTGCardComponent = memo((props: CardComponentProps) => {
         handleOpenPopup
     }
 
-    const deckCounterBoxProps: MTGCardCollectionCounterBoxProps = {
+    const deckCounterBoxProps: MTGCardDeckCounterBoxProps = {
         cardState,
         deckState: props.deckState
     }
