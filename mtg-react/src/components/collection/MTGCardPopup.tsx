@@ -34,87 +34,90 @@ export const MTGCardPopup = memo((props: MTGCardPopupProps) => {
                 style: {
                     backgroundColor: 'transparent',
                     boxShadow: 'none',
-                    textAlign: 'center',
-                    display: "flex",
-                    justifyContent: 'center',
-                    alignItems: 'center'
                 },
             }}
         >
-            <List style={listStyle}>
-                {
-                    Array.from(new Set(cardState.variantImages)).map(variantImage => (
-                        <ListItem key={`listitem-${variantImage}-${Date.now()}`}>
-                            <CardMedia
-                                key={`cardmedia-${variantImage}-${Date.now()}`}
-                                sx={{
-                                    height: imageHeight * variantImageSizeFactor,
-                                    width: imageWidth * variantImageSizeFactor,
-                                    margin: 2
-                                }}
-                                style={{
-                                    padding: 2,
-                                    backgroundColor: "White",
-                                    borderRadius: '10px'
-                                }}
-                                image={variantImage}
-                            />
-                        </ListItem>
-                    ))}
-            </List>
-            <Box style={{ justifyContent: 'center', }}>
-                <CardMedia
-                    key={Date.now()}
-                    sx={{
-                        height: imageHeight * popupImageSizeFactor,
-                        width: imageWidth * popupImageSizeFactor
-                    }}
-                    style={{
-                        padding: 5,
-                        backgroundColor: "White",
-                        borderRadius: '10px'
-                    }}
-                    image={props.cardState.primaryImage}
-                />
-                <Box >
-                    {cardState.primaryVersion.backImageUri !== null &&
-                        <IconButton
-                            name="flip-button"
-                            style={largeFlipButtonStyle}
-                            onClick={
-                                cardState.flipCard
-                            }
-                        >
-                            <AutorenewIcon sx={{
-                                height: 40,
-                                width: 40
-                            }} />
-                        </IconButton>
-                    }
-                    <Button
-                        variant="contained"
-                        startIcon={<ShoppingCartIcon />}
-                        name="buy-button"
-                        sx={{ margin: 2 }}
-                        disabled={Number.isNaN(props.buyPrice)}
-                        onClick={() => {
-                            console.log("buy")
-                        }}>
-                        {`${props.buyPrice ? "€ " + props.buyPrice : 'Not available'}`}
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<CurrencyExchangeIcon />}
-                        name="sell-button"
-                        sx={{ margin: 2 }}
-                        disabled={Number.isNaN(props.buyPrice)}
-                        onClick={() => {
-                            console.log("sell")
-                        }}>
-                        {props.sellPrice}
-                    </Button>
-                </Box>
+            <Box style={{ justifyContent: 'center', alignItems: 'center', overflowY: "auto"}}>
+                <List style={{ justifyContent: 'center', alignItems: 'center', overflowX: "auto", display: "flex", flexDirection: "row"}}>
+                    {
+                        Array.from(new Set(cardState.variantImages)).map(variantImage => (
+                            <ListItem key={`listitem-${variantImage}-${Date.now()}`} style={{ justifyContent: 'center'}}> 
+                                <CardMedia
+                                    key={`cardmedia-${variantImage}-${Date.now()}`}
+                                    sx={{
+                                        height: imageHeight * variantImageSizeFactor,
+                                        width: imageWidth * variantImageSizeFactor,
+                                    }}
+                                    style={{
+                                        backgroundColor: "White",
+                                        borderRadius: '10px'
+                                    }}
+                                    image={variantImage}
+                                />
+                            </ListItem>
+                        ))}
+                </List>
             </Box>
+            <List>
+                <ListItem style={{ display: "flex", justifyContent: 'center', alignItems: 'center' }}>
+                    <Box>
+                        <CardMedia
+                            key={Date.now()}
+                            sx={{
+                                height: imageHeight * popupImageSizeFactor,
+                                width: imageWidth * popupImageSizeFactor
+                            }}
+                            style={{
+                                padding: 5,
+                                backgroundColor: "White",
+                                borderRadius: '10px',
+                            }}
+                            image={props.cardState.primaryImage}
+                        />
+                    </Box>
+                </ListItem>
+                <ListItem style={{ display: "flex", justifyContent: 'center', alignItems: 'center' }}>
+                    <Box >
+                        {cardState.primaryVersion.backImageUri !== null &&
+                            <IconButton
+                                name="flip-button"
+                                style={largeFlipButtonStyle}
+                                onClick={
+                                    cardState.flipCard
+                                }
+                            >
+                                <AutorenewIcon sx={{
+                                    height: 40,
+                                    width: 40
+                                }} />
+                            </IconButton>
+                        }
+                        <Button
+                            variant="contained"
+                            startIcon={<ShoppingCartIcon />}
+                            name="buy-button"
+                            sx={{ margin: 2 }}
+                            disabled={Number.isNaN(props.buyPrice)}
+                            onClick={() => {
+                                console.log("buy")
+                            }}>
+                            {`${props.buyPrice ? "€ " + props.buyPrice : 'Not available'}`}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<CurrencyExchangeIcon />}
+                            name="sell-button"
+                            sx={{ margin: 2 }}
+                            disabled={Number.isNaN(props.buyPrice)}
+                            onClick={() => {
+                                console.log("sell")
+                            }}>
+                            {props.sellPrice}
+                        </Button>
+                    </Box>
+                </ListItem>
+                {/* </Box> */}
+            </List>
         </Dialog >
     );
 });

@@ -2,31 +2,32 @@ import { Box } from "@mui/material"
 import { deckEntryTextBoxStyle } from "../../style/styles"
 import { DeckCardEntryDTO } from "../../../../mtg-common/src/DTO"
 import { DeckEntryComponentWithTooltip } from "./DeckEntryCardWithTooltip"
+import { DeckState } from "../hooks/DeckState"
 
 export interface DeckCardTypeCounterProps {
   label: String
-  selectedDeckEntries: DeckCardEntryDTO[]
+  deckState: DeckState
   countFn: (entries: DeckCardEntryDTO[]) => number
   filterFn: (entries: DeckCardEntryDTO[]) => DeckCardEntryDTO[]
-  addCardCopyToDeck: Function,
-  subtractCardCopyFromDeck: Function
   setNewCommander: (entry: DeckCardEntryDTO) => void
+  isSideboardEntry: boolean
 }
 
 export default function DeckCardTypeCounter(props: DeckCardTypeCounterProps) {
+  const deckState = props.deckState
   
-  return props.countFn(props.selectedDeckEntries) > 0 ? (
+  return props.countFn(deckState.selectedDeckEntries) > 0 ? (
     <div>
       <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-        {props.label} ({props.countFn(props.selectedDeckEntries)})
+        {props.label} ({props.countFn(deckState.selectedDeckEntries)})
       </Box>
       {
-        props.filterFn(props.selectedDeckEntries).map(entry => {
+        props.filterFn(deckState.selectedDeckEntries).map(entry => {
           const deckEntryProps = {
             entry,
-            addCardCopyToDeck: props.addCardCopyToDeck,
-            subtractCardCopyFromDeck: props.subtractCardCopyFromDeck,
-            setNewCommander: props.setNewCommander
+            deckState,
+            setNewCommander: props.setNewCommander,
+            isSideboardEntry: props.isSideboardEntry
           }
           return (
             <DeckEntryComponentWithTooltip key={entry.card.id} {...deckEntryProps} />

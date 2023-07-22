@@ -13,13 +13,12 @@ import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
 import { CardQueryParameters, ListDecksResponse } from '../../../mtg-common/src/requests';
 import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
-import { maximumCardCopiesStandard, searchBarDrawerWidth } from '../constants';
+import { searchBarDrawerWidth } from '../constants';
 import { DeckState } from './hooks/DeckState';
 import { isBasicLand } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
-import { error } from 'console';
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
@@ -152,6 +151,16 @@ const MagicCollectionManager: FC = (props) => {
     selectedQueryParameters
   ]);
 
+  const getDefaultSetsForFormat = (format: string) => {
+    if (format === DeckFormat.STANDARD.toString()) {
+      return currentStandardSets
+    } else if (format === DeckFormat.COMMANDER.toString()) {
+      return sets.map(set => set.id)
+    } else {
+      throw "Unknown format!"
+    }
+  }
+
   const handleChangeSelectedQueryParameters = (event: SelectChangeEvent<typeof selectedQueryParameters>) => {
     const propName = event.target.name;
     const newValue = event.target.value;
@@ -184,14 +193,7 @@ const MagicCollectionManager: FC = (props) => {
     } else if (propName === "manaCost" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, manaCost: newValue }
     } else if (propName === "format" && typeof newValue === 'string') {
-      var newSets: number[] = []
-      if (newValue === DeckFormat.STANDARD.toString()) {
-        newSets = currentStandardSets
-      } else if (newValue === DeckFormat.COMMANDER.toString()) {
-        newSets = sets.map(set => set.id)
-      } else {
-        console.error("Unknown format!")
-      }
+      var newSets: number[] = getDefaultSetsForFormat(newValue)
       queryParameters = { ...selectedQueryParameters, format: newValue, sets: newSets }
     } else if (propName === "minOwnedCopies" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, minOwnedCopies: parseInt(newValue) }
@@ -208,7 +210,9 @@ const MagicCollectionManager: FC = (props) => {
       console.error("help!")
     } else {
       setSelectedDeckId(newDeckId);
-      setSelectedDeck(decks.filter(deck => deck.id === newDeckId)[0])
+      const newDeck = decks.filter(deck => deck.id === newDeckId)[0]
+      setSelectedDeck(newDeck)
+      setSelectedQueryParameters({ ...selectedQueryParameters, format: newDeck.format, sets: getDefaultSetsForFormat(newDeck.format) })
 
       Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
         return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
@@ -280,51 +284,58 @@ const MagicCollectionManager: FC = (props) => {
     setSelectedDeckEntries(newEntriesList)
   }
 
-  const addCardCopyToDeck = (newCard: MTGCardDTO, setCopiesInDeck?: Function) => {
-    var cardEntry: DeckCardEntryDTO | null = getExistingEntry(newCard)
-    fetchCardBuyPriceFromMagicersSingle(newCard).then(buyPrice => {
-      if (!cardEntry) {
-        cardEntry = {
-          id: undefined,
-          card: newCard,
-          copies: 1,
-          sideboardCopies: 0,
-          isCommander: false,
-          buyPrice
-        }
-      } else {
-        if (cardEntry.copies >= maximumCardCopiesStandard && !isBasicLand(cardEntry.card)) {
-          console.error("Cannot increase copies beyond 4!")
-        } else {
-          cardEntry.copies += 1
-        }
-      }
-      updateDeckEntries(cardEntry)
-      if (setCopiesInDeck) {
-        setCopiesInDeck(cardEntry.copies)
-      }
-    })
+  const updateCardCopiesInDeck = (card: MTGCardDTO, increment: number, isSideboard: boolean) => {
+    if (increment !== -1 && increment !== 1) {
+      throw "Unexpected increment"
+    }
+    if (selectedDeck === null) {
+      throw "No deck selected!"
+    }
+    const existingCardEntry: DeckCardEntryDTO | null = getExistingEntry(card)
 
+    if (!existingCardEntry) {
+      if (increment === -1) {
+        throw "Cannot remove cards from nonexistant entry"
+      }
+      const newEntry = {
+        id: undefined,
+        card: card,
+        copies: isSideboard ? 0 : 1,
+        sideboardCopies: isSideboard ? 1 : 0,
+        isCommander: false
+      }
+      updateDeckEntries(newEntry)
+    } else {
+      if (isSideboard) {
+        existingCardEntry.sideboardCopies += increment
+      } else {
+        existingCardEntry.copies += increment
+      }
+      checkEntryIllegal(existingCardEntry, selectedDeck)
+      updateDeckEntries(existingCardEntry)
+    }
   }
 
-  const subtractCardCopyFromDeck = (newCard: MTGCardDTO, setCopiesInDeck?: Function) => {
-    const existingCardEntry: DeckCardEntryDTO | null = getExistingEntry(newCard)
-    if (!existingCardEntry) {
-      return
+  function checkEntryIllegal(entry: DeckCardEntryDTO, deck: DeckDTO) {
+    const format = deck.format
+    var maxCardCopies
+    if (format == "standard") {
+      maxCardCopies = 4
+    } else if (format === "commander") {
+      maxCardCopies = 1
     } else {
-      if (existingCardEntry.copies <= 1) {
-        setSelectedDeckEntries(selectedDeckEntries.filter(entry => entry.card.id !== existingCardEntry.card.id))
-        if (setCopiesInDeck) {
-          setCopiesInDeck(0)
-        }
-      } else {
-        existingCardEntry.copies -= 1
-        updateDeckEntries(existingCardEntry)
-        if (setCopiesInDeck) {
-          setCopiesInDeck(existingCardEntry.copies)
-        }
-      }
+      console.log(format)
+      throw "Unsupported format"
     }
+    if (entry.copies < 0 || entry.sideboardCopies < 0) {
+      throw "Cannot have less than 0 copies"
+    }
+    if (isBasicLand(entry.card)) {
+      return
+    } else if (entry.copies > maxCardCopies || entry.sideboardCopies > maxCardCopies) {
+      throw "Cannot exceed max card copies"
+    }
+    return
   }
 
   const handleLoadMore = async () => {
@@ -344,30 +355,25 @@ const MagicCollectionManager: FC = (props) => {
 
   const deckState: DeckState = {
     decks,
+    saveDeck,
+    deleteDeck,
     fetchDecks,
     selectedDeck,
     selectedDeckId,
+    selectedDeckEntries,
     handleChangeSelectedDeck,
     deckChanged,
     setDeckChanged,
-    addCardCopyToDeck,
-    subtractCardCopyFromDeck,
-    getCurrentNumberOfCopiesForCard,
+    updateCardCopiesInDeck,
+    updateDeckEntries,
+    getCurrentNumberOfCopiesForCard
   }
 
   const deckManagerProps: DeckManagerProps = {
     deckManagerOpened: deckManagerOpened,
     handleDeckManagerOpenClose,
-    decks,
-    selectedDeckId,
-    selectedDeck,
-    selectedDeckEntries,
-    fetchDecks,
-    saveDeck,
-    deleteDeck,
-    handleChangeSelectedDeck,
-    addCardCopyToDeck,
-    subtractCardCopyFromDeck
+    deckState,
+    selectedDeckEntries
   }
 
   const searchGridProps: CardGridProps = {

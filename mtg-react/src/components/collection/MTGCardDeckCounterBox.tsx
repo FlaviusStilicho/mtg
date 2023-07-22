@@ -8,6 +8,7 @@ import { DeckState } from '../hooks/DeckState';
 import { useState, memo } from 'react';
 import { isBasicLand } from '../../functions/util';
 import { DeckFormat } from '../../enum';
+import ArchiveIcon from '@mui/icons-material/Archive';
 
 export interface MTGCardDeckCounterBoxProps {
     cardState: CardState
@@ -43,13 +44,6 @@ export const MTGCardDeckCounterBox = memo((props: MTGCardDeckCounterBoxProps) =>
 
     const canAddCopy: boolean = checkCanAddCopy()
 
-    const addCopy = () => {
-        deckState.addCardCopyToDeck(cardState.card, setCopiesInDeck)
-    }
-    const removeCopy = () => {
-        deckState.subtractCardCopyFromDeck(cardState.card, setCopiesInDeck)
-    }
-
     return (
         <Box style={{ alignItems: "center" }}>
             <Button
@@ -59,7 +53,7 @@ export const MTGCardDeckCounterBox = memo((props: MTGCardDeckCounterBoxProps) =>
                 style={staticButtonStyle}
                 sx={{ borderRadius: '20%' }}
                 disabled={deckState.selectedDeckId === 0 || copiesInDeck <= 0}
-                onClick={removeCopy}
+                onClick={() => deckState.updateCardCopiesInDeck(cardState.card, -1, false)}
             >
                 <RemoveIcon fontSize="small" />
             </Button>
@@ -83,9 +77,19 @@ export const MTGCardDeckCounterBox = memo((props: MTGCardDeckCounterBoxProps) =>
                 variant="contained"
                 style={staticButtonStyle}
                 disabled={!canAddCopy}
-                onClick={addCopy}
+                onClick={() => deckState.updateCardCopiesInDeck(cardState.card, 1, false)}
             >
                 <AddIcon fontSize="small" />
+            </Button>
+            <Button
+                aria-label="sideboard"
+                name="sideboard-button"
+                variant="contained"
+                style={{...staticButtonStyle, backgroundColor: "#6497b1"}}
+                disabled={!canAddCopy}
+                onClick={() => deckState.updateCardCopiesInDeck(cardState.card, 1, true)}
+            >
+                <ArchiveIcon fontSize="small" />
             </Button>
 
             {cardState.primaryVersion.backImageUri !== null &&

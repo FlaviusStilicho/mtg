@@ -1,0 +1,41 @@
+"filename", "language", "TypeScript", "XML", "CSS", "TypeScript JSX", "comment", "blank", "total"
+"/home/alex/git/mtg/mtg-common/src/DTO.ts", "TypeScript", 52, 0, 0, 0, 0, 8, 60
+"/home/alex/git/mtg/mtg-common/src/requests.ts", "TypeScript", 48, 0, 0, 0, 0, 11, 59
+"/home/alex/git/mtg/mtg-react/src/App.css", "CSS", 0, 0, -33, 0, 0, -6, -39
+"/home/alex/git/mtg/mtg-react/src/App.test.tsx", "TypeScript JSX", 0, 0, 0, -8, 0, -2, -10
+"/home/alex/git/mtg/mtg-react/src/App.tsx", "TypeScript JSX", 0, 0, 0, -13, 0, -3, -16
+"/home/alex/git/mtg/mtg-react/src/components/MagicCollectionManager.tsx", "TypeScript JSX", 0, 0, 0, -484, -7, -46, -537
+"/home/alex/git/mtg/mtg-react/src/components/NavBar.tsx", "TypeScript JSX", 0, 0, 0, -39, -1, -4, -44
+"/home/alex/git/mtg/mtg-react/src/components/SearchBar.tsx", "TypeScript JSX", 0, 0, 0, -381, -1, -17, -399
+"/home/alex/git/mtg/mtg-react/src/components/TabPanel.tsx", "TypeScript JSX", 0, 0, 0, -25, 0, -4, -29
+"/home/alex/git/mtg/mtg-react/src/components/collection/CardGrid.tsx", "TypeScript JSX", 0, 0, 0, -63, 0, -7, -70
+"/home/alex/git/mtg/mtg-react/src/components/collection/MTGCardCollectionCounterBox.tsx", "TypeScript JSX", 0, 0, 0, -51, 0, -2, -53
+"/home/alex/git/mtg/mtg-react/src/components/collection/MTGCardComponent.tsx", "TypeScript JSX", 0, 0, 0, -111, 0, -13, -124
+"/home/alex/git/mtg/mtg-react/src/components/collection/MTGCardDeckCounterBox.tsx", "TypeScript JSX", 0, 0, 0, -97, 0, -8, -105
+"/home/alex/git/mtg/mtg-react/src/components/collection/MTGCardImage.tsx", "TypeScript JSX", 0, 0, 0, -27, 0, -2, -29
+"/home/alex/git/mtg/mtg-react/src/components/collection/MTGCardPopup.tsx", "TypeScript JSX", 0, 0, 0, -118, -1, -4, -123
+"/home/alex/git/mtg/mtg-react/src/components/decks/CopyDeckWindow.tsx", "TypeScript JSX", 0, 0, 0, -74, 0, -8, -82
+"/home/alex/git/mtg/mtg-react/src/components/decks/CreateDeckWindow.tsx", "TypeScript JSX", 0, 0, 0, -139, 0, -13, -152
+"/home/alex/git/mtg/mtg-react/src/components/decks/DeckCardTypeCounter.tsx", "TypeScript JSX", 0, 0, 0, -35, 0, -3, -38
+"/home/alex/git/mtg/mtg-react/src/components/decks/DeckEntryCardWithTooltip.tsx", "TypeScript JSX", 0, 0, 0, -168, -2, -6, -176
+"/home/alex/git/mtg/mtg-react/src/components/decks/DeckManagerDrawer.tsx", "TypeScript JSX", 0, 0, 0, -405, -4, -38, -447
+"/home/alex/git/mtg/mtg-react/src/components/decks/DeleteDeckWindow.tsx", "TypeScript JSX", 0, 0, 0, -61, 0, -6, -67
+"/home/alex/git/mtg/mtg-react/src/components/decks/EditDeckWindow.tsx", "TypeScript JSX", 0, 0, 0, -92, -1, -10, -103
+"/home/alex/git/mtg/mtg-react/src/components/decks/UploadDeckWindow.tsx", "TypeScript JSX", 0, 0, 0, -83, 0, -10, -93
+"/home/alex/git/mtg/mtg-react/src/components/hooks/CardState.ts", "TypeScript", -64, 0, 0, 0, 0, -13, -77
+"/home/alex/git/mtg/mtg-react/src/components/hooks/DeckState.ts", "TypeScript", -17, 0, 0, 0, 0, -1, -18
+"/home/alex/git/mtg/mtg-react/src/constants.tsx", "TypeScript JSX", 0, 0, 0, -57, 0, -4, -61
+"/home/alex/git/mtg/mtg-react/src/enum.ts", "TypeScript", -4, 0, 0, 0, 0, -1, -5
+"/home/alex/git/mtg/mtg-react/src/functions/exportToCsv.tsx", "TypeScript JSX", 0, 0, 0, -31, -1, -7, -39
+"/home/alex/git/mtg/mtg-react/src/functions/magicers.ts", "TypeScript", -65, 0, 0, 0, 0, -4, -69
+"/home/alex/git/mtg/mtg-react/src/functions/parseNewDeck.tsx", "TypeScript JSX", 0, 0, 0, -22, 0, -4, -26
+"/home/alex/git/mtg/mtg-react/src/functions/util.ts", "TypeScript", -162, 0, 0, 0, 0, -33, -195
+"/home/alex/git/mtg/mtg-react/src/index.css", "CSS", 0, 0, -12, 0, 0, -2, -14
+"/home/alex/git/mtg/mtg-react/src/index.tsx", "TypeScript JSX", 0, 0, 0, -17, -3, -4, -24
+"/home/alex/git/mtg/mtg-react/src/logo.svg", "XML", 0, -1, 0, 0, 0, 0, -1
+"/home/alex/git/mtg/mtg-react/src/react-app-env.d.ts", "TypeScript", 0, 0, 0, 0, -1, -1, -2
+"/home/alex/git/mtg/mtg-react/src/reportWebVitals.ts", "TypeScript", -13, 0, 0, 0, 0, -3, -16
+"/home/alex/git/mtg/mtg-react/src/setupTests.ts", "TypeScript", -1, 0, 0, 0, -4, -1, -6
+"/home/alex/git/mtg/mtg-react/src/style/styles.tsx", "TypeScript JSX", 0, 0, 0, -81, -2, -15, -98
+"/home/alex/git/mtg/mtg-react/src/style/theme.tsx", "TypeScript JSX", 0, 0, 0, -155, -5, -7, -167
+"Total", "-", -226, -1, -45, -2837, -33, -293, -3435

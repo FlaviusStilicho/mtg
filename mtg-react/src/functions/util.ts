@@ -144,7 +144,7 @@ export const getNumberOfSideboardCards = (entries: DeckCardEntryDTO[]): number =
 }
 
 export const isCommanderEligible = (entry: DeckCardEntryDTO): boolean => {
-    if (entry.isCommander === true || entry.copies > 0) {
+    if (entry.isCommander === true || entry.copies === 0) {
         return false
     } else if (entry.card.type.includes("Legendary") && entry.card.type.includes("Creature")) {
         return true
@@ -157,9 +157,14 @@ export const firstCharUpper = (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
 }
 
-export const numberOfMissingCards = (entry: DeckCardEntryDTO): number => {
-    const missingCards = entry.copies - entry.card.ownedCopies
-    return missingCards > 0 ? missingCards : 0
+export const numberOfMissingCards = (entry: DeckCardEntryDTO, isSideboardEntry: boolean = false): number => {
+    if (!isSideboardEntry) {
+        const missingCards = entry.copies - entry.card.ownedCopies
+        return missingCards > 0 ? missingCards : 0
+    } else { 
+        const missingCards = entry.sideboardCopies - entry.card.ownedCopies
+        return missingCards > 0 ? missingCards : 0
+    }
 }
 
 export const numberOfCardsAvailable = (entries: DeckCardEntryDTO[]): [number, number] => {

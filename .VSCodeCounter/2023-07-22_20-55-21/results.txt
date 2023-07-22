@@ -1,0 +1,72 @@
+Date : 2023-07-22 20:55:21
+Directory : /home/alex/git/mtg/mtg-react/src
+Total : 37 files,  3209 codes, 33 comments, 312 blanks, all 3554 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| TypeScript JSX |         26 |      2,837 |         28 |        247 |      3,112 |
+| TypeScript     |          8 |        326 |          5 |         57 |        388 |
+| CSS            |          2 |         45 |          0 |          8 |         53 |
+| XML            |          1 |          1 |          0 |          0 |          1 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                   | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                      |         37 |      3,209 |         33 |        312 |      3,554 |
+| . (Files)                                                                              |         11 |        159 |          8 |         27 |        194 |
+| components                                                                             |         20 |      2,534 |         17 |        215 |      2,766 |
+| components (Files)                                                                     |          4 |        929 |          9 |         71 |      1,009 |
+| components/collection                                                                  |          6 |        467 |          1 |         36 |        504 |
+| components/decks                                                                       |          8 |      1,057 |          7 |         94 |      1,158 |
+| components/hooks                                                                       |          2 |         81 |          0 |         14 |         95 |
+| functions                                                                              |          4 |        280 |          1 |         48 |        329 |
+| style                                                                                  |          2 |        236 |          7 |         22 |        265 |
++----------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                               | language       | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /home/alex/git/mtg/mtg-react/src/App.css                                               | CSS            |         33 |          0 |          6 |         39 |
+| /home/alex/git/mtg/mtg-react/src/App.test.tsx                                          | TypeScript JSX |          8 |          0 |          2 |         10 |
+| /home/alex/git/mtg/mtg-react/src/App.tsx                                               | TypeScript JSX |         13 |          0 |          3 |         16 |
+| /home/alex/git/mtg/mtg-react/src/components/MagicCollectionManager.tsx                 | TypeScript JSX |        484 |          7 |         46 |        537 |
+| /home/alex/git/mtg/mtg-react/src/components/NavBar.tsx                                 | TypeScript JSX |         39 |          1 |          4 |         44 |
+| /home/alex/git/mtg/mtg-react/src/components/SearchBar.tsx                              | TypeScript JSX |        381 |          1 |         17 |        399 |
+| /home/alex/git/mtg/mtg-react/src/components/TabPanel.tsx                               | TypeScript JSX |         25 |          0 |          4 |         29 |
+| /home/alex/git/mtg/mtg-react/src/components/collection/CardGrid.tsx                    | TypeScript JSX |         63 |          0 |          7 |         70 |
+| /home/alex/git/mtg/mtg-react/src/components/collection/MTGCardCollectionCounterBox.tsx | TypeScript JSX |         51 |          0 |          2 |         53 |
+| /home/alex/git/mtg/mtg-react/src/components/collection/MTGCardComponent.tsx            | TypeScript JSX |        111 |          0 |         13 |        124 |
+| /home/alex/git/mtg/mtg-react/src/components/collection/MTGCardDeckCounterBox.tsx       | TypeScript JSX |         97 |          0 |          8 |        105 |
+| /home/alex/git/mtg/mtg-react/src/components/collection/MTGCardImage.tsx                | TypeScript JSX |         27 |          0 |          2 |         29 |
+| /home/alex/git/mtg/mtg-react/src/components/collection/MTGCardPopup.tsx                | TypeScript JSX |        118 |          1 |          4 |        123 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/CopyDeckWindow.tsx                   | TypeScript JSX |         74 |          0 |          8 |         82 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/CreateDeckWindow.tsx                 | TypeScript JSX |        139 |          0 |         13 |        152 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/DeckCardTypeCounter.tsx              | TypeScript JSX |         35 |          0 |          3 |         38 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/DeckEntryCardWithTooltip.tsx         | TypeScript JSX |        168 |          2 |          6 |        176 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/DeckManagerDrawer.tsx                | TypeScript JSX |        405 |          4 |         38 |        447 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/DeleteDeckWindow.tsx                 | TypeScript JSX |         61 |          0 |          6 |         67 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/EditDeckWindow.tsx                   | TypeScript JSX |         92 |          1 |         10 |        103 |
+| /home/alex/git/mtg/mtg-react/src/components/decks/UploadDeckWindow.tsx                 | TypeScript JSX |         83 |          0 |         10 |         93 |
+| /home/alex/git/mtg/mtg-react/src/components/hooks/CardState.ts                         | TypeScript     |         64 |          0 |         13 |         77 |
+| /home/alex/git/mtg/mtg-react/src/components/hooks/DeckState.ts                         | TypeScript     |         17 |          0 |          1 |         18 |
+| /home/alex/git/mtg/mtg-react/src/constants.tsx                                         | TypeScript JSX |         57 |          0 |          4 |         61 |
+| /home/alex/git/mtg/mtg-react/src/enum.ts                                               | TypeScript     |          4 |          0 |          1 |          5 |
+| /home/alex/git/mtg/mtg-react/src/functions/exportToCsv.tsx                             | TypeScript JSX |         31 |          1 |          7 |         39 |
+| /home/alex/git/mtg/mtg-react/src/functions/magicers.ts                                 | TypeScript     |         65 |          0 |          4 |         69 |
+| /home/alex/git/mtg/mtg-react/src/functions/parseNewDeck.tsx                            | TypeScript JSX |         22 |          0 |          4 |         26 |
+| /home/alex/git/mtg/mtg-react/src/functions/util.ts                                     | TypeScript     |        162 |          0 |         33 |        195 |
+| /home/alex/git/mtg/mtg-react/src/index.css                                             | CSS            |         12 |          0 |          2 |         14 |
+| /home/alex/git/mtg/mtg-react/src/index.tsx                                             | TypeScript JSX |         17 |          3 |          4 |         24 |
+| /home/alex/git/mtg/mtg-react/src/logo.svg                                              | XML            |          1 |          0 |          0 |          1 |
+| /home/alex/git/mtg/mtg-react/src/react-app-env.d.ts                                    | TypeScript     |          0 |          1 |          1 |          2 |
+| /home/alex/git/mtg/mtg-react/src/reportWebVitals.ts                                    | TypeScript     |         13 |          0 |          3 |         16 |
+| /home/alex/git/mtg/mtg-react/src/setupTests.ts                                         | TypeScript     |          1 |          4 |          1 |          6 |
+| /home/alex/git/mtg/mtg-react/src/style/styles.tsx                                      | TypeScript JSX |         81 |          2 |         15 |         98 |
+| /home/alex/git/mtg/mtg-react/src/style/theme.tsx                                       | TypeScript JSX |        155 |          5 |          7 |        167 |
+| Total                                                                                  |                |      3,209 |         33 |        312 |      3,554 |
++----------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+

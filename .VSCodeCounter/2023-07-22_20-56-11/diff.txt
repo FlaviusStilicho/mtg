@@ -1,0 +1,62 @@
+Date : 2023-07-22 20:56:11
+Directory : /home/alex/git/mtg/mtg-node/src
+Total : 29 files,  1728 codes, 152 comments, 191 blanks, all 2071 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| TypeScript |         29 |      1,728 |        152 |        191 |      2,071 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                   | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                      |         29 |      1,728 |        152 |        191 |      2,071 |
+| . (Files)                                                              |          7 |        102 |         13 |         23 |        138 |
+| ..                                                                     |          2 |       -100 |          0 |        -19 |       -119 |
+| ../..                                                                  |          2 |       -100 |          0 |        -19 |       -119 |
+| ../../mtg-common                                                       |          2 |       -100 |          0 |        -19 |       -119 |
+| ../../mtg-common/src                                                   |          2 |       -100 |          0 |        -19 |       -119 |
+| clients                                                                |          1 |         41 |          0 |          3 |         44 |
+| controller                                                             |          8 |        721 |         25 |         85 |        831 |
+| entity                                                                 |          7 |        868 |        114 |         90 |      1,072 |
+| repository                                                             |          4 |         96 |          0 |          9 |        105 |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                               | language   | code       | comment    | blank      | total      |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| /home/alex/git/mtg/mtg-common/src/DTO.ts                               | TypeScript |        -52 |          0 |         -8 |        -60 |
+| /home/alex/git/mtg/mtg-common/src/requests.ts                          | TypeScript |        -48 |          0 |        -11 |        -59 |
+| /home/alex/git/mtg/mtg-node/src/clients/scryfallCardsApi.client.ts     | TypeScript |         41 |          0 |          3 |         44 |
+| /home/alex/git/mtg/mtg-node/src/constants.ts                           | TypeScript |          5 |          0 |          0 |          5 |
+| /home/alex/git/mtg/mtg-node/src/controller/card.controller.ts          | TypeScript |         52 |          0 |         11 |         63 |
+| /home/alex/git/mtg/mtg-node/src/controller/collection.controller.ts    | TypeScript |        116 |          0 |         16 |        132 |
+| /home/alex/git/mtg/mtg-node/src/controller/color.controller.ts         | TypeScript |         39 |          0 |          3 |         42 |
+| /home/alex/git/mtg/mtg-node/src/controller/deck.controller.ts          | TypeScript |        139 |          0 |         15 |        154 |
+| /home/alex/git/mtg/mtg-node/src/controller/fileUpload.controller.ts    | TypeScript |         80 |          6 |          8 |         94 |
+| /home/alex/git/mtg/mtg-node/src/controller/set.controller.ts           | TypeScript |         16 |         19 |          3 |         38 |
+| /home/alex/git/mtg/mtg-node/src/controller/sync.controller.ts          | TypeScript |        263 |          0 |         28 |        291 |
+| /home/alex/git/mtg/mtg-node/src/controller/type.controller.ts          | TypeScript |         16 |          0 |          1 |         17 |
+| /home/alex/git/mtg/mtg-node/src/datasource.ts                          | TypeScript |         10 |         13 |          1 |         24 |
+| /home/alex/git/mtg/mtg-node/src/entity/Deck.entity.ts                  | TypeScript |        182 |          0 |         19 |        201 |
+| /home/alex/git/mtg/mtg-node/src/entity/MTGCard.entity.ts               | TypeScript |        600 |          1 |         43 |        644 |
+| /home/alex/git/mtg/mtg-node/src/entity/MTGCardTag.entity.ts            | TypeScript |         11 |          0 |          5 |         16 |
+| /home/alex/git/mtg/mtg-node/src/entity/MTGCardType.entity.ts           | TypeScript |          2 |         26 |          7 |         35 |
+| /home/alex/git/mtg/mtg-node/src/entity/MTGCardVersion.entity.ts        | TypeScript |          5 |         87 |          7 |         99 |
+| /home/alex/git/mtg/mtg-node/src/entity/MTGSet.entity.ts                | TypeScript |         58 |          0 |          6 |         64 |
+| /home/alex/git/mtg/mtg-node/src/entity/MTGType.entity.ts               | TypeScript |         10 |          0 |          3 |         13 |
+| /home/alex/git/mtg/mtg-node/src/enum.ts                                | TypeScript |          4 |          0 |          1 |          5 |
+| /home/alex/git/mtg/mtg-node/src/errors.ts                              | TypeScript |          5 |          0 |          0 |          5 |
+| /home/alex/git/mtg/mtg-node/src/index.ts                               | TypeScript |         32 |          0 |         11 |         43 |
+| /home/alex/git/mtg/mtg-node/src/repository/Deck.repository.ts          | TypeScript |         16 |          0 |          3 |         19 |
+| /home/alex/git/mtg/mtg-node/src/repository/DeckCardEntry.repository.ts | TypeScript |          4 |          0 |          2 |          6 |
+| /home/alex/git/mtg/mtg-node/src/repository/MTGCard.repository.ts       | TypeScript |         42 |          0 |          2 |         44 |
+| /home/alex/git/mtg/mtg-node/src/repository/MTGSet.repository.ts        | TypeScript |         34 |          0 |          2 |         36 |
+| /home/alex/git/mtg/mtg-node/src/routes.ts                              | TypeScript |         42 |          0 |          9 |         51 |
+| /home/alex/git/mtg/mtg-node/src/util.ts                                | TypeScript |          4 |          0 |          1 |          5 |
+| Total                                                                  |            |      1,728 |        152 |        191 |      2,071 |
++------------------------------------------------------------------------+------------+------------+------------+------------+------------+

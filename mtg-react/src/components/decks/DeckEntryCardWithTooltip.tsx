@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import ListItem from '@mui/material/ListItem';
-import { imageHeight, imageWidth, maximumCardCopiesStandard } from '../../constants';
+import { imageHeight, imageWidth } from '../../constants';
 import { deckEntryTextBoxStyle } from '../../style/styles';
 import { Button, CardMedia, Tooltip } from '@mui/material';
 import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
@@ -9,31 +9,45 @@ import { isBasicLand, isCommanderEligible, numberOfMissingCards } from '../../fu
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { memo } from 'react';
+import { DeckState } from '../hooks/DeckState';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import UnarchiveIcon from '@mui/icons-material/Unarchive';
 
-export interface DeckEntryComponent {
+export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO
-  addCardCopyToDeck: Function
-  subtractCardCopyFromDeck: Function
+  deckState: DeckState
+  isSideboardEntry: boolean
   setNewCommander: (entry: DeckCardEntryDTO) => void
 }
 
-const iconWidth = 12
-const iconHeight = 15
-const commIconSizeFactor = 1
+const iconWidth = 16
+const iconHeight = 16
 
-export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponent) => {
+export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponentProps) => {
   const entry: DeckCardEntryDTO = props.entry
+  const copies = props.isSideboardEntry ? entry.sideboardCopies : entry.copies
+  const deckState = props.deckState
   var manaCostArray = entry.card.manaCost.split("}").map(mc => mc.substring(1)).filter(mc => mc !== '');
 
-  const addCopy = () => {
-    props.addCardCopyToDeck(entry.card)
-  }
+  const maxCardCopies = props.deckState.selectedDeck?.format === "Standard" ? 4 : 1
+  const missingCards = numberOfMissingCards(entry, props.isSideboardEntry) > 0
+  const addButtonDisabled = props.isSideboardEntry ?
+    entry.sideboardCopies >= maxCardCopies && !isBasicLand(entry.card) :
+    entry.copies >= maxCardCopies && !isBasicLand(entry.card)
+  const subtractButtonDisabled = props.isSideboardEntry ? entry.sideboardCopies < 1 : entry.copies < 1
 
-  const removeCopy = () => {
-    props.subtractCardCopyFromDeck(entry.card)
+  function swapSideboardCopies() {
+    console.log(entry.card.name)
+    if (props.isSideboardEntry) {
+      entry.copies = entry.sideboardCopies
+      entry.sideboardCopies = 0
+    } else {
+      entry.sideboardCopies = entry.copies
+      entry.copies = 0
+    }
+    // checkEntryIllegal(existingCardEntry, selectedDeck)
+    deckState.updateDeckEntries(entry)
   }
-
-  const missingCards = numberOfMissingCards(entry) > 0
 
   return (
     <ListItem key={`entry-listitem-${entry.card.name}-${Date.now()}`} sx={{ py: 0.2 }}>
@@ -59,11 +73,11 @@ export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponent) =>
           flexDirection: 'row',
           display: "flex"
         }}>
-          <Box style={{ width: "44%" }} sx={deckEntryTextBoxStyle}>
+          <Box style={{ width: "42%" }} sx={deckEntryTextBoxStyle}>
             {entry.card.name}
           </Box>
-          <Box style={{ textAlign: "right", marginRight: 4, width: "15%" }} sx={deckEntryTextBoxStyle}>
-            { entry.buyPrice !== undefined ? `€ ${entry.buyPrice}`: 'N/A'}
+          <Box style={{ textAlign: "right", marginRight: 4, width: "14%" }} sx={deckEntryTextBoxStyle}>
+            {entry.buyPrice !== undefined ? `€ ${entry.buyPrice}` : 'N/A'}
           </Box>
           <Box style={{ textAlign: "right", marginRight: 4, width: "25%" }} sx={deckEntryTextBoxStyle}>
             {manaCostArray.map(manaCost => {
@@ -72,43 +86,21 @@ export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponent) =>
                 fileName = fileName.replace('/', '');
               }
               return (
-              <Box
-                component="img"
-                key={`deck-entry-${manaCost}-${uuidv4()}`}
-                sx={{
-                  height: 15,
-                  width: 15,
-                  maxHeight: { xs: 15, md: 15 },
-                  maxWidth: { xs: 15, md: 15 },
-                }}
-                src={`http://localhost:3000/mana/${fileName}.png`} />)})}
-          </Box>
-          <Box style={{ textAlign: "right", marginRight: 0, width: "8%" }} sx={deckEntryTextBoxStyle}>
-            {isCommanderEligible(entry) ?
-              (
-                <Button
-                  variant="contained"
+                <Box
+                  component="img"
+                  key={`deck-entry-${manaCost}-${uuidv4()}`}
                   sx={{
-                    borderRadius: '30%',
-                    minWidth: { xs: iconWidth * commIconSizeFactor, md: iconWidth * commIconSizeFactor },
-                    maxHeight: { xs: iconHeight * commIconSizeFactor, md: iconHeight * commIconSizeFactor },
-                    maxWidth: { xs: iconWidth * commIconSizeFactor, md: iconWidth * commIconSizeFactor },
+                    height: iconHeight,
+                    width: iconWidth,
+                    maxHeight: iconHeight,
+                    maxWidth: iconWidth,
+                    paddingLeft: 0,
+                    paddingRight: 0
                   }}
-                  onClick={() => props.setNewCommander(entry)}
-                >
-                  <Box
-                    component="img"
-                    sx={{
-                      borderRadius: '30%',
-                      maxWidth: { xs: iconWidth * commIconSizeFactor, md: iconWidth * commIconSizeFactor },
-                    }}
-                    src={`http://localhost:3000/commander.png`}
-                  />
-                </Button>
-              ) : (<></>)
-            }
+                  src={`http://localhost:3000/mana/${fileName}.png`} />)
+            })}
           </Box>
-          <Box style={{ textAlign: "right", marginRight: 2, width: "25%" }} sx={deckEntryTextBoxStyle}>
+          <Box style={{ textAlign: "right", marginRight: 2, width: "47%" }} sx={deckEntryTextBoxStyle}>
             <Button
               variant="contained"
               sx={{
@@ -117,7 +109,30 @@ export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponent) =>
                 width: iconWidth,
                 minWidth: { xs: iconWidth, md: iconWidth },
               }}
-              onClick={removeCopy}
+              disabled={!isCommanderEligible(entry)}
+              onClick={() => props.setNewCommander(entry)}
+            >
+              <Box
+                component="img"
+                sx={{
+                  borderRadius: '30%',
+                  height: iconHeight,
+                  width: iconWidth,
+                  minWidth: iconWidth,
+                }}
+                src={`http://localhost:3000/commander.png`}
+              />
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                borderRadius: '30%',
+                height: iconHeight,
+                width: iconWidth,
+                minWidth: iconWidth,
+              }}
+              disabled={subtractButtonDisabled}
+              onClick={() => deckState.updateCardCopiesInDeck(entry.card, -1, props.isSideboardEntry)}
             >
               <RemoveIcon fontSize="small" />
             </Button>
@@ -127,19 +142,32 @@ export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponent) =>
                 borderRadius: '30%',
                 height: iconHeight,
                 width: iconWidth,
-                minWidth: { xs: iconWidth, md: iconWidth },
+                minWidth: iconWidth,
               }}
-              disabled={entry.copies >= maximumCardCopiesStandard && !isBasicLand(entry.card)}
-              onClick={addCopy}
+              disabled={addButtonDisabled}
+              onClick={() => deckState.updateCardCopiesInDeck(entry.card, 1, props.isSideboardEntry)}
             >
               <AddIcon fontSize="small" />
             </Button>
+            <Button
+              variant="contained"
+              sx={{
+                borderRadius: '30%',
+                height: iconHeight,
+                width: iconWidth,
+                minWidth: iconWidth,
+              }}
+              style={{ backgroundColor: "#6497b1" }}
+              onClick={swapSideboardCopies}
+            >
+              {props.isSideboardEntry ? (<UnarchiveIcon fontSize="small" />) : (<ArchiveIcon fontSize="small" />)}
+            </Button>
           </Box>
           <Box style={{ textAlign: "right", width: "6%" }} sx={deckEntryTextBoxStyle}>
-            {Math.min(entry.copies, entry.card.ownedCopies)}/{entry.copies}
+            {Math.min(copies, entry.card.ownedCopies)}/{copies}
           </Box>
         </Box>
       </Tooltip>
-    </ListItem>
+    </ListItem >
   );
 })

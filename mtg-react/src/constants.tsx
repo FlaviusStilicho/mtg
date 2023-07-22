@@ -3,10 +3,10 @@ export const baseUrl = "http://localhost:8000";
 export const imageWidth = 488;
 export const imageHeight = 680;
 export const gridCardSizeFactor = 0.5;
-export const popupImageSizeFactor = 0.7
-export const variantImageSizeFactor = 0.4
+export const popupImageSizeFactor = 0.6
+export const variantImageSizeFactor = 0.35
 export const searchBarDrawerWidth = 280
-export const deckManagerDrawerWidth = 450;
+export const deckManagerDrawerWidth = 470;
 export const maximumCardCopiesStandard = 4
 export const navBarHeight = 50;
 
