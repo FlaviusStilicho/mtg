@@ -1,4 +1,4 @@
-import { MTGCardDTO, DeckCardEntryDTO } from '../../../mtg-common/src/DTO';
+import { MTGCardDTO, DeckCardEntryDTO, DeckDTO } from '../../../mtg-common/src/DTO';
 
 export const isBasicLand = (card: MTGCardDTO): boolean => {
     return card.type.startsWith('Basic Land')
@@ -148,6 +148,8 @@ export const isCommanderEligible = (entry: DeckCardEntryDTO): boolean => {
         return false
     } else if (entry.card.type.includes("Legendary") && entry.card.type.includes("Creature")) {
         return true
+    } else if (entry.card.type.includes("Planeswalker")) {
+        return true
     } else {
         return false
     }
@@ -198,3 +200,15 @@ export const costToFinishDeck = (entries: DeckCardEntryDTO[]): number => {
         .reduce((a, b) => a + b, 0)
     return result
 }
+
+export function getCommander(deck: DeckDTO | null) {
+    if (deck === null) {
+      return null
+    }
+    const currentCommanderEntries: DeckCardEntryDTO[] = deck.cardEntries.filter(entry => entry.isCommander)
+    if (currentCommanderEntries.length !== 1) {
+      return null
+    } else {
+      return currentCommanderEntries[0].card
+    }
+  }

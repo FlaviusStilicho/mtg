@@ -3,6 +3,7 @@ export interface MTGCardDTO {
     name: string
     type: string
     manaCost: string
+    colorIdentity: string[]
     convertedManaCost: number
     ownedCopies: number
     versions: MTGCardVersionDTO[]

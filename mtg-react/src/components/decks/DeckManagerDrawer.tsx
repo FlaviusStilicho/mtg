@@ -4,7 +4,6 @@ import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
 import { navBarHeight, deckManagerDrawerWidth, manaCurveChartOptions, imageHeight, imageWidth } from '../../constants';
 import { buttonBackgroundStyle, deckEntryTextBoxStyle, listItemStyle, searchTextFieldStyle } from '../../style/styles';
 import { Button, CardMedia, IconButton, MenuItem, Select } from '@mui/material';
@@ -16,16 +15,20 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SaveIcon from '@mui/icons-material/Save';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './CreateDeckWindow';
-import { DeckCardEntryDTO, DeckDTO } from '../../../../mtg-common/src/DTO';
-import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards } from '../../functions/util';
+import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
+import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
-import DeckCardTypeCounter from './DeckCardTypeCounter';
+import { DeckCardTypeCounter } from './DeckCardTypeCounter';
 import { CopyDeckWindow, CopyDeckWindowProps } from './CopyDeckWindow';
 import { DeleteDeckWindow, DeleteDeckWindowProps } from './DeleteDeckWindow';
 import { EditDeckWindow, EditDeckWindowProps } from './EditDeckWindow';
 import { DeckState } from '../hooks/DeckState';
+import { CompareDeckWindow, CompareDeckWindowProps } from './CompareDeckWindow';
+
+const colorIconSize = 15
+const deckNameFontSize = 10
 
 export interface DeckManagerProps extends MuiAppBarProps {
   deckManagerOpened?: boolean;
@@ -45,6 +48,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
   const [editDeckWindowOpened, setEditDeckWindowOpened] = useState<boolean>(false);
   const [copyDeckWindowOpened, setCopyDeckWindowOpened] = useState<boolean>(false);
   const [deleteDeckWindowOpened, setDeleteDeckWindowOpened] = useState<boolean>(false);
+  const [compareDeckWindowOpened, setCompareDeckWindowOpened] = useState<boolean>(false);
 
   const closeCreateDeckWindow = () => {
     setCreateDeckWindowOpened(false);
@@ -55,12 +59,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     onClose: closeCreateDeckWindow,
     fetchDecks: deckState.fetchDecks
   }
-
-
-  const closeDeleteDeckWindow = () => {
-    setDeleteDeckWindowOpened(false);
-  };
-
 
   const windows = []
   windows.push(<CreateDeckWindow {...createDeckWindowProps} />)
@@ -74,6 +72,13 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
       setCopyDeckWindowOpened(false);
     };
 
+    const closeDeleteDeckWindow = () => {
+      setDeleteDeckWindowOpened(false);
+    };
+
+    const closeCompareDeckWindow = () => {
+      setCompareDeckWindowOpened(false);
+    };
 
     const editDeckWindowProps: EditDeckWindowProps = {
       opened: editDeckWindowOpened,
@@ -96,10 +101,18 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
       fetchDecks: deckState.fetchDecks
     }
 
+    const compareDeckWindowProps: CompareDeckWindowProps = {
+      opened: compareDeckWindowOpened,
+      onClose: closeCompareDeckWindow,
+      deck: deckState.selectedDeck,
+      decks: deckState.decks
+    }
+
     if (deckState.selectedDeck != null) {
       windows.push(<EditDeckWindow {...editDeckWindowProps} />)
       windows.push(<CopyDeckWindow {...copyDeckWindowProps} />)
       windows.push(<DeleteDeckWindow {...deleteDeckWindowProps} />)
+      windows.push(<CompareDeckWindow {...compareDeckWindowProps} />)
     }
 
   }
@@ -178,29 +191,12 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     }
     console.log(`Assigning ${entry.card.name} as new commander of deck ${deckState.selectedDeck.name}!`)
     entry.isCommander = true
-    // console.log(`Current number of commanders in deck ${props.selectedDeck.name}: ${props.selectedDeck.cardEntries.filter(entry => entry.isCommander).length}`)
     forceUpdate();
   }
 
-  const getCommander = () => {
-    if (deckState.selectedDeck === null) {
-      return null
-    }
-    const currentCommanderEntries: DeckCardEntryDTO[] = deckState.selectedDeck.cardEntries.filter(entry => entry.isCommander)
-    if (currentCommanderEntries.length !== 1) {
-      return null
-    } else {
-      return currentCommanderEntries[0].card
-    }
-  }
-
-  const currentCommander = getCommander()
+  const currentCommander = getCommander(deckState.selectedDeck)
   const [availableMissingCards, unavailableMissingCards] = numberOfCardsAvailable(props.selectedDeckEntries)
 
-  function constructDeckName(deck: DeckDTO){
-    
-  }
-  
   return (
     <Box sx={{
       display: 'flex',
@@ -243,15 +239,46 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               style={searchTextFieldStyle}
               sx={{ ...buttonBackgroundStyle }}
               value={deckState.selectedDeckId ? deckState.selectedDeckId : undefined}
-              renderValue={selectedDeckId => deckState.selectedDeck !== null ? deckState.selectedDeck.name : "Select a deck"}
+              // renderValue={selectedDeckId => deckState.selectedDeck !== null ? deckState.selectedDeck.name : "Select a deck"}
               onChange={deckState.handleChangeSelectedDeck}
             >
+              <MenuItem value={99999}>
+                <Box sx={{ fontSize: deckNameFontSize }}>
+                  Select a deck
+                </Box>
+              </MenuItem>
               {
-                deckState.decks.map((deck) => (
-                  <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id}>
-                    <ListItemText primary={deck.name} />
-                  </MenuItem>
-                ))}
+                deckState.decks.map((deck) => {
+                  const commander = getCommander(deck)
+                  var deckColorIdentity: Set<string>
+                  if (commander) {
+                    deckColorIdentity = new Set(commander.colorIdentity)
+                  } else {
+                    deckColorIdentity = new Set()
+                    deck.cardEntries.forEach(entry => entry.card.colorIdentity.forEach(color => deckColorIdentity.add(color)))
+                  }
+                  return (
+                    <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id} >
+                      <Box sx={{ fontSize: deckNameFontSize, display: "flex", flexWrap: "wrap", gap: 1 }}>
+                        {commander ? `${deck.name} [${commander.name}]` : deck.name}
+                        <Box>
+                          {Array.from(deckColorIdentity).map((color) => (
+                            <Box
+                              component="img"
+                              key={color}
+                              sx={{
+                                height: colorIconSize,
+                                width: colorIconSize,
+                                maxHeight: colorIconSize,
+                                maxWidth: colorIconSize,
+                              }}
+                              src={`http://localhost:3000/mana/${color}.png`}
+                            />))}
+                        </Box>
+                      </Box>
+                    </MenuItem>
+                  )
+                })}
             </Select>
             <IconButton
               color="inherit"
@@ -415,33 +442,51 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             setNewCommander={setNewCommander}
             isSideboardEntry={true}
           />
-          <Divider/>
-          <ListItem>
-            <Button
-              color="inherit"
-              aria-label="save deck"
-              variant="contained"
-              onClick={deckState.saveDeck}
-              sx={{
-                ...buttonBackgroundStyle, ...listItemStyle
-              }}
-            >
-              <SaveIcon /> Save Changes
-            </Button>
-          </ListItem>
-          <ListItem>
-            <Button
-              color="inherit"
-              aria-label="download-deck"
-              variant="contained"
-              onClick={exportDeckToCsv}
-              sx={{
-                ...buttonBackgroundStyle, ...listItemStyle
-              }}
-            >
-              <SaveAltIcon /> Download card list
-            </Button>
-          </ListItem>
+          <Divider />
+          {deckState.selectedDeck ?
+            (<div>
+              <ListItem>
+                <Button
+                  color="inherit"
+                  aria-label="save deck"
+                  variant="contained"
+                  onClick={deckState.saveDeck}
+                  sx={{
+                    ...buttonBackgroundStyle, ...listItemStyle
+                  }}
+                >
+                  <SaveIcon /> Save Changes
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Button
+                  color="inherit"
+                  aria-label="compare deck"
+                  variant="contained"
+                  onClick={() => setCompareDeckWindowOpened(true)}
+                  sx={{
+                    ...buttonBackgroundStyle, ...listItemStyle
+                  }}
+                >
+                  <SaveIcon /> Compare decks
+                </Button>
+              </ListItem>
+              <ListItem>
+                <Button
+                  color="inherit"
+                  aria-label="download-deck"
+                  variant="contained"
+                  onClick={exportDeckToCsv}
+                  sx={{
+                    ...buttonBackgroundStyle, ...listItemStyle
+                  }}
+                >
+                  <SaveAltIcon /> Download card list
+                </Button>
+              </ListItem>
+            </div>
+            ) : (<></>)
+          }
         </List>
         {windows}
       </Drawer>

@@ -15,7 +15,7 @@ import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { searchBarDrawerWidth } from '../constants';
 import { DeckState } from './hooks/DeckState';
-import { isBasicLand } from '../functions/util';
+import { isBasicLand, numberOfMissingCards } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
@@ -71,7 +71,7 @@ const MagicCollectionManager: FC = (props) => {
   // deck state
   const [deckManagerOpened, setDeckManagerOpened] = useState(true);
   const [decks, setDecks] = useState<DeckDTO[]>([]);
-  const [selectedDeckId, setSelectedDeckId] = useState<number>(0);
+  const [selectedDeckId, setSelectedDeckId] = useState<number>(99999);
   const [selectedDeck, setSelectedDeck] = useState<DeckDTO | null>(null);
   const [selectedDeckEntries, setSelectedDeckEntries] = useState<DeckCardEntryDTO[]>([])
   const [deckChanged, setDeckChanged] = useState<boolean>(false);
@@ -209,17 +209,28 @@ const MagicCollectionManager: FC = (props) => {
     if (typeof newDeckId === 'string') {
       console.error("help!")
     } else {
-      setSelectedDeckId(newDeckId);
-      const newDeck = decks.filter(deck => deck.id === newDeckId)[0]
-      setSelectedDeck(newDeck)
-      setSelectedQueryParameters({ ...selectedQueryParameters, format: newDeck.format, sets: getDefaultSetsForFormat(newDeck.format) })
+      if (newDeckId === 99999) {
+        setSelectedDeckId(99999);
+        setSelectedDeck(null)
+        setSelectedDeckEntries([])
+      } else {
+        setSelectedDeckId(newDeckId);
+        const newDeck = decks.filter(deck => deck.id === newDeckId)[0]
+        setSelectedDeck(newDeck)
+        setSelectedQueryParameters({ ...selectedQueryParameters, format: newDeck.format, sets: getDefaultSetsForFormat(newDeck.format) })
 
-      Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
-        return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
-          entry.buyPrice = price
-          return entry
-        })
-      })).then(entries => setSelectedDeckEntries(entries))
+        Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
+          if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
+            return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
+              entry.buyPrice = price
+              return entry
+            })
+          } else {
+            entry.buyPrice = undefined
+            return entry
+          }
+        })).then(entries => setSelectedDeckEntries(entries))
+      }
     }
   }
 

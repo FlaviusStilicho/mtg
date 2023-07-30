@@ -54,7 +54,7 @@ export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponentProp
       <Tooltip
         arrow
         placement='left'
-        title={<> <CardMedia
+        title={<CardMedia
           key={`tooltip-${entry.card.name}-${Date.now()}`}
           sx={{
             height: imageHeight * 0.5,
@@ -64,8 +64,9 @@ export const DeckEntryComponentWithTooltip = memo((props: DeckEntryComponentProp
             backgroundColor: "White"
           }}
           image={entry.card.versions[0].frontImageUri}
+          />
+          }
         >
-        </CardMedia></>}>
         <Box bgcolor={missingCards ? "#e3c2c2" : "White"} sx={{
           width: "100%",
           border: '1px solid',

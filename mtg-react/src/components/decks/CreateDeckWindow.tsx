@@ -117,10 +117,7 @@ export const CreateDeckWindow: React.FC<CreateDeckWindowProps> = (props) => {
                         label="File format"
                         onChange={event => setSelectedFileFormat(event.target.value)}>
                         {supportedFileFormats.map(format => (
-                            <MenuItem key={format}
-                                value={format}>
-                                {format}
-                            </MenuItem>
+                            <MenuItem key={`${format}-${Date.now()}`} value={format}>{format}</MenuItem>
                         ))}
                     </TextField>
                 </ListItem>

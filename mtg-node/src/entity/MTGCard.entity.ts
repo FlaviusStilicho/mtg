@@ -250,6 +250,7 @@ export class MTGCard {
             name: this.name,
             type: this.type,
             manaCost: this.manaCost,
+            colorIdentity: this.colorIdentity.split(""),
             convertedManaCost: this.convertedManaCost,
             ownedCopies: this.ownedCopies,
             versions: this.versions.map(version => version.toDTO()),

@@ -3,6 +3,7 @@ import { deckEntryTextBoxStyle } from "../../style/styles"
 import { DeckCardEntryDTO } from "../../../../mtg-common/src/DTO"
 import { DeckEntryComponentWithTooltip } from "./DeckEntryCardWithTooltip"
 import { DeckState } from "../hooks/DeckState"
+import { memo } from "react"
 
 export interface DeckCardTypeCounterProps {
   label: String
@@ -13,7 +14,7 @@ export interface DeckCardTypeCounterProps {
   isSideboardEntry: boolean
 }
 
-export default function DeckCardTypeCounter(props: DeckCardTypeCounterProps) {
+export const DeckCardTypeCounter = memo((props: DeckCardTypeCounterProps) => {
   const deckState = props.deckState
   
   return props.countFn(deckState.selectedDeckEntries) > 0 ? (
@@ -35,4 +36,4 @@ export default function DeckCardTypeCounter(props: DeckCardTypeCounterProps) {
         })}
     </div>
   ) : (<div></div>)
-}
+})

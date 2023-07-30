@@ -46,7 +46,7 @@ export const fetchCardBuyPriceFromMagicers = async (card: MTGCardDTO): Promise<n
             })
         }
 
-        return parsedProducts.filter(product => product.name.startsWith(card.name))
+        return parsedProducts.filter(product => product.name.startsWith(card.name) && !product.name.includes('Emblem'))
             .filter(product => product.stock > 1)
             .map(product => product.price)
             .filter(price => price > 0);
