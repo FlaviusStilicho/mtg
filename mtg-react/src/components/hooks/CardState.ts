@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { MTGCardDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
-import { UpdateCardOwnedCopiesQueryParams as UpdateCardOwnedCopiesReqBody } from '../../../../mtg-common/src/requests';
+import { UpdateCardOwnedCopiesQueryParams } from '../../../../mtg-common/src/requests';
 import axios from 'axios';
 import useConstant from 'use-constant';
 import { debounce } from 'lodash';
@@ -60,13 +60,13 @@ export const useCardState = (card: MTGCardDTO) => {
         handleChangeOwnedCopies(ownedCopies + 1)
     }
 
-    const postUpdatedOwnedCopies = useConstant(() => debounce((body: UpdateCardOwnedCopiesReqBody) => {
+    const postUpdatedOwnedCopies = useConstant(() => debounce((body: UpdateCardOwnedCopiesQueryParams) => {
         axios.post(`http://localhost:8000/cards/ownedCopies`, body)
     }, 1500))
 
     function handleChangeOwnedCopies(newValue: number): void {
         setOwnedCopies(newValue)
-        const body: UpdateCardOwnedCopiesReqBody = {
+        const body: UpdateCardOwnedCopiesQueryParams = {
             cardId: card.id,
             ownedCopies: newValue
         }

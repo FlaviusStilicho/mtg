@@ -1,8 +1,8 @@
 import { Alert, Button, Dialog, List, ListItem, Snackbar, TextField } from "@mui/material";
-import { useState } from "react";
+import { memo, useState } from "react";
 import axios from "axios";
-import { DeckDTO } from "../../../../mtg-common/src/DTO";
-import { CopyDeckRequest } from "../../../../mtg-common/src/requests";
+import { DeckDTO } from "../../../../../mtg-common/src/DTO";
+import { CopyDeckRequest } from "../../../../../mtg-common/src/requests";
 
 export interface CopyDeckWindowProps {
     opened: boolean;
@@ -11,7 +11,7 @@ export interface CopyDeckWindowProps {
     fetchDecks: () => void;
 }
 
-export const CopyDeckWindow: React.FC<CopyDeckWindowProps> = (props) => {
+export const CopyDeckWindow = memo((props: CopyDeckWindowProps) => {
     const [newName, setNewName] = useState<string>("")
 
     const [snackbarMessage, setSnackbarMessage] = useState<string>("")
@@ -79,4 +79,4 @@ export const CopyDeckWindow: React.FC<CopyDeckWindowProps> = (props) => {
             </Snackbar>
         </Dialog>
     )
-}
+});

@@ -1,7 +1,7 @@
 import { Alert, Button, Dialog, List, ListItem, Snackbar } from "@mui/material";
-import { useState } from "react";
+import { memo, useState } from "react";
 import axios from "axios";
-import { DeckDTO } from '../../../../mtg-common/src/DTO';
+import { DeckDTO } from '../../../../../mtg-common/src/DTO';
 
 export interface DeleteDeckWindowProps {
     opened: boolean;
@@ -10,7 +10,7 @@ export interface DeleteDeckWindowProps {
     fetchDecks: any;
 }
 
-export const DeleteDeckWindow: React.FC<DeleteDeckWindowProps> = (props) => {
+export const DeleteDeckWindow = memo((props: DeleteDeckWindowProps) => {
     const [snackbarMessage, setSnackbarMessage] = useState<string>("")
     const [snackbarOpen, setSnackbarOpen] = useState<boolean>(false)
 
@@ -64,4 +64,4 @@ export const DeleteDeckWindow: React.FC<DeleteDeckWindowProps> = (props) => {
             </Snackbar>
         </Dialog>
     )
-}
+});

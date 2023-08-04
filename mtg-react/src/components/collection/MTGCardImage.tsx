@@ -1,29 +1,34 @@
-import { CardMedia } from "@mui/material";
+import { CardMedia } from '@mui/material';
 import { imageHeight, imageWidth } from "../../constants";
-import { CardState } from "../hooks/CardState";
-import { memo } from "react";
+import { Component } from 'react';
 
 export interface CardImageProps {
-    cardState: CardState,
-    sizeFactor: number,
-    handleOpenPopup? : Function
+    image: string;
+    sizeFactor: number;
+    handleOpenPopup?: Function;
 }
 
-export const MTGCardImage = memo((props: CardImageProps) => {
-    return (
-        <CardMedia
-        key={Date.now()}
-        sx={{
-            height: imageHeight * props.sizeFactor,
-            width: imageWidth * props.sizeFactor
-        }}
-        style={{
-            padding: 5,
-            backgroundColor: "White",
-            borderRadius: '10px'
-        }}
-        image={props.cardState.primaryImage}
-        onClick={() => props.handleOpenPopup ? props.handleOpenPopup() : null }
-    />
-    )
-});
+export class MTGCardImage extends Component<CardImageProps> {
+    shouldComponentUpdate(nextProps: CardImageProps) {
+        return this.props.image !== nextProps.image
+    }
+
+    render() {
+        return (
+            <CardMedia
+                key={Date.now()}
+                sx={{
+                    height: imageHeight * this.props.sizeFactor,
+                    width: imageWidth * this.props.sizeFactor
+                }}
+                style={{
+                    padding: 5,
+                    backgroundColor: "White",
+                    borderRadius: '10px'
+                }}
+                image={this.props.image}
+                onClick={() => this.props.handleOpenPopup ? this.props.handleOpenPopup() : null}
+            />
+        );
+    }
+};

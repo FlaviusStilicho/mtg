@@ -14,18 +14,18 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SaveIcon from '@mui/icons-material/Save';
 import { useEffect, useState } from 'react';
-import { CreateDeckWindow, CreateDeckWindowProps } from './CreateDeckWindow';
+import { CreateDeckWindow, CreateDeckWindowProps } from './windows/CreateDeckWindow';
 import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
 import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
 import { DeckCardTypeCounter } from './DeckCardTypeCounter';
-import { CopyDeckWindow, CopyDeckWindowProps } from './CopyDeckWindow';
-import { DeleteDeckWindow, DeleteDeckWindowProps } from './DeleteDeckWindow';
-import { EditDeckWindow, EditDeckWindowProps } from './EditDeckWindow';
+import { CopyDeckWindow, CopyDeckWindowProps } from './windows/CopyDeckWindow';
+import { DeleteDeckWindow, DeleteDeckWindowProps } from './windows/DeleteDeckWindow';
+import { EditDeckWindow, EditDeckWindowProps } from './windows/EditDeckWindow';
 import { DeckState } from '../hooks/DeckState';
-import { CompareDeckWindow, CompareDeckWindowProps } from './CompareDeckWindow';
+import { CompareDeckWindow, CompareDeckWindowProps } from './windows/CompareDeckWindow';
 
 const colorIconSize = 15
 const deckNameFontSize = 10

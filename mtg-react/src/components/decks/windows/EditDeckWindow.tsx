@@ -1,8 +1,8 @@
 import { Alert, Button, Dialog, List, ListItem, ListItemText, MenuItem, Snackbar, TextField } from "@mui/material";
-import { DeckDTO } from '../../../../mtg-common/src/DTO';
+import { DeckDTO } from '../../../../../mtg-common/src/DTO';
 import axios from "axios";
-import { useState } from "react";
-import { firstCharUpper } from "../../functions/util";
+import { memo, useState } from "react";
+import { firstCharUpper } from "../../../functions/util";
 
 export interface EditDeckWindowProps {
     opened: boolean;
@@ -11,7 +11,7 @@ export interface EditDeckWindowProps {
     fetchDecks: any;
 }
 
-export const EditDeckWindow: React.FC<EditDeckWindowProps> = (props) => {
+export const EditDeckWindow = memo((props: EditDeckWindowProps) => {
     const [newName, setNewName] = useState<string>(props.deck.name)
     const formats = ["standard", "commander"]
     const [newFormat, setNewFormat] = useState<string>(props.deck.format)
@@ -100,4 +100,4 @@ export const EditDeckWindow: React.FC<EditDeckWindowProps> = (props) => {
             </Snackbar>
         </Dialog>
     )
-}
+});

@@ -1,5 +1,5 @@
 import { Alert, Button, Dialog, List, ListItem, MenuItem, Snackbar, TextField } from "@mui/material";
-import { useState } from "react";
+import { useState, memo } from 'react';
 import axios from "axios";
 
 export interface UploadDeckWindowProps {
@@ -8,7 +8,7 @@ export interface UploadDeckWindowProps {
     fetchDecks: any;
 }
 
-export const UploadDeckWindow: React.FC<UploadDeckWindowProps> = (props) => {
+export const UploadDeckWindow = memo((props: UploadDeckWindowProps) => {
     const [name, setName] = useState<string>("")
     const formats = ["Standard", "Commander"]
     const [selectedFormat, setSelectedFormat] = useState<string>("")
@@ -90,4 +90,4 @@ export const UploadDeckWindow: React.FC<UploadDeckWindowProps> = (props) => {
 
         </Dialog>
     )
-}
+});

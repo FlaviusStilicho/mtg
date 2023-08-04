@@ -1,8 +1,8 @@
 import { Alert, Button, Dialog, List, ListItem, MenuItem, Snackbar, TextField } from "@mui/material";
-import { useState } from "react";
+import { memo, useState } from "react";
 import axios from "axios";
-import { parseMTGGoldfishFile } from "../../functions/parseNewDeck";
-import { UploadDeckDTO } from "../../../../mtg-common/src/DTO";
+import { parseMTGGoldfishFile } from "../../../functions/parseNewDeck";
+import { UploadDeckDTO } from "../../../../../mtg-common/src/DTO";
 
 export interface CreateDeckWindowProps {
     opened: boolean;
@@ -12,7 +12,7 @@ export interface CreateDeckWindowProps {
 
 const supportedFileFormats = ['mtggoldfish [txt]']
 
-export const CreateDeckWindow: React.FC<CreateDeckWindowProps> = (props) => {
+export const CreateDeckWindow = memo((props: CreateDeckWindowProps) => {
     const [name, setName] = useState<string>("")
     const formats = ["Standard", "Commander"]
     const [selectedFormat, setSelectedFormat] = useState<string>("Commander")
@@ -146,4 +146,4 @@ export const CreateDeckWindow: React.FC<CreateDeckWindowProps> = (props) => {
 
         </Dialog>
     )
-}
+})

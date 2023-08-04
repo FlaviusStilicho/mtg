@@ -14,18 +14,18 @@ import {
   TableRow,
   Tooltip,
 } from "@mui/material";
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   DeckDTO,
   DeckCardEntryDTO,
   MTGCardDTO,
-} from "../../../../mtg-common/src/DTO";
+} from "../../../../../mtg-common/src/DTO";
 import {
   buttonBackgroundStyle,
   searchTextFieldStyle,
-} from "../../style/styles";
+} from "../../../style/styles";
 import Divider from "@mui/material/Divider";
-import { imageHeight, imageWidth } from "../../constants";
+import { imageHeight, imageWidth } from "../../../constants";
 
 export interface CompareDeckWindowProps {
   opened: boolean;
@@ -43,7 +43,7 @@ export interface CompareTableRow {
   quantity: number;
 }
 
-export const CompareDeckWindow: React.FC<CompareDeckWindowProps> = (props) => {
+export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
   const [targetDeck, setTargetDeck] = useState<DeckDTO | null>(null);
   const [compareTableRows, setCompareTableRows] = useState<CompareTableRow[]>(
     []
@@ -265,4 +265,4 @@ export const CompareDeckWindow: React.FC<CompareDeckWindowProps> = (props) => {
       </List>
     </Dialog>
   );
-};
+});
