@@ -21,6 +21,7 @@ export default function NavBar(props: NavBarProps) {
         <Tabs value={props.selectedTab} textColor="inherit" onChange={props.handleChangeSelectedTab}>
           <Tab label="Collection" />
           <Tab label="Decks" />
+          <Tab label="Wishlist" />
         </Tabs>
         {props.selectedTab === 1 &&
           <IconButton

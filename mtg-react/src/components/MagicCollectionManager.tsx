@@ -19,6 +19,7 @@ import { isBasicLand, numberOfMissingCards } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
+import Wishlist, { WishlistProps } from './wishList/WishList';
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
@@ -75,6 +76,9 @@ const MagicCollectionManager: FC = (props) => {
   const [selectedDeck, setSelectedDeck] = useState<DeckDTO | null>(null);
   const [selectedDeckEntries, setSelectedDeckEntries] = useState<DeckCardEntryDTO[]>([])
   const [deckChanged, setDeckChanged] = useState<boolean>(false);
+
+  // wishlist
+  const [wishlistedCards, setWishlistedCards] = useState<MTGCardDTO[]>([])
 
   const handleDeckManagerOpenClose = () => {
     if (deckManagerOpened) {
@@ -416,6 +420,10 @@ const MagicCollectionManager: FC = (props) => {
     handleDeckManagerOpenClose
   }
 
+  const wishlistProps: WishlistProps = {
+    wishlistedCards
+  }
+
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex', minHeight: '100vh', minWidth: "100%" }}>
@@ -437,6 +445,11 @@ const MagicCollectionManager: FC = (props) => {
               <CardGrid {...deckGridProps} />
             </Box>
             <DeckManagerDrawer {...deckManagerProps} />
+          </TabPanel>
+          <TabPanel value={selectedTab} index={2}>
+            <Box width="100%">
+              <Wishlist {...wishlistProps}/>
+            </Box>
           </TabPanel>
         </Box>
       </Box>
