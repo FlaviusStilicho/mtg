@@ -16,7 +16,6 @@ export class MTGCardImage extends Component<CardImageProps> {
     render() {
         return (
             <CardMedia
-                key={Date.now()}
                 sx={{
                     height: imageHeight * this.props.sizeFactor,
                     width: imageWidth * this.props.sizeFactor

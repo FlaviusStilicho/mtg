@@ -40,8 +40,6 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
   }
 
   render() {
-    console.log("rendering popup");
-
     return (
       <Dialog
         open={this.props.opened}
@@ -74,11 +72,11 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
             {Array.from(new Set(this.props.variantImages)).map(
               (variantImage) => (
                 <ListItem
-                  key={`listitem-${variantImage}-${Date.now()}`}
+                  key={`listitem-${variantImage}`}
                   style={{ justifyContent: "center" }}
                 >
                   <CardMedia
-                    key={`cardmedia-${variantImage}-${Date.now()}`}
+                    key={`cardmedia-${variantImage}}`}
                     sx={{
                       height: imageHeight * variantImageSizeFactor,
                       width: imageWidth * variantImageSizeFactor,
@@ -104,7 +102,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
           >
             <Box>
               <CardMedia
-                key={Date.now()}
+                key={`popup-image-${this.props.primaryImage}`}
                 sx={{
                   height: imageHeight * popupImageSizeFactor,
                   width: imageWidth * popupImageSizeFactor,

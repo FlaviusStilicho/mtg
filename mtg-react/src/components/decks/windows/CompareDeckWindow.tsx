@@ -165,7 +165,7 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
               );
               // }
               return (
-                <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id}>
+                <MenuItem key={`${deck.id}`} value={deck.id}>
                   <Box
                     sx={{
                       fontSize: deckNameFontSize,
@@ -213,7 +213,7 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
                     placement="left"
                     title={
                       <CardMedia
-                        key={`tooltip-${row.card.name}-${Date.now()}`}
+                        key={`tooltip-${row.card.name}`}
                         sx={{
                           height: imageHeight * 0.5,
                           width: imageWidth * 0.5,

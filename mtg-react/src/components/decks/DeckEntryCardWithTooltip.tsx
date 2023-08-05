@@ -64,7 +64,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
 
     return (
       <ListItem
-        key={`entry-listitem-${entry.card.name}-${Date.now()}`}
+        key={`entry-listitem-${entry.card.name}`}
         sx={{ py: 0.2 }}
       >
         <Tooltip
@@ -72,7 +72,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
           placement="left"
           title={
             <CardMedia
-              key={`tooltip-${entry.card.name}-${Date.now()}`}
+              key={`tooltip-${entry.card.name}`}
               sx={{
                 height: imageHeight * 0.5,
                 width: imageWidth * 0.5,

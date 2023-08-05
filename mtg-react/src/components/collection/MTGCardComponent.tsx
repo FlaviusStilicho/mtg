@@ -7,7 +7,7 @@ import { EnabledTab } from '../MagicCollectionManager';
 import { DeckState } from '../hooks/DeckState';
 import { MTGCardDeckCounterBox, MTGCardDeckCounterBoxProps } from './MTGCardDeckCounterBox';
 import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
-import { Component, memo, useState } from 'react';
+import { Component } from 'react';
 import { MTGCardCollectionCounterBox } from './MTGCardCollectionCounterBox';
 import { MTGCardPopup } from './MTGCardPopup';
 import { UpdateCardOwnedCopiesQueryParams } from '../../../../mtg-common/src/requests';
@@ -47,6 +47,14 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
             ownedCopies: this.props.card.ownedCopies
         }
     };
+
+    shouldComponentUpdate(nextProps: CardComponentProps, nextState: CardComponentState) {
+        return this.props.card.ownedCopies !== nextProps.card.ownedCopies ||
+        this.props.deckState.selectedDeckId !== nextProps.deckState.selectedDeckId ||
+        this.state.buyPrice !== nextState.buyPrice ||
+        this.state.sellPrice !== nextState.sellPrice ||
+        this.state.frontSideUp !== nextState.frontSideUp
+      }
 
     flipCard(): void {
         const primaryImage = this.props.card.versions.filter(version => version.isPrimaryVersion).map(version => this.state.frontSideUp ? version.frontImageUri : version.backImageUri).filter(this.notEmpty)[0]
