@@ -3,8 +3,6 @@ import { MTGCardDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
 import axios from 'axios';
 import HTMLParser from 'node-html-parser';
 import { imageWidth, gridCardSizeFactor, imageHeight, numberFormat } from '../../constants';
-import { CardState, useCardState } from '../hooks/CardState';
-import { CardImageProps, MTGCardImage } from './MTGCardImage';
 import { EnabledTab } from '../MagicCollectionManager';
 import { DeckState } from '../hooks/DeckState';
 import { MTGCardDeckCounterBox, MTGCardDeckCounterBoxProps } from './MTGCardDeckCounterBox';
@@ -14,6 +12,7 @@ import { MTGCardCollectionCounterBox } from './MTGCardCollectionCounterBox';
 import { MTGCardPopup } from './MTGCardPopup';
 import { UpdateCardOwnedCopiesQueryParams } from '../../../../mtg-common/src/requests';
 import { debounce } from 'lodash';
+import { CardImageProps, MTGCardImage } from './MTGCardImage';
 
 export interface CardComponentProps {
     card: MTGCardDTO,

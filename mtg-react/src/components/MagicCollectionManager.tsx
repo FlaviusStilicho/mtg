@@ -157,7 +157,7 @@ const MagicCollectionManager: FC = (props) => {
     } else if (format === DeckFormat.COMMANDER.toString()) {
       return sets.map(set => set.id)
     } else {
-      throw "Unknown format!"
+      throw Error("Unknown format!")
     }
   }
 
@@ -193,7 +193,7 @@ const MagicCollectionManager: FC = (props) => {
     } else if (propName === "manaCost" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, manaCost: newValue }
     } else if (propName === "format" && typeof newValue === 'string') {
-      var newSets: number[] = getDefaultSetsForFormat(newValue)
+      const newSets: number[] = getDefaultSetsForFormat(newValue)
       queryParameters = { ...selectedQueryParameters, format: newValue, sets: newSets }
     } else if (propName === "minOwnedCopies" && typeof newValue === 'string') {
       queryParameters = { ...selectedQueryParameters, minOwnedCopies: parseInt(newValue) }
@@ -230,6 +230,8 @@ const MagicCollectionManager: FC = (props) => {
             return entry
           }
         })).then(entries => setSelectedDeckEntries(entries))
+        // todo
+        // setSelectedDeckEntries(getDeck(newDeckId).cardEntries)
       }
     }
   }
@@ -297,16 +299,16 @@ const MagicCollectionManager: FC = (props) => {
 
   const updateCardCopiesInDeck = (card: MTGCardDTO, increment: number, isSideboard: boolean) => {
     if (increment !== -1 && increment !== 1) {
-      throw "Unexpected increment"
+      throw Error("Unexpected increment")
     }
     if (selectedDeck === null) {
-      throw "No deck selected!"
+      throw Error("No deck selected!")
     }
     const existingCardEntry: DeckCardEntryDTO | null = getExistingEntry(card)
 
     if (!existingCardEntry) {
       if (increment === -1) {
-        throw "Cannot remove cards from nonexistant entry"
+        throw Error("Cannot remove cards from nonexistant entry")
       }
       const newEntry = {
         id: undefined,
@@ -330,21 +332,21 @@ const MagicCollectionManager: FC = (props) => {
   function checkEntryIllegal(entry: DeckCardEntryDTO, deck: DeckDTO) {
     const format = deck.format
     var maxCardCopies
-    if (format == "standard") {
+    if (format === "standard") {
       maxCardCopies = 4
     } else if (format === "commander") {
       maxCardCopies = 1
     } else {
       console.log(format)
-      throw "Unsupported format"
+      throw Error("Unsupported format")
     }
     if (entry.copies < 0 || entry.sideboardCopies < 0) {
-      throw "Cannot have less than 0 copies"
+      throw Error("Cannot have less than 0 copies")
     }
     if (isBasicLand(entry.card)) {
       return
     } else if (entry.copies > maxCardCopies || entry.sideboardCopies > maxCardCopies) {
-      throw "Cannot exceed max card copies"
+      throw Error("Cannot exceed max card copies")
     }
     return
   }

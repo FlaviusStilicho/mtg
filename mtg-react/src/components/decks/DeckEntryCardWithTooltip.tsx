@@ -47,7 +47,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
 
   render() {
     console.log("rendering entry with tooltip")
-    const { entry, isSideboardEntry, deckState, setNewCommander } = this.props;
+    const { entry, isSideboardEntry, deckState } = this.props;
     const copies = isSideboardEntry ? entry.sideboardCopies : entry.copies;
     const manaCostArray = entry.card.manaCost
       .split("}")

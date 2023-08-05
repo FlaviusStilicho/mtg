@@ -20,6 +20,7 @@ export interface CollectionCounterBoxProps {
 }
 export class MTGCardCollectionCounterBox extends Component<CollectionCounterBoxProps> {
   shouldComponentUpdate(nextProps: CardState) {
+    //todo replace cardState
     return this.props.card !== nextProps.card ||
     this.props.card.ownedCopies !== nextProps.card.ownedCopies
   }
