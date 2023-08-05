@@ -118,7 +118,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
   }
 
   useEffect(() => {
-    console.log("rerendering deck manager")
+    // console.log("rerendering deck manager")
   }, [deckState.decks])
 
 
@@ -258,7 +258,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
                     deck.cardEntries.forEach(entry => entry.card.colorIdentity.forEach(color => deckColorIdentity.add(color)))
                   }
                   return (
-                    <MenuItem key={`${deck.id}`} value={deck.id} >
+                    <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id} >
                       <Box sx={{ fontSize: deckNameFontSize, display: "flex", flexWrap: "wrap", gap: 1 }}>
                         {commander ? `${deck.name} [${commander.name}]` : deck.name}
                         <Box>

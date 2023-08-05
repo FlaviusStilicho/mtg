@@ -151,8 +151,7 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
 
       
     render(){
-        console.log("rendering card component")
-
+        // console.log("rendering card component")
         const imageProps: CardImageProps = {
             image: this.state.primaryImage,
             sizeFactor: gridCardSizeFactor,

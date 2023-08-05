@@ -1,4 +1,4 @@
-import { createRef, useEffect, useState } from "react";
+import { Component, RefObject, createRef } from "react";
 
 import { Button, Grid } from '@mui/material';
 import { MTGCardComponent, CardComponentProps } from "./MTGCardComponent";
@@ -15,56 +15,83 @@ export interface CardGridProps {
     handleLoadMore: any
 }
 
-const CardGrid = (props: CardGridProps) => {
-    const divRef: any = createRef()
-    const [gridMaxWidth, setWidth] = useState(0)
-
-    useEffect(() => {
-        setWidth(divRef.current.clientWidth)
-    }, [divRef])
-
-    const gridActualWidth = props.enabledTab === EnabledTab.DECK && props.deckManagerOpened ? gridMaxWidth - deckManagerDrawerWidth : gridMaxWidth
-    const maxCardsOnScreen = gridActualWidth / (imageWidth * gridCardSizeFactor)
-    const cardWidth = (12 / maxCardsOnScreen) + 0.15
-
-    return (
-        <div
-            ref={divRef as React.RefObject<HTMLDivElement>}
-            style={{ width: "100%", overflowY: "auto" }}>
-            <Grid
-                container
-                direction="row"
-                sx={{ width: gridActualWidth }}
-                spacing={1.5}>
-                {props.cards.map((card: MTGCardDTO) => {
-                    if (props.deckState === undefined) {
-                        throw Error()
-                    }
-                    const cardComponentProps: CardComponentProps = {
-                        card,
-                        enabledTab: props.enabledTab,
-                        deckState: props.deckState
-                    }
-                    return (
-                        <Grid key={`${card.id}-${Date.now()}`} item xs={cardWidth}>
-                            <MTGCardComponent {...cardComponentProps} />
-                        </Grid>
-                    )
-                })}
-            </Grid>
-            <Button
-                aria-label="load"
-                name="load-button"
-                variant="contained"
-                style={{
-                    backgroundColor: "3C00E0"
-                }}
-                sx={{ borderRadius: '20%' }}
-                onClick={props.handleLoadMore}>
-                Load more
-            </Button>
-        </div>
-    )
+interface CardGridState {
+    gridMaxWidth: number
+    myRef: RefObject<HTMLDivElement>
 }
 
-export default CardGrid
+export class CardGrid extends Component<CardGridProps, CardGridState> {
+    constructor(props: CardGridProps){
+        super(props)
+
+        this.state = {
+            gridMaxWidth: 0,
+            myRef: createRef()
+        }
+    }   
+
+    handleResize = () => {
+        if (this.state.myRef.current !== null){
+            this.setState({
+                gridMaxWidth: this.state.myRef.current.clientWidth
+            });
+        }
+      };
+    
+    componentDidMount() {
+        window.addEventListener('resize', this.handleResize);
+     }
+
+    shouldComponentUpdate(nextProps: Readonly<CardGridProps>, nextState: Readonly<CardGridState>, nextContext: any): boolean {
+         return this.props.cards !== nextProps.cards ||
+         this.props.deckState.selectedDeckId !== nextProps.deckState.selectedDeckId ||
+         this.props.deckState.selectedDeckEntries.length !== nextProps.deckState.selectedDeckEntries.length ||
+         this.state.gridMaxWidth !== nextState.gridMaxWidth
+     }
+
+    render() {
+        // console.log("rendering grid")   
+        const gridActualWidth = this.props.enabledTab === EnabledTab.DECK && this.props.deckManagerOpened ? this.state.gridMaxWidth - deckManagerDrawerWidth : this.state.gridMaxWidth
+        const maxCardsOnScreen = gridActualWidth / (imageWidth * gridCardSizeFactor)
+        const cardWidth = (12 / maxCardsOnScreen) + 0.15
+
+        return (
+            <div
+                ref={this.state.myRef as React.RefObject<HTMLDivElement>}
+                style={{ width: "100%", overflowY: "auto" }}>
+                <Grid
+                    container
+                    direction="row"
+                    sx={{ width: gridActualWidth }}
+                    spacing={1.5}>
+                    {this.props.cards.map((card: MTGCardDTO) => {
+                        if (this.props.deckState === undefined) {
+                            throw Error("DeckState cannot be undefined")
+                        }
+                        const cardComponentProps: CardComponentProps = {
+                            card,
+                            enabledTab: this.props.enabledTab,
+                            deckState: this.props.deckState
+                        }
+                        return (
+                            <Grid key={`${card.id}-${card.name}`} item xs={cardWidth}>
+                                <MTGCardComponent {...cardComponentProps} />
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+                <Button
+                    aria-label="load"
+                    name="load-button"
+                    variant="contained"
+                    style={{
+                        backgroundColor: "3C00E0"
+                    }}
+                    sx={{ borderRadius: '20%' }}
+                    onClick={this.props.handleLoadMore}>
+                    Load more
+                </Button>
+            </div>
+        )
+    }
+}

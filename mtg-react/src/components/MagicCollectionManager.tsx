@@ -3,7 +3,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
 import SearchBar, { SearchWindowProps } from './SearchBar';
 import NavBar, { NavBarProps } from './NavBar';
-import CardGrid from './collection/CardGrid';
+import { CardGrid } from './collection/CardGrid';
 import { theme } from '../style/theme';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO } from '../../../mtg-common/src/DTO';
@@ -219,9 +219,14 @@ const MagicCollectionManager: FC = (props) => {
         setSelectedDeck(newDeck)
         setSelectedQueryParameters({ ...selectedQueryParameters, format: newDeck.format, sets: getDefaultSetsForFormat(newDeck.format) })
 
+        console.log(getDeck(newDeckId).cardEntries.length)
+        setSelectedDeckEntries(getDeck(newDeckId).cardEntries)
+        console.log(getDeck(newDeckId).cardEntries.length)
+        console.log("Collecting card prices")
         Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
           if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
             return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
+              console.log(`Price of card ${entry.card.name} is ${price}`)
               entry.buyPrice = price
               return entry
             })
@@ -230,8 +235,8 @@ const MagicCollectionManager: FC = (props) => {
             return entry
           }
         })).then(entries => setSelectedDeckEntries(entries))
-        // todo
-        // setSelectedDeckEntries(getDeck(newDeckId).cardEntries)
+        console.log("done collecting card prices")
+        console.log(getDeck(newDeckId).cardEntries.length)
       }
     }
   }

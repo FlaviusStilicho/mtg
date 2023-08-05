@@ -42,11 +42,12 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
   };
 
   shouldComponentUpdate(nextProps: DeckEntryComponentProps) {
-    return this.props.entry !== nextProps.entry;
+    return this.props.entry !== nextProps.entry ||
+    this.props.entry.buyPrice !== nextProps.entry.buyPrice
   }
 
   render() {
-    console.log("rendering entry with tooltip")
+    // console.log("rendering entry with tooltip")
     const { entry, isSideboardEntry, deckState } = this.props;
     const copies = isSideboardEntry ? entry.sideboardCopies : entry.copies;
     const manaCostArray = entry.card.manaCost
