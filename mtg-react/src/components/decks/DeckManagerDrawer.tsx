@@ -242,7 +242,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               // renderValue={selectedDeckId => deckState.selectedDeck !== null ? deckState.selectedDeck.name : "Select a deck"}
               onChange={deckState.handleChangeSelectedDeck}
             >
-              <MenuItem value={99999}>
+              <MenuItem key="all" value={99999}>
                 <Box sx={{ fontSize: deckNameFontSize }}>
                   Select a deck
                 </Box>

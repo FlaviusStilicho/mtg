@@ -56,7 +56,7 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
         this.state.frontSideUp !== nextState.frontSideUp
       }
 
-    flipCard(): void {
+    flipCard = (): void => {
         const primaryImage = this.props.card.versions.filter(version => version.isPrimaryVersion).map(version => this.state.frontSideUp ? version.frontImageUri : version.backImageUri).filter(this.notEmpty)[0]
         this.setState({primaryImage})
         const variantImages: string[] = this.props.card.versions.filter(version => version.isPrimaryVersion === false).map(version => this.state.frontSideUp ? version.frontImageUri : version.backImageUri).filter(this.notEmpty)
@@ -68,13 +68,13 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
         return value !== null && value !== undefined;
     }
 
-    subtractOwnedCopy(): void {
+    subtractOwnedCopy = (): void => {
         if (this.state.ownedCopies > 0) {
             this.handleChangeOwnedCopies(this.state.ownedCopies - 1)
         }
     }
 
-    addOwnedCopy(): void {
+    addOwnedCopy = (): void => {
         this.handleChangeOwnedCopies(this.state.ownedCopies + 1)
     }
 
@@ -82,7 +82,7 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
         axios.post(`http://localhost:8000/cards/ownedCopies`, body)
     }, 1500)
 
-    handleChangeOwnedCopies(newValue: number): void {
+    handleChangeOwnedCopies = (newValue: number): void => {
         this.setState({ownedCopies: newValue})
         const body: UpdateCardOwnedCopiesQueryParams = {
             cardId: this.props.card.id,
@@ -91,13 +91,14 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
         this.postUpdatedOwnedCopies(body)
     }
 
-    fetchBuyPrice(): void {
+    fetchBuyPrice = (): void => {
         if (this.state.buyPrice === undefined) {
+            // fetchCardBuyPriceFromMagicersSingle
             fetchCardBuyPriceFromMagicersSingle(this.props.card).then(price => this.setState({buyPrice: price}))
         }
     }
 
-    fetchSellPrice():void {
+    fetchSellPrice = (): void => {
         if (this.state.sellPrice === "") {
             const cardName = this.props.card.name
             axios.post('https://www.magicers.nl/inc/ajax_public/buylist.php',
@@ -139,13 +140,13 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
         }
     }
 
-    handleOpenPopup(){
+    handleOpenPopup = (): void => {
         this.setState({ cardPopupOpened: true});
         this.fetchBuyPrice()
         this.fetchSellPrice()
     };
 
-    handleClose(){
+    handleClose = (): void => {
         this.setState({ cardPopupOpened: false});
     };
 
