@@ -8,10 +8,9 @@ import { GetColors } from './controller/color.controller.ts';
 import { CreateDeck, GetDeck, ListDecks, CheckDeck, ClearDecks, ListDeckNames, CopyDeck, UploadDeck } from './controller/deck.controller.ts';
 import { DeleteDeck, UpdateDeck } from './controller/deck.controller.ts';
 import { ClearCollection, CreateBuylistMultipleDecks, ExportCollection, GetCollection } from './controller/collection.controller.ts';
+import { AddWishlistEntry, GetWishlistEntries, RemoveWishlistEntry } from './controller/wishlist.controller.ts';
 
 export const routes = (router: Router) => {
-
-
     router.get("/types", GetTypes)   
 
     router.get("/cards", GetCards)
@@ -32,6 +31,10 @@ export const routes = (router: Router) => {
     router.put("/decks", UpdateDeck)
     router.delete("/decks", DeleteDeck)
     router.delete("/decks/clear", ClearDecks)
+    
+    router.get("/wishlist", GetWishlistEntries)
+    router.post("/wishlist", AddWishlistEntry)
+    router.delete("/wishlist", RemoveWishlistEntry)
     
     router.post("/sync", Sync)
     router.post("/syncImages", SyncImages)

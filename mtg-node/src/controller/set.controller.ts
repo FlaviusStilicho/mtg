@@ -2,26 +2,6 @@ import { Request, Response } from "express";
 import { MTGSetDTO } from 'mtg-common';
 import { MTGSetRepository } from "../repository/MTGSet.repository.ts";
 
-// const excludedSetTypes: string[] = [
-//     'token',
-//     'draft_innovation',
-//     'minigame',
-//     'memorabilia',
-//     'box',
-//     'funny',
-//     'planechase',
-//     'archenemy',
-//     'vanguard',
-//     'masterpiece',
-//     'alchemy',
-//     'arsenal',
-//     'spellbook',
-//     'duel_deck',
-//     'from_the_vault',
-//     'treasure_chest',
-//     'promo'
-// ]
-
 const listedSetTypes: string[] = [
     'core',
     'expansion',

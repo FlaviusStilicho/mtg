@@ -58,3 +58,10 @@ export interface NewDeckEntryDTO {
     quantity: number,
     cardName: string
   }
+
+export interface WishlistEntryDTO {
+    card: MTGCardDTO
+    deck: DeckDTO
+    shop: string
+    isInShoppingCart: boolean
+}
