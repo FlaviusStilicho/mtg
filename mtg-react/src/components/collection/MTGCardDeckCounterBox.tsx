@@ -23,12 +23,22 @@ export interface MTGCardDeckCounterBoxProps {
 export class MTGCardDeckCounterBox extends Component<MTGCardDeckCounterBoxProps> {
 
     shouldComponentUpdate(nextProps: MTGCardDeckCounterBoxProps) {
-        return this.props.card !== nextProps.card ||
-        this.props.card.ownedCopies !== nextProps.card.ownedCopies ||
-        this.props.selectedDeckId !== nextProps.selectedDeckId ||
-        this.props.selectedDeck !== nextProps.selectedDeck ||
-        this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
-        this.props.primaryVersion !== nextProps.primaryVersion
+        const previousEntry = this.props.selectedDeckEntries.filter(entry => entry.card.id ===  this.props.card.id)[0]
+        const nextEntry =  nextProps.selectedDeckEntries.filter(entry => entry.card.id ===  nextProps.card.id)[0]
+        if (previousEntry == null && nextEntry == null){
+            return false
+        } else if (previousEntry == null || nextEntry == null){
+            return true
+        } else {
+            return this.props.card !== nextProps.card ||
+            this.props.card.ownedCopies !== nextProps.card.ownedCopies ||
+            this.props.selectedDeckId !== nextProps.selectedDeckId ||
+            this.props.selectedDeck !== nextProps.selectedDeck ||
+            this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
+            this.props.primaryVersion !== nextProps.primaryVersion ||
+            previousEntry.copies !== nextEntry.copies ||
+            previousEntry.sideboardCopies !== nextEntry.sideboardCopies 
+        }
       }
 
     checkCanAddCopy = () => {

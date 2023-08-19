@@ -40,6 +40,7 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
     
     componentDidMount() {
         window.addEventListener('resize', this.handleResize);
+        this.handleResize()
      }
 
     shouldComponentUpdate(nextProps: Readonly<CardGridProps>, nextState: Readonly<CardGridState>, nextContext: any): boolean {
@@ -71,7 +72,11 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
                         const cardComponentProps: CardComponentProps = {
                             card,
                             enabledTab: this.props.enabledTab,
-                            deckState: this.props.deckState
+                            selectedDeckId: this.props.deckState.selectedDeckId,
+                            selectedDeck: this.props.deckState.selectedDeck,
+                            selectedDeckEntries: this.props.deckState.selectedDeckEntries,
+                            getCurrentNumberOfCopiesForCard: this.props.deckState.getCurrentNumberOfCopiesForCard,
+                            updateCardCopiesInDeck: this.props.deckState.updateCardCopiesInDeck,
                         }
                         return (
                             <Grid key={`${card.id}-${card.name}`} item xs={cardWidth}>

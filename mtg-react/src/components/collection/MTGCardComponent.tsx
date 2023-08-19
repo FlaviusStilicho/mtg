@@ -1,10 +1,9 @@
 import { Box } from '@mui/material';
-import { MTGCardDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
+import { MTGCardDTO, DeckDTO, MTGCardVersionDTO, DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
 import axios from 'axios';
 import HTMLParser from 'node-html-parser';
 import { imageWidth, gridCardSizeFactor, imageHeight, numberFormat } from '../../constants';
 import { EnabledTab } from '../MagicCollectionManager';
-import { DeckState } from '../hooks/DeckState';
 import { MTGCardDeckCounterBox, MTGCardDeckCounterBoxProps } from './MTGCardDeckCounterBox';
 import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
 import { Component } from 'react';
@@ -13,11 +12,14 @@ import { MTGCardPopup } from './MTGCardPopup';
 import { UpdateCardOwnedCopiesQueryParams } from '../../../../mtg-common/src/requests';
 import { debounce } from 'lodash';
 import { CardImageProps, MTGCardImage } from './MTGCardImage';
-
 export interface CardComponentProps {
     card: MTGCardDTO,
     enabledTab: EnabledTab
-    deckState: DeckState
+    selectedDeckId: number | null
+    selectedDeck: DeckDTO | null
+    selectedDeckEntries: DeckCardEntryDTO[]
+    getCurrentNumberOfCopiesForCard: Function,
+    updateCardCopiesInDeck: Function
 }
 
 interface CardComponentState {
@@ -50,10 +52,14 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
 
     shouldComponentUpdate(nextProps: CardComponentProps, nextState: CardComponentState) {
         return this.props.card.ownedCopies !== nextProps.card.ownedCopies ||
-        this.props.deckState.selectedDeckId !== nextProps.deckState.selectedDeckId ||
+        this.props.selectedDeckId !== nextProps.selectedDeckId ||
+        this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
+        this.props.getCurrentNumberOfCopiesForCard !== nextProps.getCurrentNumberOfCopiesForCard ||
+        this.props.updateCardCopiesInDeck !== nextProps.updateCardCopiesInDeck ||
         this.state.buyPrice !== nextState.buyPrice ||
         this.state.sellPrice !== nextState.sellPrice ||
-        this.state.frontSideUp !== nextState.frontSideUp
+        this.state.frontSideUp !== nextState.frontSideUp ||
+        this.state.cardPopupOpened !== nextState.cardPopupOpened
       }
 
     flipCard = (): void => {
@@ -149,7 +155,6 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
     handleClose = (): void => {
         this.setState({ cardPopupOpened: false});
     };
-
       
     render(){
         // console.log("rendering card component")
@@ -161,12 +166,12 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
 
         const deckCounterBoxProps: MTGCardDeckCounterBoxProps = {
             card: this.props.card,
-            selectedDeckId: this.props.deckState.selectedDeckId,
-            selectedDeck: this.props.deckState.selectedDeck,
-            selectedDeckEntries: this.props.deckState.selectedDeckEntries,
+            selectedDeckId: this.props.selectedDeckId,
+            selectedDeck: this.props.selectedDeck,
+            selectedDeckEntries: this.props.selectedDeckEntries,
             primaryVersion: this.props.card.versions.filter(version => version.isPrimaryVersion)[0],
-            getCurrentNumberOfCopiesForCard: this.props.deckState.getCurrentNumberOfCopiesForCard,
-            updateCardCopiesInDeck: this.props.deckState.updateCardCopiesInDeck,
+            getCurrentNumberOfCopiesForCard: this.props.getCurrentNumberOfCopiesForCard,
+            updateCardCopiesInDeck: this.props.updateCardCopiesInDeck,
             flipCard: this.flipCard
         }
 
