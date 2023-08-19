@@ -152,9 +152,9 @@ const MagicCollectionManager: FC = (props) => {
 
   const getDefaultSetsForFormat = (format: string) => {
     if (format === DeckFormat.STANDARD.toString()) {
-      return []
+      return currentStandardSets
     } else if (format === DeckFormat.COMMANDER.toString()) {
-      return sets.map(set => set.id)
+      return []
     } else {
       throw Error("Unknown format!")
     }
@@ -224,9 +224,7 @@ const MagicCollectionManager: FC = (props) => {
           colorSearchSetting: colorIdentity.length > 0 ? "Includes at most" : selectedQueryParameters.colorSearchSetting
          })
 
-        console.log(getDeck(newDeckId).cardEntries.length)
         setSelectedDeckEntries(getDeck(newDeckId).cardEntries)
-        console.log(getDeck(newDeckId).cardEntries.length)
         console.log("Collecting card prices")
         Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
           if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
@@ -239,9 +237,9 @@ const MagicCollectionManager: FC = (props) => {
             entry.buyPrice = undefined
             return entry
           }
-        })).then(entries => setSelectedDeckEntries(entries))
-        console.log("done collecting card prices")
-        console.log(getDeck(newDeckId).cardEntries.length)
+        })).then(entries => {
+          console.log("done collecting card prices")
+          setSelectedDeckEntries(entries)})
       }
     }
   }
