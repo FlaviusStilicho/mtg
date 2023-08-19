@@ -39,12 +39,24 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
     this.props.sellPrice !== nextProps.sellPrice
   }
 
+  escFunction = (event: any): void => {
+    if (event.key !== null && this.props.opened) {
+      this.props.onClose()
+    }
+  }
+
+  componentDidUpdate(){
+    if(this.props.opened){
+      document.addEventListener("keydown", this.escFunction, false);
+    }
+  }
+
   render() {
     return (
       <Dialog
         open={this.props.opened}
         onClose={this.props.onClose}
-        fullWidth
+        // fullWidth
         maxWidth="md"
         PaperProps={{
           style: {
