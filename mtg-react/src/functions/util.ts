@@ -212,3 +212,20 @@ export function getCommander(deck: DeckDTO | null) {
       return currentCommanderEntries[0].card
     }
   }
+
+export function getDeckColorIdentity(deck: DeckDTO | null): Set<string>{
+    if (deck === null){
+        return new Set() 
+    }
+    var deckColorIdentity: Set<string>
+    const commander = getCommander(deck)
+    if (commander) {
+        deckColorIdentity = new Set(commander.colorIdentity)
+        deckColorIdentity.add("C")
+    } else {
+        deckColorIdentity = new Set()
+        deck.cardEntries.forEach(entry => entry.card.colorIdentity.forEach(color => deckColorIdentity.add(color)))
+        deckColorIdentity.add("C")
+    }
+    return deckColorIdentity
+}

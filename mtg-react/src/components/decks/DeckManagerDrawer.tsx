@@ -16,7 +16,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './windows/CreateDeckWindow';
 import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
-import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander } from '../../functions/util';
+import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander, getDeckColorIdentity } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -26,6 +26,7 @@ import { DeleteDeckWindow, DeleteDeckWindowProps } from './windows/DeleteDeckWin
 import { EditDeckWindow, EditDeckWindowProps } from './windows/EditDeckWindow';
 import { DeckState } from '../hooks/DeckState';
 import { CompareDeckWindow, CompareDeckWindowProps } from './windows/CompareDeckWindow';
+import { DevotionCountersBox } from './DevotionCountersBox';
 
 const colorIconSize = 15
 const deckNameFontSize = 10
@@ -42,6 +43,7 @@ function useForceUpdate() {
   return () => setValue(value => value + 1);
 }
 
+// TODO convert to class and check equality of deck entry prices
 export default function DeckManagerDrawer(props: DeckManagerProps) {
   const deckState = props.deckState
   const [createDeckWindowOpened, setCreateDeckWindowOpened] = useState<boolean>(false);
@@ -139,9 +141,9 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     }
   }
 
-  const getNumberOfCardsAtManaPrice = (price: string): number => {
+  const getNumberOfCardsAtManaCost = (cmc: string): number => {
     var total = 0
-    if (price === '7+') {
+    if (cmc === '7+') {
       props.selectedDeckEntries.forEach((entry) => {
         if (entry.card.convertedManaCost >= 7) {
           total += entry.copies
@@ -149,7 +151,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
       })
     } else {
       props.selectedDeckEntries.forEach((entry) => {
-        if (entry.card.convertedManaCost === Number(price)) {
+        if (entry.card.convertedManaCost === Number(cmc)) {
           total += entry.copies
         }
       })
@@ -163,7 +165,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     datasets: [
       {
         label: 'Mana Curve',
-        data: manaCurveChartLabels.map(price => getNumberOfCardsAtManaPrice(price)),
+        data: manaCurveChartLabels.map(cmc => getNumberOfCardsAtManaCost(cmc)),
         backgroundColor: 'rgba(255, 0, 0, 0.8)',
       }
     ],
@@ -250,13 +252,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               {
                 deckState.decks.map((deck) => {
                   const commander = getCommander(deck)
-                  var deckColorIdentity: Set<string>
-                  if (commander) {
-                    deckColorIdentity = new Set(commander.colorIdentity)
-                  } else {
-                    deckColorIdentity = new Set()
-                    deck.cardEntries.forEach(entry => entry.card.colorIdentity.forEach(color => deckColorIdentity.add(color)))
-                  }
+                  var deckColorIdentity = getDeckColorIdentity(deck)
                   return (
                     <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id} >
                       <Box sx={{ fontSize: deckNameFontSize, display: "flex", flexWrap: "wrap", gap: 1 }}>
@@ -342,6 +338,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             </List>
           ) : (<></>)
           }
+          <Divider/>
+          <DevotionCountersBox entries={props.selectedDeckEntries}/>
           <Divider />
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
             Total: {props.selectedDeckEntries.length > 0 ? props.selectedDeckEntries.map(entry => entry.copies).reduce((a, b) => a + b) : 0} cards

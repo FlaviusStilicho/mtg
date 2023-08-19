@@ -15,7 +15,7 @@ import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { searchBarDrawerWidth } from '../constants';
 import { DeckState } from './hooks/DeckState';
-import { isBasicLand, numberOfMissingCards } from '../functions/util';
+import { isBasicLand, numberOfMissingCards, getDeckColorIdentity } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
@@ -51,7 +51,7 @@ const MagicCollectionManager: FC = (props) => {
   const [selectedQueryParameters, setSelectedQueryParameters] = useState<CardQueryParameters>({
     cardName: "",
     cardText: "",
-    sets: currentStandardSets,
+    sets: [],
     rarities: raritiesList,
     types: [],
     typeSearchSetting: "Includes any of",
@@ -92,7 +92,6 @@ const MagicCollectionManager: FC = (props) => {
     fetchData()
     fetchCardsDebounced({
       ...selectedQueryParameters,
-      sets: currentStandardSets
     }, false)
     fetchDecks()
   }, []);
@@ -101,10 +100,6 @@ const MagicCollectionManager: FC = (props) => {
     axios.get(`http://localhost:8000/sets`).then(response => {
       const setsFromApi: MTGSetDTO[] = response.data.data
       setSets(setsFromApi)
-      setSelectedQueryParameters({
-        ...selectedQueryParameters,
-        sets: currentStandardSets
-      })
     })
     axios.get('http://localhost:8000/types').then(response => {
       const types: string[] = response.data.data
@@ -157,7 +152,7 @@ const MagicCollectionManager: FC = (props) => {
 
   const getDefaultSetsForFormat = (format: string) => {
     if (format === DeckFormat.STANDARD.toString()) {
-      return currentStandardSets
+      return []
     } else if (format === DeckFormat.COMMANDER.toString()) {
       return sets.map(set => set.id)
     } else {
@@ -218,10 +213,16 @@ const MagicCollectionManager: FC = (props) => {
         setSelectedDeck(null)
         setSelectedDeckEntries([])
       } else {
-        setSelectedDeckId(newDeckId);
         const newDeck = decks.filter(deck => deck.id === newDeckId)[0]
+        const colorIdentity: string[] = Array.from(getDeckColorIdentity(newDeck))
+        setSelectedDeckId(newDeckId);
         setSelectedDeck(newDeck)
-        setSelectedQueryParameters({ ...selectedQueryParameters, format: newDeck.format, sets: getDefaultSetsForFormat(newDeck.format) })
+        setSelectedQueryParameters({ ...selectedQueryParameters, 
+          format: newDeck.format, 
+          sets: getDefaultSetsForFormat(newDeck.format),
+          colors: colorIdentity,
+          colorSearchSetting: colorIdentity.length > 0 ? "Includes at most" : selectedQueryParameters.colorSearchSetting
+         })
 
         console.log(getDeck(newDeckId).cardEntries.length)
         setSelectedDeckEntries(getDeck(newDeckId).cardEntries)
@@ -255,9 +256,13 @@ const MagicCollectionManager: FC = (props) => {
   }
 
   const saveDeck = () => {
+    doSaveDeck(selectedDeckEntries)
+  }
+
+  const doSaveDeck = (entries: DeckCardEntryDTO[]) => {
     console.log('Saving deck')
     const deck = getDeck(selectedDeckId)
-    deck.cardEntries = selectedDeckEntries
+    deck.cardEntries = entries
 
     // make a clone, submit it without version data
     const deckClone = JSON.parse(JSON.stringify(deck));
@@ -304,6 +309,7 @@ const MagicCollectionManager: FC = (props) => {
     const newEntriesList = currentEntriesList.filter(currentEntry => currentEntry.card.name !== entry.card.name)
     newEntriesList.push(entry)
     setSelectedDeckEntries(newEntriesList)
+    doSaveDeck(newEntriesList)
   }
 
   const updateCardCopiesInDeck = (card: MTGCardDTO, increment: number, isSideboard: boolean) => {
