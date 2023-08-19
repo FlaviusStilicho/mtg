@@ -45,6 +45,7 @@ function useForceUpdate() {
 
 // TODO convert to class and check equality of deck entry prices
 export default function DeckManagerDrawer(props: DeckManagerProps) {
+  // console.log("rendering deck manager")
   const deckState = props.deckState
   const [createDeckWindowOpened, setCreateDeckWindowOpened] = useState<boolean>(false);
   const [editDeckWindowOpened, setEditDeckWindowOpened] = useState<boolean>(false);

@@ -20,7 +20,7 @@ export class DeckCardTypeCounter extends Component<DeckCardTypeCounterProps> {
   }
 
   render() {
-    // console.log("rendering counter");
+    // console.log(`rendering counter ${this.props.label}`);
     const deckState = this.props.deckState;
 
     return this.props.countFn(deckState.selectedDeckEntries) > 0 ? (
