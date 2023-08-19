@@ -1,8 +1,8 @@
 import { WishlistEntryDTO } from '../../../mtg-common/src/DTO';
-import { WishlistEntryRepository } from '../repository/WishlistEntry.repository';
+import { WishlistEntryRepository } from '../repository/WishlistEntry.repository.ts';
 import { Request, Response } from "express";
 import { logger } from "./../index.ts"
-import { WishlistEntry } from '../entity/WishlistEntry.entity';
+import { WishlistEntry } from '../entity/WishlistEntry.entity.ts';
 
 export const GetWishlistEntries = async (req: Request, res: Response<WishlistEntryDTO[]>) => {
     WishlistEntryRepository.find().then(entries => res.send(entries.map(entry => entry.toDTO())))

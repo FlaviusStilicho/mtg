@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { MTGCard } from './MTGCard.entity';
-import { Deck } from './Deck.entity';
+import { MTGCard } from './MTGCard.entity.ts';
+import { Deck } from './Deck.entity.ts';
 import { WishlistEntryDTO } from '../../../mtg-common/src/DTO';
-import { MTGCardRepository } from '../repository/MTGCard.repository';
-import { DeckRepository } from '../repository/Deck.repository';
+import { MTGCardRepository } from '../repository/MTGCard.repository.ts';
+import { DeckRepository } from '../repository/Deck.repository.ts';
 
 @Entity()
 export class WishlistEntry {
