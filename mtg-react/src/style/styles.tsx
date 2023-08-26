@@ -67,6 +67,14 @@ export const deckEntryTextBoxStyle = {
         fontWeight: '700',
 }
 
+export const colorDevotionBoxStyle = {
+    // p: 0.5,
+    // py: 0.02,
+    // m: 0.2,
+    fontSize: '0.7rem',
+    fontWeight: '700',
+}
+
 export const selectListItemStyle = {
     color: 'black',
 

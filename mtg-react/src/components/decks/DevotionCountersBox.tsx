@@ -1,6 +1,9 @@
 import { Component } from 'react';
 import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
-import { Box } from '@mui/material';
+import { Box, List } from '@mui/material';
+import ColorIcon from '../ColorIcon';
+import { colorDevotionBoxStyle } from '../../style/styles';
+import { areSetsEqual } from '../../functions/util';
 
 interface ColorDevotion {
     red: number,
@@ -20,6 +23,11 @@ export interface DevotionCountersBoxProps {
   
   export class DevotionCountersBox extends Component<DevotionCountersBoxProps> {
     shouldComponentUpdate(nextProps: DevotionCountersBoxProps) {
+      const currentCards = new Set(this.props.entries.map(entry => entry.card.name))
+      const nextCards = new Set(nextProps.entries.map(entry => entry.card.name))
+      if (!areSetsEqual(currentCards, nextCards)){
+        return true
+      }
       const currentCardCount: number = this.props.entries.length > 0 ? this.props.entries.map(entry => entry.copies).reduce((a, b) => a + b) : 0
       const nextCardCount: number = nextProps.entries.length > 0 ? nextProps.entries.map(entry => entry.copies).reduce((a, b) => a + b) : 0
       return currentCardCount !== nextCardCount
@@ -78,8 +86,17 @@ export interface DevotionCountersBoxProps {
         const totalNumberOfCardsInDeck = this.props.entries.length > 0 ? this.props.entries.map(entry => entry.copies).reduce((a, b) => a + b) : 0
         colorDevotionMap.average = colorDevotionMap.total / totalNumberOfCardsInDeck
 
-        // TODO finish me
-        return (<Box>
-            </Box>)
+        return (this.props.entries.length > 0) ? (
+            <List>
+            <Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}>Color devotion:</Box>
+            { colorDevotionMap.white > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="W"/> {colorDevotionMap.white}</Box>) : <></> }
+            { colorDevotionMap.blue > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="U"/> {colorDevotionMap.blue}</Box>) : <></> }
+            { colorDevotionMap.black > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="B"/> {colorDevotionMap.black}</Box>) : <></> }
+            { colorDevotionMap.red > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="R"/> {colorDevotionMap.red}</Box>) : <></> }
+            { colorDevotionMap.green > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="G"/> {colorDevotionMap.green}</Box>) : <></> }
+            { colorDevotionMap.colorless > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}> <ColorIcon color="C"/> {colorDevotionMap.colorless}</Box>) : <></> }
+            <Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}>Average mana cost: {colorDevotionMap.average.toFixed(1)}</Box>
+            </List>
+        ) : (<></>)
     }
 }

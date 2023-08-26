@@ -20,6 +20,7 @@ export interface CardComponentProps {
     selectedDeckEntries: DeckCardEntryDTO[]
     getCurrentNumberOfCopiesForCard: Function,
     updateCardCopiesInDeck: Function
+    updateCardCopiesInCollection: (id: number, copies: number) => void
 }
 
 interface CardComponentState {
@@ -29,7 +30,6 @@ interface CardComponentState {
     frontSideUp: boolean
     primaryImage: string
     variantImages: string[]
-    ownedCopies: number
 }
 
 export class MTGCardComponent extends Component<CardComponentProps, CardComponentState> {
@@ -46,7 +46,7 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
             frontSideUp: true,
             primaryImage: primaryVersion.frontImageUri,
             variantImages: variantVersions.map(version => version.frontImageUri),
-            ownedCopies: this.props.card.ownedCopies
+            // ownedCopies: this.props.card.ownedCopies
         }
     };
 
@@ -55,7 +55,7 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
         this.props.selectedDeckId !== nextProps.selectedDeckId ||
         this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
         this.props.getCurrentNumberOfCopiesForCard !== nextProps.getCurrentNumberOfCopiesForCard ||
-        this.props.updateCardCopiesInDeck !== nextProps.updateCardCopiesInDeck ||
+        // this.props.updateCardCopiesInDeck !== nextProps.updateCardCopiesInDeck ||
         this.state.buyPrice !== nextState.buyPrice ||
         this.state.sellPrice !== nextState.sellPrice ||
         this.state.frontSideUp !== nextState.frontSideUp ||
@@ -75,26 +75,14 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
     }
 
     subtractOwnedCopy = (): void => {
-        if (this.state.ownedCopies > 0) {
-            this.handleChangeOwnedCopies(this.state.ownedCopies - 1)
+        if (this.props.card.ownedCopies > 0) {
+            this.props.updateCardCopiesInCollection(this.props.card.id, this.props.card.ownedCopies - 1)
         }
     }
 
     addOwnedCopy = (): void => {
-        this.handleChangeOwnedCopies(this.state.ownedCopies + 1)
-    }
-
-    postUpdatedOwnedCopies = debounce((body: UpdateCardOwnedCopiesQueryParams) => {
-        axios.post(`http://localhost:8000/cards/ownedCopies`, body)
-    }, 1500)
-
-    handleChangeOwnedCopies = (newValue: number): void => {
-        this.setState({ownedCopies: newValue})
-        const body: UpdateCardOwnedCopiesQueryParams = {
-            cardId: this.props.card.id,
-            ownedCopies: newValue
-        }
-        this.postUpdatedOwnedCopies(body)
+        this.props.updateCardCopiesInCollection(this.props.card.id, this.props.card.ownedCopies + 1)
+        // this.handleChangeOwnedCopies(this.state.ownedCopies + 1)
     }
 
     fetchBuyPrice = (): void => {
@@ -157,7 +145,7 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
     };
       
     render(){
-        // console.log("rendering card component")
+        // console.log(`rendering card component ${this.props.card.name}`)
         const imageProps: CardImageProps = {
             image: this.state.primaryImage,
             sizeFactor: gridCardSizeFactor,

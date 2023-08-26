@@ -10,7 +10,7 @@ import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO } from '../../.
 import axios from 'axios';
 import { CardGridProps } from './collection/CardGrid';
 import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
-import { CardQueryParameters, ListDecksResponse } from '../../../mtg-common/src/requests';
+import { CardQueryParameters, ListDecksResponse, UpdateCardOwnedCopiesQueryParams } from '../../../mtg-common/src/requests';
 import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { searchBarDrawerWidth } from '../constants';
@@ -132,8 +132,10 @@ const MagicCollectionManager: FC = (props) => {
     }).then(response => {
       const newCards: MTGCardDTO[] = response.data.cards
       if (currentPage === 1) {
+        console.log("new cards")
         setCards(newCards)
       } else {
+        console.log("extra cards")
         const newCardsList = cards.concat(newCards)
         setCards(newCardsList)
         // todo alex do something with total pages
@@ -364,6 +366,30 @@ const MagicCollectionManager: FC = (props) => {
     return
   }
 
+  const postUpdatedOwnedCopies = debounce((body: UpdateCardOwnedCopiesQueryParams) => {
+    axios.post(`http://localhost:8000/cards/ownedCopies`, body)
+  } , 1500)
+
+  const updateCardCopiesInCollection = (id: number, copies: number) => {
+    const updatedCards: MTGCardDTO[] = cards.map(card => {
+      if (card.id === id) {
+          console.log(`updating collection: ${card.name} to ${copies}`);
+          const body: UpdateCardOwnedCopiesQueryParams = {
+            cardId: card.id,
+            ownedCopies: copies
+          }
+          postUpdatedOwnedCopies(body)
+          return {
+              ...card,          
+              ownedCopies: copies 
+          };
+      } else {
+        return card
+      }
+    });
+    setCards(updatedCards);
+  }
+
   const handleLoadMore = async () => {
     fetchCardsDebounced(selectedQueryParameters, true)
   }
@@ -406,6 +432,7 @@ const MagicCollectionManager: FC = (props) => {
     cards,
     enabledTab: EnabledTab.COLLECTION,
     deckState,
+    updateCardCopiesInCollection,
     handleLoadMore
   }
 
@@ -414,6 +441,7 @@ const MagicCollectionManager: FC = (props) => {
     enabledTab: EnabledTab.DECK,
     deckState,
     deckManagerOpened,
+    updateCardCopiesInCollection,
     handleLoadMore
   }
 

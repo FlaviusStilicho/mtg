@@ -26,7 +26,7 @@ export class MTGCardCollectionCounterBox extends Component<CollectionCounterBoxP
   }
 
   render() {
-    // console.log("rendering collection card counter box");
+    // console.log(`rendering collection card counter box ${this.props.card.name}`);
     return (
       <Box style={{ alignItems: "center" }}>
         <Button

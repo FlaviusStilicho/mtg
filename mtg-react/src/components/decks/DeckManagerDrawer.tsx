@@ -27,8 +27,8 @@ import { EditDeckWindow, EditDeckWindowProps } from './windows/EditDeckWindow';
 import { DeckState } from '../hooks/DeckState';
 import { CompareDeckWindow, CompareDeckWindowProps } from './windows/CompareDeckWindow';
 import { DevotionCountersBox } from './DevotionCountersBox';
+import ColorIcon from '../ColorIcon';
 
-const colorIconSize = 15
 const deckNameFontSize = 10
 
 export interface DeckManagerProps extends MuiAppBarProps {
@@ -259,18 +259,10 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
                       <Box sx={{ fontSize: deckNameFontSize, display: "flex", flexWrap: "wrap", gap: 1 }}>
                         {commander ? `${deck.name} [${commander.name}]` : deck.name}
                         <Box>
-                          {Array.from(deckColorIdentity).map((color) => (
-                            <Box
-                              component="img"
-                              key={color}
-                              sx={{
-                                height: colorIconSize,
-                                width: colorIconSize,
-                                maxHeight: colorIconSize,
-                                maxWidth: colorIconSize,
-                              }}
-                              src={`http://localhost:3000/mana/${color}.png`}
-                            />))}
+                        {
+                        Array.from(deckColorIdentity).map((color) => (
+                            <ColorIcon color={color}/>
+                          ))}
                         </Box>
                       </Box>
                     </MenuItem>
@@ -340,7 +332,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           ) : (<></>)
           }
           <Divider/>
-          <DevotionCountersBox entries={props.selectedDeckEntries}/>
           <Divider />
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
             Total: {props.selectedDeckEntries.length > 0 ? props.selectedDeckEntries.map(entry => entry.copies).reduce((a, b) => a + b) : 0} cards
@@ -349,7 +340,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             {availableMissingCards > 0 || unavailableMissingCards > 0 ? `Missing cards: ${availableMissingCards} available, ${unavailableMissingCards} unavailable` : ``}
           </Box>
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            {availableMissingCards > 0 || unavailableMissingCards > 0 ? `Cost to complete: € ${costToFinishDeck(props.selectedDeckEntries)}` : ``}
+            {availableMissingCards > 0 || unavailableMissingCards > 0 ? `Cost to complete: € ${costToFinishDeck(props.selectedDeckEntries).toFixed(2)}` : ``}
           </Box>
           <Divider />
 
@@ -424,7 +415,9 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
           />
-
+          
+          <DevotionCountersBox entries={props.selectedDeckEntries}/>
+          
           <Bar style={{
             paddingLeft: 30,
             paddingRight: 30,

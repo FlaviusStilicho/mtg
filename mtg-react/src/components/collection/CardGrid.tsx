@@ -12,6 +12,7 @@ export interface CardGridProps {
     enabledTab: EnabledTab
     deckState: DeckState
     deckManagerOpened?: boolean
+    updateCardCopiesInCollection: (id: number, copies: number) => void
     handleLoadMore: any
 }
 
@@ -76,6 +77,7 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
                             selectedDeck: this.props.deckState.selectedDeck,
                             selectedDeckEntries: this.props.deckState.selectedDeckEntries,
                             getCurrentNumberOfCopiesForCard: this.props.deckState.getCurrentNumberOfCopiesForCard,
+                            updateCardCopiesInCollection: this.props.updateCardCopiesInCollection,                            
                             updateCardCopiesInDeck: this.props.deckState.updateCardCopiesInDeck,
                         }
                         return (

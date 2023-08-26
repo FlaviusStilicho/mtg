@@ -9,6 +9,7 @@ export const searchBarDrawerWidth = 280
 export const deckManagerDrawerWidth = 470;
 export const maximumCardCopiesStandard = 4
 export const navBarHeight = 50;
+export const colorIconSize = 15;
 
 export const numberFormat = new Intl.NumberFormat('nl-NL', {
     style: 'currency',

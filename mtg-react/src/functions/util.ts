@@ -229,3 +229,7 @@ export function getDeckColorIdentity(deck: DeckDTO | null): Set<string>{
     }
     return deckColorIdentity
 }
+
+export function areSetsEqual(a: Set<string>, b: Set<string>){
+    return a.size === b.size && [...a].every(value => b.has(value))
+}

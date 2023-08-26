@@ -26,6 +26,7 @@ import {
 } from "../../../style/styles";
 import Divider from "@mui/material/Divider";
 import { imageHeight, imageWidth } from "../../../constants";
+import ColorIcon from "../../ColorIcon";
 
 export interface CompareDeckWindowProps {
   opened: boolean;
@@ -34,7 +35,6 @@ export interface CompareDeckWindowProps {
   decks: DeckDTO[];
 }
 
-const colorIconSize = 15;
 const deckNameFontSize = 10;
 
 export interface CompareTableRow {
@@ -177,17 +177,7 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
                     {deck.name}
                     <Box>
                       {Array.from(deckColorIdentity).map((color) => (
-                        <Box
-                          component="img"
-                          key={color}
-                          sx={{
-                            height: colorIconSize,
-                            width: colorIconSize,
-                            maxHeight: colorIconSize,
-                            maxWidth: colorIconSize,
-                          }}
-                          src={`http://localhost:3000/mana/${color}.png`}
-                        />
+                        <ColorIcon color={color}/>
                       ))}
                     </Box>
                   </Box>
