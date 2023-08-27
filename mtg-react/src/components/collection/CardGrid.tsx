@@ -3,16 +3,19 @@ import { Component, RefObject, createRef } from "react";
 import { Button, Grid } from '@mui/material';
 import { MTGCardComponent, CardComponentProps } from "./MTGCardComponent";
 import { gridCardSizeFactor, imageWidth, drawerWidth } from '../../constants';
-import { MTGCardDTO } from '../../../../mtg-common/src/DTO';
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from '../../../../mtg-common/src/DTO';
 import { EnabledTab } from "../MagicCollectionManager";
-import { DeckState } from "../hooks/DeckState";
 
 export interface CardGridProps {
     cards: MTGCardDTO[]
     enabledTab: EnabledTab
-    deckState: DeckState
+    selectedDeck: DeckDTO | null
+    selectedDeckId: number | null
+    selectedDeckEntries: DeckCardEntryDTO[]
     deckManagerOpened?: boolean
     wishlistOpened?: boolean
+    updateCardCopiesInDeck: (card: MTGCardDTO, increment: number, isSideboard: boolean) => void
+    getCurrentNumberOfCopiesForCard: (card: MTGCardDTO) => number
     updateCardCopiesInCollection: (id: number, copies: number) => void
     updateCardCopiesInWishlist: (id: number, add: boolean) => void
     handleLoadMore: any
@@ -48,8 +51,8 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
 
     shouldComponentUpdate(nextProps: Readonly<CardGridProps>, nextState: Readonly<CardGridState>, nextContext: any): boolean {
          return this.props.cards !== nextProps.cards ||
-         this.props.deckState.selectedDeckId !== nextProps.deckState.selectedDeckId ||
-         this.props.deckState.selectedDeckEntries.length !== nextProps.deckState.selectedDeckEntries.length ||
+         this.props.selectedDeckId !== nextProps.selectedDeckId ||
+         this.props.selectedDeckEntries.length !== nextProps.selectedDeckEntries.length ||
          this.state.gridMaxWidth !== nextState.gridMaxWidth ||
          this.props.deckManagerOpened !== nextProps.deckManagerOpened ||
          this.props.wishlistOpened !== nextProps.wishlistOpened
@@ -80,19 +83,16 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
                     sx={{ width: gridActualWidth }}
                     spacing={1.5}>
                     {this.props.cards.map((card: MTGCardDTO) => {
-                        if (this.props.deckState === undefined) {
-                            throw Error("DeckState cannot be undefined")
-                        }
                         const cardComponentProps: CardComponentProps = {
                             card,
                             enabledTab: this.props.enabledTab,
-                            selectedDeckId: this.props.deckState.selectedDeckId,
-                            selectedDeck: this.props.deckState.selectedDeck,
-                            selectedDeckEntries: this.props.deckState.selectedDeckEntries,
-                            getCurrentNumberOfCopiesForCard: this.props.deckState.getCurrentNumberOfCopiesForCard,
+                            selectedDeckId: this.props.selectedDeckId,
+                            selectedDeck: this.props.selectedDeck,
+                            selectedDeckEntries: this.props.selectedDeckEntries,
+                            getCurrentNumberOfCopiesForCard: this.props.getCurrentNumberOfCopiesForCard,
                             updateCardCopiesInCollection: this.props.updateCardCopiesInCollection,
                             updateCardCopiesInWishlist: this.props.updateCardCopiesInWishlist,                     
-                            updateCardCopiesInDeck: this.props.deckState.updateCardCopiesInDeck,
+                            updateCardCopiesInDeck: this.props.updateCardCopiesInDeck,
                         }
                         return (
                             <Grid key={`${card.id}-${card.name}`} item xs={cardWidth}>

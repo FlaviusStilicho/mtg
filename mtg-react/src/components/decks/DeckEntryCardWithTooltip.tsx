@@ -3,7 +3,7 @@ import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
 import { Button, CardMedia, Tooltip } from "@mui/material";
-import { DeckCardEntryDTO } from "../../../../mtg-common/src/DTO";
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from '../../../../mtg-common/src/DTO';
 import { v4 as uuidv4 } from "uuid";
 import {
   isBasicLand,
@@ -14,12 +14,13 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
-import { DeckState } from "./DeckState";
 import { Component } from "react";
 
 export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO;
-  deckState: DeckState;
+  selectedDeck: DeckDTO | null;
+  updateDeckEntries: (entry: DeckCardEntryDTO) => void
+  updateCardCopiesInDeck: (card: MTGCardDTO, increment: number, isSideboard: boolean) => void
   isSideboardEntry: boolean;
   setNewCommander: (entry: DeckCardEntryDTO) => void;
 }
@@ -29,16 +30,16 @@ const iconHeight = 16;
 
 export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentProps> {
   swapSideboardCopies = () => {
-    const { entry, isSideboardEntry, deckState } = this.props;
+    const entry = this.props.entry;
     console.log(entry.card.name);
-    if (isSideboardEntry) {
+    if (this.props.isSideboardEntry) {
       entry.copies = entry.sideboardCopies;
       entry.sideboardCopies = 0;
     } else {
       entry.sideboardCopies = entry.copies;
       entry.copies = 0;
     }
-    deckState.updateDeckEntries(entry);
+    this.props.updateDeckEntries(entry);
   };
 
   shouldComponentUpdate(nextProps: DeckEntryComponentProps) {
@@ -50,13 +51,15 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
 
   render() {
     // console.log(`rendering entry ${this.props.entry.card.name}`)
-    const { entry, isSideboardEntry, deckState } = this.props;
+    const entry = this.props.entry;
+    const isSideboardEntry = this.props.isSideboardEntry;
+
     const copies = isSideboardEntry ? entry.sideboardCopies : entry.copies;
     const manaCostArray = entry.card.manaCost
       .split("}")
       .map((mc) => mc.substring(1))
       .filter((mc) => mc !== "");
-    const maxCardCopies = deckState.selectedDeck?.format === "Standard" ? 4 : 1;
+    const maxCardCopies = this.props.selectedDeck?.format === "Standard" ? 4 : 1;
     const missingCards = numberOfMissingCards(entry, isSideboardEntry) > 0;
     const addButtonDisabled = isSideboardEntry
       ? entry.sideboardCopies >= maxCardCopies && !isBasicLand(entry.card)
@@ -168,7 +171,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
                 }}
                 disabled={subtractButtonDisabled}
                 onClick={() =>
-                  deckState.updateCardCopiesInDeck(
+                  this.props.updateCardCopiesInDeck(
                     entry.card,
                     -1,
                     this.props.isSideboardEntry
@@ -187,7 +190,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
                 }}
                 disabled={addButtonDisabled}
                 onClick={() =>
-                  deckState.updateCardCopiesInDeck(
+                  this.props.updateCardCopiesInDeck(
                     entry.card,
                     1,
                     this.props.isSideboardEntry

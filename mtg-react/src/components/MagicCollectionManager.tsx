@@ -9,12 +9,11 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO, WishlistEntryDTO } from '../../../mtg-common/src/DTO';
 import axios from 'axios';
 import { CardGridProps } from './collection/CardGrid';
-import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
+import { Component, SyntheticEvent } from 'react';
 import { CardQueryParameters, ListDecksResponse, UpdateCardOwnedCopiesQueryParams } from '../../../mtg-common/src/requests';
 import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { searchBarDrawerWidth } from '../constants';
-import { DeckState } from './hooks/DeckState';
 import { isBasicLand, numberOfMissingCards, getDeckColorIdentity } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
@@ -25,114 +24,124 @@ const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
 const colorSearchOptions = ["Exact match", "Includes at least", "Includes at most"]
 const typeSearchOptions = ["Includes at least", "Includes any of"]
+const pageSize = 60;
 
 export enum EnabledTab {
   COLLECTION,
   DECK
 }
 
-const MagicCollectionManager: FC = (props) => {
-  // console.log("rendering collection manager")
-  
-  // tab state
-  const [selectedTab, setSelectedTab] = useState(0);
+export interface CollectionManagerProps {
 
-  const handleChangeSelectedTab = (event: SyntheticEvent, newValue: number) => {
-    setSelectedTab(newValue);
-  };
+}
 
-  // search options
-  const [sets, setSets] = useState<MTGSetDTO[]>([]);
-  const rarities = useState<string[]>(raritiesList)[0];
-  const [types, setTypes] = useState<string[]>([]);
-  const [colors, setColors] = useState<Color[]>([]);
-  const typeSearchSettings = useState<string[]>(typeSearchOptions)[0];
-  const colorSearchSettings = useState<string[]>(colorSearchOptions)[0];
+interface CollectionManagerState{
+  selectedTab: number
 
   // search state
-  const [selectedQueryParameters, setSelectedQueryParameters] = useState<CardQueryParameters>({
-    cardName: "",
-    cardText: "",
-    sets: [],
-    rarities: raritiesList,
-    types: [],
-    typeSearchSetting: "Includes any of",
-    subType: "",
-    colors: [],
-    colorSearchSetting: "Exact match",
-    manaCost: "",
-    format: DeckFormat.STANDARD.toString(),
-    minOwnedCopies: 0
-  })
+  sets: MTGSetDTO[]
+  rarities: string[];
+  types: string[];
+  colors: Color[];
+  typeSearchSettings: string[];
+  colorSearchSettings: string[];
+  selectedQueryParameters: CardQueryParameters
 
   // card state
-  const pageSize = 60;
-  const [page, setPage] = useState(1);
-  // const [lastPage, setLastPage] = useState(1)
-  const [cards, setCards] = useState<MTGCardDTO[]>([]);
+  page: number
+  // lastPage: number
+  cards: MTGCardDTO[]
 
   // deck state
-  const [deckManagerOpened, setDeckManagerOpened] = useState(true);
-  const [decks, setDecks] = useState<DeckDTO[]>([]);
-  const [selectedDeckId, setSelectedDeckId] = useState<number>(99999);
-  const [selectedDeck, setSelectedDeck] = useState<DeckDTO | null>(null);
-  const [selectedDeckEntries, setSelectedDeckEntries] = useState<DeckCardEntryDTO[]>([])
-  const [deckChanged, setDeckChanged] = useState<boolean>(false);
+  deckManagerOpened: boolean
+  decks: DeckDTO[]
+  selectedDeckId: number
+  selectedDeck: DeckDTO | null;
+  selectedDeckEntries: DeckCardEntryDTO[]
+  deckChanged: boolean;
 
   // wishlist
-  const [wishlistOpened, setWishlistOpened] = useState(true);
-  const [wishlistEntries, setWishlistEntries] = useState<WishlistEntryDTO[]>([])
+  wishlistOpened: boolean 
+  wishlistEntries: WishlistEntryDTO[] 
+}
 
-  const handleDeckManagerOpenClose = () => {
-    if (deckManagerOpened) {
-      setDeckManagerOpened(false)
-    } else {
-      setDeckManagerOpened(true);
+export class MagicCollectionManager extends Component<CollectionManagerProps, CollectionManagerState> {
+  constructor(props: CollectionManagerProps){
+    super(props)
+
+    this.state = {
+      selectedTab: 0,
+      sets: [],
+      rarities: raritiesList,
+      types: [],
+      colors: [],
+      typeSearchSettings: typeSearchOptions,
+      colorSearchSettings: colorSearchOptions,
+      selectedQueryParameters: {
+        cardName: "",
+        cardText: "",
+        sets: [],
+        rarities: raritiesList,
+        types: [],
+        typeSearchSetting: "Includes any of",
+        subType: "",
+        colors: [],
+        colorSearchSetting: "Exact match",
+        manaCost: "",
+        format: DeckFormat.STANDARD.toString(),
+        minOwnedCopies: 0
+      },
+      page: 1,
+      cards: [],
+      deckManagerOpened: true,
+      decks: [],
+      selectedDeckId: 99999,
+      selectedDeck: null,
+      selectedDeckEntries: [],
+      deckChanged: false,
+      wishlistOpened: true,
+      wishlistEntries: []
     }
-  };
 
-  const handleWishlistOpenClose = () => {
-    if (wishlistOpened) {
-      setWishlistOpened(false)
-    } else {
-      setWishlistOpened(true);
-    }
-  };
-
-
-  useEffect(() => {
-    fetchData()
-    fetchCardsDebounced({
-      ...selectedQueryParameters,
+    this.fetchData()
+    this.fetchCardsDebounced({
+      ...this.state.selectedQueryParameters,
     }, false)
-    fetchDecks()
-  }, []);
+    this.fetchDecks()
+  }
 
-  const fetchData = () => {
+  fetchData(){
     axios.get(`http://localhost:8000/sets`).then(response => {
       const setsFromApi: MTGSetDTO[] = response.data.data
-      setSets(setsFromApi)
+      this.setState({sets: setsFromApi})
     })
     axios.get('http://localhost:8000/types').then(response => {
       const types: string[] = response.data.data
-      setTypes(types)
+      this.setState({types})
     })
     axios.get(`http://localhost:8000/colors`).then(response => {
       const colors: Color[] = response.data.data
-      setColors(colors)
+      this.setState({colors})
     })
-
   }
 
-  const fetchCards = (queryParameters: CardQueryParameters, incrementPage: boolean = false) => {
-    var currentPage = page
+  fetchDecks(){
+    axios.get(`http://localhost:8000/decks/list`).then(response => {
+      const data: ListDecksResponse = response.data
+      const decks = data.decks
+      decks.forEach(deck => { if (deck['cardEntries'] === undefined) deck['cardEntries'] = [] })
+      this.setState({decks})
+    })
+  }
+
+  fetchCards(queryParameters: CardQueryParameters, incrementPage: boolean = false){
+    var currentPage = this.state.page
     if (incrementPage) {
       currentPage += 1
-      setPage(currentPage)
     } else {
       currentPage = 1
-      setPage(currentPage)
     }
+    this.setState({page: currentPage})
 
     console.log(`fetchcards: currentPage: ${currentPage}`)
     axios.get(`cards/`, {
@@ -145,405 +154,412 @@ const MagicCollectionManager: FC = (props) => {
       const newCards: MTGCardDTO[] = response.data.cards
       if (currentPage === 1) {
         console.log("new cards")
-        setCards(newCards)
+        this.setState({cards: newCards})
       } else {
         console.log("extra cards")
-        const newCardsList = cards.concat(newCards)
-        setCards(newCardsList)
+        const newCardsList = this.state.cards.concat(newCards)
+        this.setState({cards: newCardsList})
         // todo alex do something with total pages
       }
     }).catch(error => {
       console.error(error)
-      setCards([])
+      this.setState({cards: []})
     })
   }
 
-  const fetchCardsDebounced = useCallback(debounce(fetchCards, 1500), [
-    page,
-    cards,
-    selectedQueryParameters
-  ]);
+  fetchCardsDebounced = debounce(this.fetchCards, 1500);
 
-  const getDefaultSetsForFormat = (format: string) => {
-    if (format === DeckFormat.STANDARD.toString()) {
-      return currentStandardSets
-    } else if (format === DeckFormat.COMMANDER.toString()) {
-      return []
-    } else {
-      throw Error("Unknown format!")
-    }
-  }
+  render(){
+    // console.log("rendering collection manager")
+    const handleChangeSelectedTab = (event: SyntheticEvent, selectedTab: number) => {
+      this.setState({selectedTab});
+    };
 
-  const handleChangeSelectedQueryParameters = (event: SelectChangeEvent<typeof selectedQueryParameters>) => {
-    const propName = event.target.name;
-    const newValue = event.target.value;
-    var queryParameters = selectedQueryParameters
+    const handleDeckManagerOpenClose = () => {
+      this.setState({deckManagerOpened: !this.state.deckManagerOpened})
+    };
 
-    if (propName === "cardName" && typeof newValue === 'string') {
-      queryParameters = { ...selectedQueryParameters, cardName: newValue }
-    } else if (propName === "cardText" && typeof newValue === 'string') {
-      queryParameters = { ...selectedQueryParameters, cardText: newValue }
-    } else if (propName === "sets" && Array.isArray(newValue) && newValue.every(item => typeof item === 'number')) {
-      var newSets: number[] = []
-      if (newValue[newValue.length - 1] === 99999) {
-        newSets = queryParameters.sets.length > 0 ? [] : sets.map(set => set.id);
+    const handleWishlistOpenClose = () => {
+      this.setState({wishlistOpened: !this.state.wishlistOpened})
+    };
+    
+    const getDefaultSetsForFormat = (format: string) => {
+      if (format === DeckFormat.STANDARD.toString()) {
+        return currentStandardSets
+      } else if (format === DeckFormat.COMMANDER.toString()) {
+        return []
       } else {
-        newSets = newValue;
-      }
-      queryParameters = { ...selectedQueryParameters, sets: newSets }
-    } else if (propName === "rarities" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
-      queryParameters = { ...selectedQueryParameters, rarities: newValue }
-    } else if (propName === "types" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
-      queryParameters = { ...selectedQueryParameters, types: newValue }
-    } else if (propName === "typeSearchSetting" && typeof newValue === 'string') {
-      queryParameters = { ...selectedQueryParameters, typeSearchSetting: newValue }
-    } else if (propName === "subType" && typeof newValue === 'string') {
-      queryParameters = { ...selectedQueryParameters, subType: newValue }
-    } else if (propName === "colors" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
-      queryParameters = { ...selectedQueryParameters, colors: newValue }
-    } else if (propName === "colorSearchSetting" && typeof newValue === 'string') {
-      queryParameters = { ...selectedQueryParameters, colorSearchSetting: newValue }
-    } else if (propName === "manaCost" && typeof newValue === 'string') {
-      queryParameters = { ...selectedQueryParameters, manaCost: newValue }
-    } else if (propName === "format" && typeof newValue === 'string') {
-      const newSets: number[] = getDefaultSetsForFormat(newValue)
-      queryParameters = { ...selectedQueryParameters, format: newValue, sets: newSets }
-    } else if (propName === "minOwnedCopies" && typeof newValue === 'string') {
-      queryParameters = { ...selectedQueryParameters, minOwnedCopies: parseInt(newValue) }
-    } else {
-      console.error(`Type error while updating query parameters: field=${propName}, type=${typeof newValue}, value=${newValue}`)
-    }
-    setSelectedQueryParameters(queryParameters)
-    fetchCardsDebounced(queryParameters, false)
-  }
-
-  const handleChangeSelectedDeck = (event: SelectChangeEvent<typeof selectedDeckId>) => {
-    const newDeckId = event.target.value
-    if (typeof newDeckId === 'string') {
-      console.error("help!")
-    } else {
-      if (newDeckId === 99999) {
-        setSelectedDeckId(99999);
-        setSelectedDeck(null)
-        setSelectedDeckEntries([])
-      } else {
-        const newDeck = decks.filter(deck => deck.id === newDeckId)[0]
-        const colorIdentity: string[] = Array.from(getDeckColorIdentity(newDeck))
-        setSelectedDeckId(newDeckId);
-        setSelectedDeck(newDeck)
-        setSelectedQueryParameters({ ...selectedQueryParameters, 
-          format: newDeck.format, 
-          sets: getDefaultSetsForFormat(newDeck.format),
-          colors: colorIdentity,
-          colorSearchSetting: colorIdentity.length > 0 ? "Includes at most" : selectedQueryParameters.colorSearchSetting
-         })
-
-        setSelectedDeckEntries(getDeck(newDeckId).cardEntries)
-        console.log("Collecting card prices")
-        Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
-          if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
-            return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
-              console.log(`Price of card ${entry.card.name} is ${price}`)
-              entry.buyPrice = price
-              return entry
-            })
-          } else {
-            entry.buyPrice = undefined
-            return entry
-          }
-        })).then(entries => {
-          console.log("done collecting card prices")
-          setSelectedDeckEntries(entries)})
+        throw Error("Unknown format!")
       }
     }
-  }
 
-  const fetchDecks = () => {
-    axios.get(`http://localhost:8000/decks/list`).then(response => {
-      const data: ListDecksResponse = response.data
-      const decks = data.decks
-      decks.forEach(deck => { if (deck['cardEntries'] === undefined) deck['cardEntries'] = [] })
-      setDecks(decks)
-    })
-  }
+    const handleChangeSelectedQueryParameters = (event: SelectChangeEvent<CardQueryParameters>) => {
+      const propName = event.target.name;
+      const newValue = event.target.value;
+      var queryParameters = this.state.selectedQueryParameters
 
-  const saveDeck = () => {
-    doSaveDeck(selectedDeckEntries)
-  }
-
-  const doSaveDeck = (entries: DeckCardEntryDTO[]) => {
-    console.log('Saving deck')
-    const deck = getDeck(selectedDeckId)
-    deck.cardEntries = entries
-
-    // make a clone, submit it without version data
-    const deckClone = JSON.parse(JSON.stringify(deck));
-    for (let i = 0; i < deck.cardEntries.length; i++) {
-      deckClone.cardEntries[i].card.versions = []
-    }
-
-    axios.put(`http://localhost:8000/decks/`, deckClone).then(response => {
-      console.log(`updated deck ${deckClone.name}!`)
-    })
-  }
-
-  const deleteDeck = () => {
-    axios.delete(`http://localhost:8000/decks/?id=${selectedDeckId}`).then(response => {
-      console.log("Deleted deck!")
-    })
-    setSelectedDeckId(0)
-  }
-
-  const getDeck = (id: number): DeckDTO => {
-    return decks.filter(deck => deck.id === id)[0]
-  }
-
-  const getExistingEntry = (newCard: MTGCardDTO) => {
-    const existingCardEntry: DeckCardEntryDTO[] = selectedDeckEntries.filter(entry => entry.card.id === newCard.id)
-    if (existingCardEntry.length !== 0) {
-      return existingCardEntry[0]
-    } else {
-      return null
-    }
-  }
-
-  const getCurrentNumberOfCopiesForCard = (card: MTGCardDTO): number => {
-    const entry = getExistingEntry(card)
-    if (!entry) {
-      return 0
-    } else {
-      return entry.copies
-    }
-  }
-
-  const updateDeckEntries = (entry: DeckCardEntryDTO) => {
-    const currentEntriesList = selectedDeckEntries
-    const newEntriesList = currentEntriesList.filter(currentEntry => currentEntry.card.name !== entry.card.name)
-    newEntriesList.push(entry)
-    setSelectedDeckEntries(newEntriesList)
-    doSaveDeck(newEntriesList)
-  }
-
-  const updateCardCopiesInDeck = (card: MTGCardDTO, increment: number, isSideboard: boolean) => {
-    if (increment !== -1 && increment !== 1) {
-      throw Error("Unexpected increment")
-    }
-    if (selectedDeck === null) {
-      throw Error("No deck selected!")
-    }
-    const existingCardEntry: DeckCardEntryDTO | null = getExistingEntry(card)
-
-    if (!existingCardEntry) {
-      if (increment === -1) {
-        throw Error("Cannot remove cards from nonexistant entry")
-      }
-      const newEntry = {
-        id: undefined,
-        card: card,
-        copies: isSideboard ? 0 : 1,
-        sideboardCopies: isSideboard ? 1 : 0,
-        isCommander: false
-      }
-      updateDeckEntries(newEntry)
-    } else {
-      if (isSideboard) {
-        existingCardEntry.sideboardCopies += increment
-      } else {
-        existingCardEntry.copies += increment
-      }
-      checkEntryIllegal(existingCardEntry, selectedDeck)
-      updateDeckEntries(existingCardEntry)
-    }
-  }
-
-  function checkEntryIllegal(entry: DeckCardEntryDTO, deck: DeckDTO) {
-    const format = deck.format
-    var maxCardCopies
-    if (format === "standard") {
-      maxCardCopies = 4
-    } else if (format === "commander") {
-      maxCardCopies = 1
-    } else {
-      console.log(format)
-      throw Error("Unsupported format")
-    }
-    if (entry.copies < 0 || entry.sideboardCopies < 0) {
-      throw Error("Cannot have less than 0 copies")
-    }
-    if (isBasicLand(entry.card)) {
-      return
-    } else if (entry.copies > maxCardCopies || entry.sideboardCopies > maxCardCopies) {
-      throw Error("Cannot exceed max card copies")
-    }
-    return
-  }
-
-  const postUpdatedOwnedCopies = debounce((body: UpdateCardOwnedCopiesQueryParams) => {
-    axios.post(`http://localhost:8000/cards/ownedCopies`, body)
-  } , 1500)
-
-  const updateCardCopiesInCollection = (id: number, copies: number) => {
-    const updatedCards: MTGCardDTO[] = cards.map(card => {
-      if (card.id === id) {
-          console.log(`updating collection: ${card.name} to ${copies}`);
-          const body: UpdateCardOwnedCopiesQueryParams = {
-            cardId: card.id,
-            ownedCopies: copies
-          }
-          postUpdatedOwnedCopies(body)
-          return {
-              ...card,          
-              ownedCopies: copies 
-          };
-      } else {
-        return card
-      }
-    });
-    setCards(updatedCards);
-  }
-
-  const updateCardCopiesInWishlist = (id: number, add: boolean) => {
-    var updatedEntries: WishlistEntryDTO[] = wishlistEntries.map(entry => entry)
-    console.log(wishlistEntries)
-
-    const matchingEntry = wishlistEntries.filter(entry => {
-        if (entry.card.id === id){
-          return true
+      if (propName === "cardName" && typeof newValue === 'string') {
+        queryParameters = { ...queryParameters, cardName: newValue }
+      } else if (propName === "cardText" && typeof newValue === 'string') {
+        queryParameters = { ...queryParameters, cardText: newValue }
+      } else if (propName === "sets" && Array.isArray(newValue) && newValue.every(item => typeof item === 'number')) {
+        var newSets: number[] = []
+        if (newValue[newValue.length - 1] === 99999) {
+          newSets = queryParameters.sets.length > 0 ? [] : this.state.sets.map(set => set.id);
+        } else {
+          newSets = newValue;
         }
-        return false
-      })
-    if (matchingEntry.length === 1){ 
-      const entry = matchingEntry[0]
-      console.log(`found existing wishlist entry ${entry.card.name}`)
-
-      entry.desiredCopies = add ? entry.desiredCopies + 1 : entry.desiredCopies - 1
-      if (matchingEntry[0].desiredCopies <= 0){
-        console.log(`Removing entry fom wishlist: ${wishlistEntries.filter(entry => entry.card.id === id)[0].card.name}`)
-        updatedEntries = wishlistEntries.filter(entry => entry.card.id !== id)
+        queryParameters = { ...queryParameters, sets: newSets }
+      } else if (propName === "rarities" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+        queryParameters = { ...queryParameters, rarities: newValue }
+      } else if (propName === "types" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+        queryParameters = { ...queryParameters, types: newValue }
+      } else if (propName === "typeSearchSetting" && typeof newValue === 'string') {
+        queryParameters = { ...queryParameters, typeSearchSetting: newValue }
+      } else if (propName === "subType" && typeof newValue === 'string') {
+        queryParameters = { ...queryParameters, subType: newValue }
+      } else if (propName === "colors" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
+        queryParameters = { ...queryParameters, colors: newValue }
+      } else if (propName === "colorSearchSetting" && typeof newValue === 'string') {
+        queryParameters = { ...queryParameters, colorSearchSetting: newValue }
+      } else if (propName === "manaCost" && typeof newValue === 'string') {
+        queryParameters = { ...queryParameters, manaCost: newValue }
+      } else if (propName === "format" && typeof newValue === 'string') {
+        const newSets: number[] = getDefaultSetsForFormat(newValue)
+        queryParameters = { ...queryParameters, format: newValue, sets: newSets }
+      } else if (propName === "minOwnedCopies" && typeof newValue === 'string') {
+        queryParameters = { ...queryParameters, minOwnedCopies: parseInt(newValue) }
       } else {
-        updatedEntries = wishlistEntries.filter(entry => entry.card.id !== id)
-        updatedEntries.push(matchingEntry[0])
+        console.error(`Type error while updating query parameters: field=${propName}, type=${typeof newValue}, value=${newValue}`)
       }
-    } else {
-      if(!add) {
-        throw Error("Cannot decrease number of copies on card that isnt on wishlist")
-      }
-      const matchingCards: MTGCardDTO[] = cards.filter(card => card.id === id)
-      if(matchingCards.length > 1 || matchingCards.length === 0){
-        throw Error("Couldnt match card")
-      } else {
-        console.log(`Adding entry to wishlist: ${matchingCards[0].name}`)
+      this.setState({selectedQueryParameters: queryParameters})
+      this.fetchCardsDebounced(queryParameters, false)
+    }
 
-        updatedEntries.push({
-          card: matchingCards[0],
-          desiredCopies: 1,
-          isInShoppingCart: false
-        })
+    const handleChangeSelectedDeck = (event: SelectChangeEvent<number>) => {
+      const newDeckId = event.target.value
+      if (typeof newDeckId === 'string') {
+        console.error("help!")
+      } else {
+        if (newDeckId === 99999) {
+          this.setState({
+            selectedDeckId: 99999,
+            selectedDeck: null,
+            selectedDeckEntries: []
+          })
+        } else {
+          const newDeck = this.state.decks.filter(deck => deck.id === newDeckId)[0]
+          const colorIdentity: string[] = Array.from(getDeckColorIdentity(newDeck))
+          this.setState({
+            selectedDeckId: newDeckId,
+            selectedDeck: newDeck,
+            selectedDeckEntries: getDeck(newDeckId).cardEntries,
+            selectedQueryParameters: {
+              ...this.state.selectedQueryParameters,
+              format: newDeck.format, 
+              sets: getDefaultSetsForFormat(newDeck.format),
+              colors: colorIdentity,
+              colorSearchSetting: colorIdentity.length > 0 ? "Includes at most" : this.state.selectedQueryParameters.colorSearchSetting 
+            }
+          })
+
+          console.log("Collecting card prices")
+          Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
+            if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
+              return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
+                console.log(`Price of card ${entry.card.name} is ${price}`)
+                entry.buyPrice = price
+                return entry
+              })
+            } else {
+              entry.buyPrice = undefined
+              return entry
+            }
+          })).then(entries => {
+            console.log("done collecting card prices")
+            this.setState({ selectedDeckEntries: entries})
+          })
+        }
       }
     }
-    console.log("updating wishlist")
-    console.log(updatedEntries)
-    setWishlistEntries(updatedEntries);
-  }
 
-  const handleLoadMore = async () => {
-    fetchCardsDebounced(selectedQueryParameters, true)
-  }
+    const saveDeck = () => {
+      doSaveDeck(this.state.selectedDeckEntries)
+    }
 
-  const searchWindowProps: SearchWindowProps = {
-    selectedQueryParameters,
-    handleChangeSelectedQueryParameters,
-    sets,
-    rarities,
-    types,
-    typeSearchSettings,
-    colors,
-    colorSearchSettings,
-  }
+    const doSaveDeck = (entries: DeckCardEntryDTO[]) => {
+      console.log('Saving deck')
+      const deck = getDeck(this.state.selectedDeckId)
+      deck.cardEntries = entries
 
-  const deckState: DeckState = {
-    decks,
-    saveDeck,
-    deleteDeck,
-    fetchDecks,
-    selectedDeck,
-    selectedDeckId,
-    selectedDeckEntries,
-    handleChangeSelectedDeck,
-    deckChanged,
-    setDeckChanged,
-    updateCardCopiesInDeck,
-    updateDeckEntries,
-    getCurrentNumberOfCopiesForCard
-  }
+      // make a clone, submit it without version data
+      const deckClone = JSON.parse(JSON.stringify(deck));
+      for (let i = 0; i < deck.cardEntries.length; i++) {
+        deckClone.cardEntries[i].card.versions = []
+      }
 
-  const deckManagerProps: DeckManagerProps = {
-    deckManagerOpened: deckManagerOpened,
-    deckState,
-    selectedDeckEntries
-  }
+      axios.put(`http://localhost:8000/decks/`, deckClone).then(response => {
+        console.log(`updated deck ${deckClone.name}!`)
+      })
+    }
 
-  const wishlistProps: WishlistProps = {
-    wishlistOpened,
-    wishlistedCards: wishlistEntries,
-    updateCardCopiesInWishlist
-  }
+    const deleteDeck = () => {
+      axios.delete(`http://localhost:8000/decks/?id=${this.state.selectedDeckId}`).then(response => {
+        console.log("Deleted deck!")
+      })
+      this.setState({selectedDeckId: 0})
+    }
 
-  const collectionGridProps: CardGridProps = {
-    cards,
-    enabledTab: EnabledTab.COLLECTION,
-    deckState,
-    wishlistOpened,
-    updateCardCopiesInCollection,
-    updateCardCopiesInWishlist,
-    handleLoadMore
-  }
+    const getDeck = (id: number): DeckDTO => {
+      return this.state.decks.filter(deck => deck.id === id)[0]
+    }
 
-  const deckGridProps: CardGridProps = {
-    cards,
-    enabledTab: EnabledTab.DECK,
-    deckState,
-    deckManagerOpened,
-    updateCardCopiesInCollection,
-    updateCardCopiesInWishlist,
-    handleLoadMore
-  }
+    const getExistingEntry = (newCard: MTGCardDTO) => {
+      const existingCardEntry: DeckCardEntryDTO[] = this.state.selectedDeckEntries.filter(entry => entry.card.id === newCard.id)
+      if (existingCardEntry.length !== 0) {
+        return existingCardEntry[0]
+      } else {
+        return null
+      }
+    }
 
-  const navBarProps: NavBarProps = {
-    selectedTab,
-    handleChangeSelectedTab,
-    open: deckManagerOpened,
-    handleDeckManagerOpenClose,
-    handleWishlistOpenClose
-  }
+    const getCurrentNumberOfCopiesForCard = (card: MTGCardDTO): number => {
+      const entry = getExistingEntry(card)
+      if (!entry) {
+        return 0
+      } else {
+        return entry.copies
+      }
+    }
 
-  return (
-    <ThemeProvider theme={theme}>
-      <Box sx={{ display: 'flex', minHeight: '100vh', minWidth: "100%" }}>
-        <CssBaseline />
-        <Box
-          component="nav"
-          sx={{ width: { sm: searchBarDrawerWidth }, flexShrink: { sm: 0 } }}>
-          <SearchBar {...searchWindowProps} />
+    const updateDeckEntries = (entry: DeckCardEntryDTO) => {
+      const currentEntriesList = this.state.selectedDeckEntries
+      const newEntriesList = currentEntriesList.filter(currentEntry => currentEntry.card.name !== entry.card.name)
+      newEntriesList.push(entry)
+      this.setState({selectedDeckEntries: newEntriesList})
+      doSaveDeck(newEntriesList)
+    }
+
+    const updateCardCopiesInDeck = (card: MTGCardDTO, increment: number, isSideboard: boolean) => {
+      if (increment !== -1 && increment !== 1) {
+        throw Error("Unexpected increment")
+      }
+      if (this.state.selectedDeck === null) {
+        throw Error("No deck selected!")
+      }
+      const existingCardEntry: DeckCardEntryDTO | null = getExistingEntry(card)
+
+      if (!existingCardEntry) {
+        if (increment === -1) {
+          throw Error("Cannot remove cards from nonexistant entry")
+        }
+        const newEntry = {
+          id: undefined,
+          card: card,
+          copies: isSideboard ? 0 : 1,
+          sideboardCopies: isSideboard ? 1 : 0,
+          isCommander: false
+        }
+        updateDeckEntries(newEntry)
+      } else {
+        if (isSideboard) {
+          existingCardEntry.sideboardCopies += increment
+        } else {
+          existingCardEntry.copies += increment
+        }
+        checkEntryIllegal(existingCardEntry, this.state.selectedDeck)
+        updateDeckEntries(existingCardEntry)
+      }
+    }
+
+    function checkEntryIllegal(entry: DeckCardEntryDTO, deck: DeckDTO) {
+      const format = deck.format
+      var maxCardCopies
+      if (format === "standard") {
+        maxCardCopies = 4
+      } else if (format === "commander") {
+        maxCardCopies = 1
+      } else {
+        console.log(format)
+        throw Error("Unsupported format")
+      }
+      if (entry.copies < 0 || entry.sideboardCopies < 0) {
+        throw Error("Cannot have less than 0 copies")
+      }
+      if (isBasicLand(entry.card)) {
+        return
+      } else if (entry.copies > maxCardCopies || entry.sideboardCopies > maxCardCopies) {
+        throw Error("Cannot exceed max card copies")
+      }
+      return
+    }
+
+    const postUpdatedOwnedCopies = debounce((body: UpdateCardOwnedCopiesQueryParams) => {
+      axios.post(`http://localhost:8000/cards/ownedCopies`, body)
+    } , 1500)
+
+    const updateCardCopiesInCollection = (id: number, copies: number) => {
+      const updatedCards: MTGCardDTO[] = this.state.cards.map(card => {
+        if (card.id === id) {
+            console.log(`updating collection: ${card.name} to ${copies}`);
+            const body: UpdateCardOwnedCopiesQueryParams = {
+              cardId: card.id,
+              ownedCopies: copies
+            }
+            postUpdatedOwnedCopies(body)
+            return {
+                ...card,          
+                ownedCopies: copies 
+            };
+        } else {
+          return card
+        }
+      });
+      this.setState({cards: updatedCards})
+    }
+
+    const updateCardCopiesInWishlist = (id: number, add: boolean) => {
+      var updatedEntries: WishlistEntryDTO[] = this.state.wishlistEntries.map(entry => entry)
+      console.log(this.state.wishlistEntries)
+
+      const matchingEntry = this.state.wishlistEntries.filter(entry => {
+          if (entry.card.id === id){
+            return true
+          }
+          return false
+        })
+      if (matchingEntry.length === 1){ 
+        const entry = matchingEntry[0]
+        console.log(`found existing wishlist entry ${entry.card.name}`)
+
+        entry.desiredCopies = add ? entry.desiredCopies + 1 : entry.desiredCopies - 1
+        if (matchingEntry[0].desiredCopies <= 0){
+          console.log(`Removing entry fom wishlist: ${this.state.wishlistEntries.filter(entry => entry.card.id === id)[0].card.name}`)
+          updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== id)
+        } else {
+          updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== id)
+          updatedEntries.push(matchingEntry[0])
+        }
+      } else {
+        if(!add) {
+          throw Error("Cannot decrease number of copies on card that isnt on wishlist")
+        }
+        const matchingCards: MTGCardDTO[] = this.state.cards.filter(card => card.id === id)
+        if(matchingCards.length > 1 || matchingCards.length === 0){
+          throw Error("Couldnt match card")
+        } else {
+          console.log(`Adding entry to wishlist: ${matchingCards[0].name}`)
+
+          updatedEntries.push({
+            card: matchingCards[0],
+            desiredCopies: 1,
+            isInShoppingCart: false
+          })
+        }
+      }
+      console.log("updating wishlist")
+      console.log(updatedEntries)
+      this.setState({wishlistEntries: updatedEntries})
+    }
+
+    const handleLoadMore = async () => {
+      this.fetchCardsDebounced(this.state.selectedQueryParameters, true)
+    }
+
+    const searchWindowProps: SearchWindowProps = {
+      selectedQueryParameters: this.state.selectedQueryParameters,
+      handleChangeSelectedQueryParameters,
+      sets: this.state.sets,
+      rarities: this.state.rarities,
+      types: this.state.types,
+      typeSearchSettings: this.state.typeSearchSettings,
+      colors: this.state.colors,
+      colorSearchSettings: this.state.colorSearchSettings,
+    }
+
+    const deckManagerProps: DeckManagerProps = {
+      deckManagerOpened: this.state.deckManagerOpened,
+      fetchDecks: this.fetchDecks,
+      decks: this.state.decks,
+      selectedDeck: this.state.selectedDeck,
+      selectedDeckId: this.state.selectedDeckId,
+      selectedDeckEntries: this.state.selectedDeckEntries,
+      handleChangeSelectedDeck,
+      updateDeckEntries,
+      updateCardCopiesInDeck,
+      saveDeck
+    }
+
+    const wishlistProps: WishlistProps = {
+      wishlistOpened: this.state.wishlistOpened,
+      wishlistedCards: this.state.wishlistEntries,
+      updateCardCopiesInWishlist
+    }
+
+    const collectionGridProps: CardGridProps = {
+      cards: this.state.cards,
+      enabledTab: EnabledTab.COLLECTION,
+      selectedDeck: this.state.selectedDeck,
+      selectedDeckId: this.state.selectedDeckId,
+      selectedDeckEntries: this.state.selectedDeckEntries,
+      wishlistOpened: this.state.wishlistOpened,
+      updateCardCopiesInDeck,
+      getCurrentNumberOfCopiesForCard,
+      updateCardCopiesInCollection,
+      updateCardCopiesInWishlist,
+      handleLoadMore
+    }
+
+    const deckGridProps: CardGridProps = {
+      cards: this.state.cards,
+      enabledTab: EnabledTab.DECK,
+      selectedDeck: this.state.selectedDeck,
+      selectedDeckId: this.state.selectedDeckId,
+      selectedDeckEntries: this.state.selectedDeckEntries,
+      deckManagerOpened: this.state.deckManagerOpened,
+      updateCardCopiesInDeck,
+      getCurrentNumberOfCopiesForCard,
+      updateCardCopiesInCollection,
+      updateCardCopiesInWishlist,
+      handleLoadMore
+    }
+
+    const navBarProps: NavBarProps = {
+      selectedTab: this.state.selectedTab,
+      handleChangeSelectedTab,
+      open: this.state.deckManagerOpened,
+      handleDeckManagerOpenClose,
+      handleWishlistOpenClose
+    }
+
+    return (
+      <ThemeProvider theme={theme}>
+        <Box sx={{ display: 'flex', minHeight: '100vh', minWidth: "100%" }}>
+          <CssBaseline />
+          <Box
+            component="nav"
+            sx={{ width: { sm: searchBarDrawerWidth }, flexShrink: { sm: 0 } }}>
+            <SearchBar {...searchWindowProps} />
+          </Box>
+          <Box width="100%">
+            <NavBar {...navBarProps} />
+            <TabPanel value={this.state.selectedTab} index={0}>
+              <Box width="100%">
+                <CardGrid {...collectionGridProps} />
+              </Box>
+              <WishlistDrawer {...wishlistProps}/>
+            </TabPanel>
+            <TabPanel value={this.state.selectedTab} index={1}>
+              <Box width="100%">
+                <CardGrid {...deckGridProps} />
+              </Box>
+              <DeckManagerDrawer {...deckManagerProps} />
+            </TabPanel>
+          </Box>
         </Box>
-        <Box width="100%">
-          <NavBar {...navBarProps} />
-          <TabPanel value={selectedTab} index={0}>
-            <Box width="100%">
-              <CardGrid {...collectionGridProps} />
-            </Box>
-            <WishlistDrawer {...wishlistProps}/>
-          </TabPanel>
-          <TabPanel value={selectedTab} index={1}>
-            <Box width="100%">
-              <CardGrid {...deckGridProps} />
-            </Box>
-            <DeckManagerDrawer {...deckManagerProps} />
-          </TabPanel>
-        </Box>
-      </Box>
-    </ThemeProvider>
-  );
+      </ThemeProvider>
+    );
+  }
 }
 
 export default MagicCollectionManager
