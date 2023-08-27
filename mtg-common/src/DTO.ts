@@ -8,6 +8,7 @@ export interface MTGCardDTO {
     ownedCopies: number
     versions: MTGCardVersionDTO[]
     otherSide?: MTGCardDTO
+    buyPrice?: number | undefined
 }
 
 export interface MTGCardVersionDTO {
@@ -39,7 +40,7 @@ export interface DeckCardEntryDTO {
     copies: number
     sideboardCopies: number
     isCommander: boolean
-    buyPrice?: number | undefined
+    buyPrice?: number | undefined //todo remove > move this to card dto
 }
 
 export interface Color {
@@ -61,7 +62,6 @@ export interface NewDeckEntryDTO {
 
 export interface WishlistEntryDTO {
     card: MTGCardDTO
-    deck: DeckDTO
-    shop: string
+    desiredCopies: number
     isInShoppingCart: boolean
 }

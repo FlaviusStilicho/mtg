@@ -9,8 +9,6 @@ import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
 import { Component } from 'react';
 import { MTGCardCollectionCounterBox } from './MTGCardCollectionCounterBox';
 import { MTGCardPopup } from './MTGCardPopup';
-import { UpdateCardOwnedCopiesQueryParams } from '../../../../mtg-common/src/requests';
-import { debounce } from 'lodash';
 import { CardImageProps, MTGCardImage } from './MTGCardImage';
 export interface CardComponentProps {
     card: MTGCardDTO,
@@ -21,6 +19,7 @@ export interface CardComponentProps {
     getCurrentNumberOfCopiesForCard: Function,
     updateCardCopiesInDeck: Function
     updateCardCopiesInCollection: (id: number, copies: number) => void
+    updateCardCopiesInWishlist: (id: number, add: boolean) => void
 }
 
 interface CardComponentState {
@@ -82,7 +81,6 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
 
     addOwnedCopy = (): void => {
         this.props.updateCardCopiesInCollection(this.props.card.id, this.props.card.ownedCopies + 1)
-        // this.handleChangeOwnedCopies(this.state.ownedCopies + 1)
     }
 
     fetchBuyPrice = (): void => {
@@ -193,6 +191,8 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
                         onClose={this.handleClose}
                         buyPrice={this.state.buyPrice}
                         sellPrice={this.state.sellPrice}
+                        updateCardCopiesInWishlist={this.props.updateCardCopiesInWishlist}
+                        card={this.props.card}
                     />}
             </Box>
         );

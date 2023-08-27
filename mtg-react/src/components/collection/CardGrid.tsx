@@ -2,8 +2,8 @@ import { Component, RefObject, createRef } from "react";
 
 import { Button, Grid } from '@mui/material';
 import { MTGCardComponent, CardComponentProps } from "./MTGCardComponent";
-import { gridCardSizeFactor, imageWidth, deckManagerDrawerWidth } from '../../constants';
-import { MTGCardDTO } from "../../../../mtg-common/src/DTO";
+import { gridCardSizeFactor, imageWidth, drawerWidth } from '../../constants';
+import { MTGCardDTO } from '../../../../mtg-common/src/DTO';
 import { EnabledTab } from "../MagicCollectionManager";
 import { DeckState } from "../hooks/DeckState";
 
@@ -12,7 +12,9 @@ export interface CardGridProps {
     enabledTab: EnabledTab
     deckState: DeckState
     deckManagerOpened?: boolean
+    wishlistOpened?: boolean
     updateCardCopiesInCollection: (id: number, copies: number) => void
+    updateCardCopiesInWishlist: (id: number, add: boolean) => void
     handleLoadMore: any
 }
 
@@ -48,12 +50,23 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
          return this.props.cards !== nextProps.cards ||
          this.props.deckState.selectedDeckId !== nextProps.deckState.selectedDeckId ||
          this.props.deckState.selectedDeckEntries.length !== nextProps.deckState.selectedDeckEntries.length ||
-         this.state.gridMaxWidth !== nextState.gridMaxWidth
+         this.state.gridMaxWidth !== nextState.gridMaxWidth ||
+         this.props.deckManagerOpened !== nextProps.deckManagerOpened ||
+         this.props.wishlistOpened !== nextProps.wishlistOpened
      }
 
     render() {
         // console.log("rendering grid")   
-        const gridActualWidth = this.props.enabledTab === EnabledTab.DECK && this.props.deckManagerOpened ? this.state.gridMaxWidth - deckManagerDrawerWidth : this.state.gridMaxWidth
+        var gridActualWidth: number
+        if (this.props.enabledTab === EnabledTab.DECK && this.props.deckManagerOpened){
+            gridActualWidth = this.state.gridMaxWidth - drawerWidth
+        } else if (this.props.enabledTab === EnabledTab.COLLECTION && this.props.wishlistOpened){
+            gridActualWidth = this.state.gridMaxWidth - drawerWidth
+        } else {
+            gridActualWidth = this.state.gridMaxWidth
+        }
+
+
         const maxCardsOnScreen = gridActualWidth / (imageWidth * gridCardSizeFactor)
         const cardWidth = (12 / maxCardsOnScreen) + 0.15
 
@@ -77,7 +90,8 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
                             selectedDeck: this.props.deckState.selectedDeck,
                             selectedDeckEntries: this.props.deckState.selectedDeckEntries,
                             getCurrentNumberOfCopiesForCard: this.props.deckState.getCurrentNumberOfCopiesForCard,
-                            updateCardCopiesInCollection: this.props.updateCardCopiesInCollection,                            
+                            updateCardCopiesInCollection: this.props.updateCardCopiesInCollection,
+                            updateCardCopiesInWishlist: this.props.updateCardCopiesInWishlist,                     
                             updateCardCopiesInDeck: this.props.deckState.updateCardCopiesInDeck,
                         }
                         return (

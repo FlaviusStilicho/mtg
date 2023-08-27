@@ -575,7 +575,7 @@ export class MTGCardVersion {
         this.scryfallUri = scryfallUri
         this.frontImageUri = frontImageUri
         this.set = set,
-            this.isPrimaryVersion = isPrimaryVersion
+        this.isPrimaryVersion = isPrimaryVersion
         this.isStandardLegal = standardLegal
         this.isCommanderLegal = commanderLegal
         this.backIllustrationId = backIllustrationId

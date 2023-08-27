@@ -6,7 +6,7 @@ import NavBar, { NavBarProps } from './NavBar';
 import { CardGrid } from './collection/CardGrid';
 import { theme } from '../style/theme';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO } from '../../../mtg-common/src/DTO';
+import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO, WishlistEntryDTO } from '../../../mtg-common/src/DTO';
 import axios from 'axios';
 import { CardGridProps } from './collection/CardGrid';
 import { FC, SyntheticEvent, useCallback, useEffect, useState } from 'react';
@@ -19,7 +19,7 @@ import { isBasicLand, numberOfMissingCards, getDeckColorIdentity } from '../func
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
-import Wishlist, { WishlistProps } from './wishList/WishList';
+import { WishlistDrawer, WishlistProps } from './collection/WishlistDrawer';
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
@@ -32,6 +32,8 @@ export enum EnabledTab {
 }
 
 const MagicCollectionManager: FC = (props) => {
+  // console.log("rendering collection manager")
+  
   // tab state
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -66,7 +68,7 @@ const MagicCollectionManager: FC = (props) => {
   // card state
   const pageSize = 60;
   const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1)
+  // const [lastPage, setLastPage] = useState(1)
   const [cards, setCards] = useState<MTGCardDTO[]>([]);
 
   // deck state
@@ -78,7 +80,8 @@ const MagicCollectionManager: FC = (props) => {
   const [deckChanged, setDeckChanged] = useState<boolean>(false);
 
   // wishlist
-  const [wishlistedCards, setWishlistedCards] = useState<MTGCardDTO[]>([])
+  const [wishlistOpened, setWishlistOpened] = useState(true);
+  const [wishlistEntries, setWishlistEntries] = useState<WishlistEntryDTO[]>([])
 
   const handleDeckManagerOpenClose = () => {
     if (deckManagerOpened) {
@@ -87,6 +90,15 @@ const MagicCollectionManager: FC = (props) => {
       setDeckManagerOpened(true);
     }
   };
+
+  const handleWishlistOpenClose = () => {
+    if (wishlistOpened) {
+      setWishlistOpened(false)
+    } else {
+      setWishlistOpened(true);
+    }
+  };
+
 
   useEffect(() => {
     fetchData()
@@ -390,6 +402,50 @@ const MagicCollectionManager: FC = (props) => {
     setCards(updatedCards);
   }
 
+  const updateCardCopiesInWishlist = (id: number, add: boolean) => {
+    var updatedEntries: WishlistEntryDTO[] = wishlistEntries.map(entry => entry)
+    console.log(wishlistEntries)
+
+    const matchingEntry = wishlistEntries.filter(entry => {
+        if (entry.card.id === id){
+          return true
+        }
+        return false
+      })
+    if (matchingEntry.length === 1){ 
+      const entry = matchingEntry[0]
+      console.log(`found existing wishlist entry ${entry.card.name}`)
+
+      entry.desiredCopies = add ? entry.desiredCopies + 1 : entry.desiredCopies - 1
+      if (matchingEntry[0].desiredCopies <= 0){
+        console.log(`Removing entry fom wishlist: ${wishlistEntries.filter(entry => entry.card.id === id)[0].card.name}`)
+        updatedEntries = wishlistEntries.filter(entry => entry.card.id !== id)
+      } else {
+        updatedEntries = wishlistEntries.filter(entry => entry.card.id !== id)
+        updatedEntries.push(matchingEntry[0])
+      }
+    } else {
+      if(!add) {
+        throw Error("Cannot decrease number of copies on card that isnt on wishlist")
+      }
+      const matchingCards: MTGCardDTO[] = cards.filter(card => card.id === id)
+      if(matchingCards.length > 1 || matchingCards.length === 0){
+        throw Error("Couldnt match card")
+      } else {
+        console.log(`Adding entry to wishlist: ${matchingCards[0].name}`)
+
+        updatedEntries.push({
+          card: matchingCards[0],
+          desiredCopies: 1,
+          isInShoppingCart: false
+        })
+      }
+    }
+    console.log("updating wishlist")
+    console.log(updatedEntries)
+    setWishlistEntries(updatedEntries);
+  }
+
   const handleLoadMore = async () => {
     fetchCardsDebounced(selectedQueryParameters, true)
   }
@@ -423,16 +479,23 @@ const MagicCollectionManager: FC = (props) => {
 
   const deckManagerProps: DeckManagerProps = {
     deckManagerOpened: deckManagerOpened,
-    handleDeckManagerOpenClose,
     deckState,
     selectedDeckEntries
   }
 
-  const searchGridProps: CardGridProps = {
+  const wishlistProps: WishlistProps = {
+    wishlistOpened,
+    wishlistedCards: wishlistEntries,
+    updateCardCopiesInWishlist
+  }
+
+  const collectionGridProps: CardGridProps = {
     cards,
     enabledTab: EnabledTab.COLLECTION,
     deckState,
+    wishlistOpened,
     updateCardCopiesInCollection,
+    updateCardCopiesInWishlist,
     handleLoadMore
   }
 
@@ -442,6 +505,7 @@ const MagicCollectionManager: FC = (props) => {
     deckState,
     deckManagerOpened,
     updateCardCopiesInCollection,
+    updateCardCopiesInWishlist,
     handleLoadMore
   }
 
@@ -449,11 +513,8 @@ const MagicCollectionManager: FC = (props) => {
     selectedTab,
     handleChangeSelectedTab,
     open: deckManagerOpened,
-    handleDeckManagerOpenClose
-  }
-
-  const wishlistProps: WishlistProps = {
-    wishlistedCards
+    handleDeckManagerOpenClose,
+    handleWishlistOpenClose
   }
 
   return (
@@ -469,19 +530,15 @@ const MagicCollectionManager: FC = (props) => {
           <NavBar {...navBarProps} />
           <TabPanel value={selectedTab} index={0}>
             <Box width="100%">
-              <CardGrid {...searchGridProps} />
+              <CardGrid {...collectionGridProps} />
             </Box>
+            <WishlistDrawer {...wishlistProps}/>
           </TabPanel>
           <TabPanel value={selectedTab} index={1}>
             <Box width="100%">
               <CardGrid {...deckGridProps} />
             </Box>
             <DeckManagerDrawer {...deckManagerProps} />
-          </TabPanel>
-          <TabPanel value={selectedTab} index={2}>
-            <Box width="100%">
-              <Wishlist {...wishlistProps}/>
-            </Box>
           </TabPanel>
         </Box>
       </Box>

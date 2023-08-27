@@ -13,27 +13,21 @@ export class WishlistEntry {
     @OneToOne(() => MTGCard)
     @JoinColumn()
     card: MTGCard
-    @OneToOne(() => Deck)
-    @JoinColumn()
-    deck: Deck
     @Column()
-    shop: string
+    desiredEntries: number
 
     constructor(
         card: MTGCard,
-        deck: Deck,
-        shop: string
+        desiredEntries: number
     ) {
         this.card = card
-        this.deck = deck
-        this.shop = shop
+        this.desiredEntries = desiredEntries
     }
 
     toDTO(){
         return <WishlistEntryDTO>{
             card: this.card.toDTO(),
-            deck: this.deck.toDTO(),
-            shop: this.shop,
+            desiredCopies: this.desiredEntries,
             isInShoppingCart: false
         } 
     }
@@ -41,8 +35,7 @@ export class WishlistEntry {
     static async fromDTO(entry: WishlistEntryDTO): Promise<WishlistEntry> {
         return new WishlistEntry(
             await MTGCardRepository.findOneBy({id: entry.card.id}),
-            await DeckRepository.findOneBy({id: entry.deck.id}),
-            entry.shop
+            entry.desiredCopies
         )
     }
 

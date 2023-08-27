@@ -4,7 +4,7 @@ import { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
-import { navBarHeight, deckManagerDrawerWidth, manaCurveChartOptions, imageHeight, imageWidth } from '../../constants';
+import { navBarHeight, drawerWidth, manaCurveChartOptions, imageHeight, imageWidth } from '../../constants';
 import { buttonBackgroundStyle, deckEntryTextBoxStyle, listItemStyle, searchTextFieldStyle } from '../../style/styles';
 import { Button, CardMedia, IconButton, MenuItem, Select } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -20,7 +20,7 @@ import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifact
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { DeckCardTypeCounter } from './DeckCardTypeCounter';
+import { DeckCardTypeCounter } from './DeckEntryGrouping';
 import { CopyDeckWindow, CopyDeckWindowProps } from './windows/CopyDeckWindow';
 import { DeleteDeckWindow, DeleteDeckWindowProps } from './windows/DeleteDeckWindow';
 import { EditDeckWindow, EditDeckWindowProps } from './windows/EditDeckWindow';
@@ -33,7 +33,6 @@ const deckNameFontSize = 10
 
 export interface DeckManagerProps extends MuiAppBarProps {
   deckManagerOpened?: boolean;
-  handleDeckManagerOpenClose: Function
   deckState: DeckState
   selectedDeckEntries: DeckCardEntryDTO[]
 }
@@ -206,10 +205,10 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     }}>
       <Drawer
         sx={{
-          width: deckManagerDrawerWidth,
+          width: drawerWidth,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
-            width: deckManagerDrawerWidth,
+            width: drawerWidth,
           },
         }}
         PaperProps={{
@@ -417,7 +416,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           />
           
           <DevotionCountersBox entries={props.selectedDeckEntries}/>
-          
+
           <Bar style={{
             paddingLeft: 30,
             paddingRight: 30,

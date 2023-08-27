@@ -5,7 +5,7 @@ import { DeckEntryComponentWithTooltip } from "./DeckEntryCardWithTooltip";
 import { DeckState } from "../hooks/DeckState";
 import { Component } from "react";
 
-export interface DeckCardTypeCounterProps {
+export interface DeckEntryGroupingProps {
   label: String;
   deckState: DeckState;
   countFn: (entries: DeckCardEntryDTO[]) => number;
@@ -14,8 +14,8 @@ export interface DeckCardTypeCounterProps {
   isSideboardEntry: boolean;
 }
 
-export class DeckCardTypeCounter extends Component<DeckCardTypeCounterProps> {
-  shouldComponentUpdate(nextProps: DeckCardTypeCounterProps) {
+export class DeckCardTypeCounter extends Component<DeckEntryGroupingProps> {
+  shouldComponentUpdate(nextProps: DeckEntryGroupingProps) {
     return this.props.deckState.selectedDeckEntries !== nextProps.deckState.selectedDeckEntries;
   }
 

@@ -219,7 +219,7 @@ function ParseCardVersion(rawCard: object, sets: MTGSet[], isPrimaryVersion: boo
             rawCard['scryfall_uri'],
             parseImageUri(rawCard, front),
             matchedSets[0],
-            isPrimaryVersion,
+            isPrimaryVersion, //todo currently the first fetched version is the primary one, instead the most recent version should be
             rawCard['legalities']['standard'] === "legal" ? true : false,
             rawCard['legalities']['commander'] === "legal" ? true : false,
             back['illustration_id'],
