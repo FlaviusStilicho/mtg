@@ -11,6 +11,7 @@ import { Component } from "react";
 
 export interface WishlistEntryProps {
   entry: WishlistEntryDTO;
+  updateCardCopiesInWishlist: (id: number, add: boolean) => void
 }
 
 const iconWidth = 16;
@@ -105,6 +106,10 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
             <Box
               style={{ textAlign: "right", marginRight: 2, width: "25%" }}
               sx={deckEntryTextBoxStyle}
+            >{this.props.entry.card.ownedCopies}/{this.props.entry.desiredCopies}</Box>
+            <Box
+              style={{ textAlign: "right", marginRight: 2, width: "25%" }}
+              sx={deckEntryTextBoxStyle}
             >
               <Button
                 variant="contained"
@@ -114,7 +119,7 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
                   width: iconWidth,
                   minWidth: iconWidth,
                 }}
-                onClick={() => null } // TODO
+                onClick={() => { this.props.updateCardCopiesInWishlist(this.props.entry.card.id, false)} }
               >
                 <RemoveIcon fontSize="small" />
               </Button>
@@ -126,7 +131,7 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
                   width: iconWidth,
                   minWidth: iconWidth,
                 }}
-                onClick={() => null } // TODO
+                onClick={() => { this.props.updateCardCopiesInWishlist(this.props.entry.card.id, true)} }
               >
                 <AddIcon fontSize="small" />
               </Button>

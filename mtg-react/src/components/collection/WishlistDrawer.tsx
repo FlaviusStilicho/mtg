@@ -7,7 +7,7 @@ import { WishlistEntry } from "./WishlistEntry";
 
 export interface WishlistProps {
     wishlistOpened: boolean
-    wishlistedCards: WishlistEntryDTO[]
+    wishlistEntries: WishlistEntryDTO[]
     updateCardCopiesInWishlist: (id: number, add: boolean) => void
   }
 
@@ -20,6 +20,7 @@ export class WishlistDrawer extends Component<WishlistProps> {
   
     render() {
         // console.log("Rendering wishlist")
+        // console.log(`current number of entries: ${this.props.wishlistEntries ? this.props.wishlistEntries.length : 0}`)
         return (<Box sx={{
           display: 'flex',
         }}>
@@ -47,21 +48,23 @@ export class WishlistDrawer extends Component<WishlistProps> {
               <ListItem sx={{ ...listItemStyle, fontSize: 18 }}>
                 Wishlist
               </ListItem>
-              <ListItem style={{ paddingLeft: 0, paddingRight: 0, width: "100%" }}>
                 <Box
                   style={{ textAlign: "left", width: "100%" }}
                   sx={deckEntryTextBoxStyle}
                 >
-                      {this.props.wishlistedCards.map((entry) => {
-                        return (
+                      {this.props.wishlistEntries && this.props.wishlistEntries.length > 0 ?
+
+                      (this.props.wishlistEntries.map((entry) => {
+                        return ( 
                           <WishlistEntry
                             key={entry.card.id}
                             entry={entry}
+                            updateCardCopiesInWishlist={this.props.updateCardCopiesInWishlist}
                           />
                         );
-                      })}
+                      })) : (<></>)
+                    }
                 </Box>
-              </ListItem>
               <Divider/>
             </List>
           </Drawer>

@@ -1,4 +1,4 @@
-import { MTGCardDTO, DeckCardEntryDTO, DeckDTO } from '../../../mtg-common/src/DTO';
+import { MTGCardDTO, DeckCardEntryDTO, DeckDTO, WishlistEntryDTO } from '../../../mtg-common/src/DTO';
 
 export const isBasicLand = (card: MTGCardDTO): boolean => {
     return card.type.startsWith('Basic Land')
@@ -232,4 +232,8 @@ export function getDeckColorIdentity(deck: DeckDTO | null): Set<string>{
 
 export function areSetsEqual(a: Set<string>, b: Set<string>){
     return a.size === b.size && [...a].every(value => b.has(value))
+}
+
+export function wishlistSortFn(a: WishlistEntryDTO, b: WishlistEntryDTO){ 
+    return a.card.name.localeCompare(b.card.name)
 }

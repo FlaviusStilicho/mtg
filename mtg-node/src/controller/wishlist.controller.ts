@@ -5,9 +5,40 @@ import { logger } from "./../index.ts"
 import { WishlistEntry } from '../entity/WishlistEntry.entity.ts';
 
 export const GetWishlistEntries = async (req: Request, res: Response<WishlistEntryDTO[]>) => {
-    WishlistEntryRepository.find().then(entries => res.send(entries.map(entry => entry.toDTO())))
+    WishlistEntryRepository.find().then(entries => {
+        logger.info(`found ${entries.length} wishlist entries!`)
+        res.send(entries.map(entry => entry.toDTO()))})
 }
 
+export const SaveWishlist = async (req: Request<{}, {}, WishlistEntryDTO[], {}>, res: Response) => {
+    const dtos: WishlistEntryDTO[] = Object.values(req.body)
+    Promise.all(dtos.map(entry => WishlistEntry.fromDTO(entry))).then(
+        async (newWishlistEntries: WishlistEntry[]) => {
+            await WishlistEntryRepository.find().then(currentWishlistEntries => {
+                if(newWishlistEntries.length > 0){
+                    newWishlistEntries.forEach(newEntry => {
+                        currentWishlistEntries.forEach(currentEntry => {
+                            if(newEntry.card.id === currentEntry.card.id){
+                                newEntry.id = currentEntry.id
+                            }
+                        })
+                    })
+                    logger.info(`saving ${newWishlistEntries.length} wishlist entries`)
+                    WishlistEntryRepository.save(newWishlistEntries)
+                }
+
+                const newWishlistEntryCardIds: Set<number> = new Set(newWishlistEntries.map(entry => entry.card.id))
+                const wishlistEntriesToDelete: WishlistEntry[] = currentWishlistEntries.filter(entry =>
+                    !newWishlistEntryCardIds.has(entry.card.id)
+                )
+                
+                logger.info(`deleting ${wishlistEntriesToDelete.length} wishlist entries`)
+                wishlistEntriesToDelete.forEach(entry => WishlistEntryRepository.delete(entry.id))
+            })
+        }
+    )
+
+}
 export const AddWishlistEntry = async (req: Request<{}, {}, WishlistEntryDTO, {}>, res: Response) => {
     const cardName = req.body.card.name
     await WishlistEntryRepository

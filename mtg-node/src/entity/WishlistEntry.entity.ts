@@ -10,7 +10,9 @@ export class WishlistEntry {
 
     @PrimaryGeneratedColumn()
     id: number
-    @OneToOne(() => MTGCard)
+    @OneToOne(() => MTGCard, {
+        eager: true
+    })
     @JoinColumn()
     card: MTGCard
     @Column()
@@ -38,7 +40,4 @@ export class WishlistEntry {
             entry.desiredCopies
         )
     }
-
-    
-
 }

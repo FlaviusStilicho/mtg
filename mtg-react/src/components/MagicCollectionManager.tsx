@@ -14,7 +14,7 @@ import { CardQueryParameters, ListDecksResponse, UpdateCardOwnedCopiesQueryParam
 import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { searchBarDrawerWidth } from '../constants';
-import { isBasicLand, numberOfMissingCards, getDeckColorIdentity } from '../functions/util';
+import { isBasicLand, numberOfMissingCards, getDeckColorIdentity, wishlistSortFn } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
@@ -102,7 +102,9 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       wishlistOpened: true,
       wishlistEntries: []
     }
+  }
 
+  componentDidMount(): void {
     this.fetchData()
     this.fetchCardsDebounced({
       ...this.state.selectedQueryParameters,
@@ -122,6 +124,13 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     axios.get(`http://localhost:8000/colors`).then(response => {
       const colors: Color[] = response.data.data
       this.setState({colors})
+    })
+    axios.get(`http://localhost:8000/wishlist`).then(response => {
+      const wishlistEntries: WishlistEntryDTO[] = response.data
+      wishlistEntries.sort(wishlistSortFn)
+      console.log(wishlistEntries)
+      this.setState({wishlistEntries})
+      // console.log(`setting wishlistEntries ${wishlistEntries.length}`)
     })
   }
 
@@ -143,7 +152,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     }
     this.setState({page: currentPage})
 
-    console.log(`fetchcards: currentPage: ${currentPage}`)
+    // console.log(`fetchcards: currentPage: ${currentPage}`)
     axios.get(`cards/`, {
       params: {
         take: pageSize,
@@ -153,10 +162,10 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     }).then(response => {
       const newCards: MTGCardDTO[] = response.data.cards
       if (currentPage === 1) {
-        console.log("new cards")
+        // console.log("new cards")
         this.setState({cards: newCards})
       } else {
-        console.log("extra cards")
+        // console.log("extra cards")
         const newCardsList = this.state.cards.concat(newCards)
         this.setState({cards: newCardsList})
         // todo alex do something with total pages
@@ -169,19 +178,21 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
 
   fetchCardsDebounced = debounce(this.fetchCards, 1500);
 
+  handleChangeSelectedTab = (event: SyntheticEvent, selectedTab: number) => {
+    this.setState({selectedTab});
+  };
+
+  handleDeckManagerOpenClose(){
+    this.setState({deckManagerOpened: !this.state.deckManagerOpened})
+  };
+
+  handleWishlistOpenClose(){
+    this.setState({wishlistOpened: !this.state.wishlistOpened})
+  };
+
   render(){
     // console.log("rendering collection manager")
-    const handleChangeSelectedTab = (event: SyntheticEvent, selectedTab: number) => {
-      this.setState({selectedTab});
-    };
 
-    const handleDeckManagerOpenClose = () => {
-      this.setState({deckManagerOpened: !this.state.deckManagerOpened})
-    };
-
-    const handleWishlistOpenClose = () => {
-      this.setState({wishlistOpened: !this.state.wishlistOpened})
-    };
     
     const getDefaultSetsForFormat = (format: string) => {
       if (format === DeckFormat.STANDARD.toString()) {
@@ -303,13 +314,6 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       })
     }
 
-    const deleteDeck = () => {
-      axios.delete(`http://localhost:8000/decks/?id=${this.state.selectedDeckId}`).then(response => {
-        console.log("Deleted deck!")
-      })
-      this.setState({selectedDeckId: 0})
-    }
-
     const getDeck = (id: number): DeckDTO => {
       return this.state.decks.filter(deck => deck.id === id)[0]
     }
@@ -419,22 +423,25 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     }
 
     const updateCardCopiesInWishlist = (id: number, add: boolean) => {
-      var updatedEntries: WishlistEntryDTO[] = this.state.wishlistEntries.map(entry => entry)
-      console.log(this.state.wishlistEntries)
+      var updatedEntries: WishlistEntryDTO[] = this.state.wishlistEntries && this.state.wishlistEntries.length > 0 ? 
+        this.state.wishlistEntries.map(entry => entry) : []
 
-      const matchingEntry = this.state.wishlistEntries.filter(entry => {
-          if (entry.card.id === id){
-            return true
-          }
-          return false
-        })
+      var matchingEntry: WishlistEntryDTO[] = []
+      if(this.state.wishlistEntries && this.state.wishlistEntries.length > 0 ){
+        matchingEntry = this.state.wishlistEntries.filter(entry => {
+            if (entry.card.id === id){
+              return true
+            }
+            return false
+          })
+      }
       if (matchingEntry.length === 1){ 
         const entry = matchingEntry[0]
-        console.log(`found existing wishlist entry ${entry.card.name}`)
+        // console.log(`found existing wishlist entry ${entry.card.name}`)
 
         entry.desiredCopies = add ? entry.desiredCopies + 1 : entry.desiredCopies - 1
-        if (matchingEntry[0].desiredCopies <= 0){
-          console.log(`Removing entry fom wishlist: ${this.state.wishlistEntries.filter(entry => entry.card.id === id)[0].card.name}`)
+        if (entry.desiredCopies <= entry.card.ownedCopies){
+          // console.log(`Removing entry fom wishlist: ${this.state.wishlistEntries.filter(entry => entry.card.id === id)[0].card.name}`)
           updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== id)
         } else {
           updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== id)
@@ -448,18 +455,19 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         if(matchingCards.length > 1 || matchingCards.length === 0){
           throw Error("Couldnt match card")
         } else {
-          console.log(`Adding entry to wishlist: ${matchingCards[0].name}`)
-
+          // console.log(`Adding entry to wishlist: ${matchingCards[0].name}`)
           updatedEntries.push({
             card: matchingCards[0],
-            desiredCopies: 1,
+            desiredCopies: matchingCards[0].ownedCopies + 1,
             isInShoppingCart: false
           })
         }
       }
-      console.log("updating wishlist")
-      console.log(updatedEntries)
+      updatedEntries.sort(wishlistSortFn)
       this.setState({wishlistEntries: updatedEntries})
+      axios.post(`http://localhost:8000/wishlist/`, updatedEntries).then(response => {
+        console.log(`updated wishlist!`)
+      })
     }
 
     const handleLoadMore = async () => {
@@ -492,7 +500,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
 
     const wishlistProps: WishlistProps = {
       wishlistOpened: this.state.wishlistOpened,
-      wishlistedCards: this.state.wishlistEntries,
+      wishlistEntries: this.state.wishlistEntries,
       updateCardCopiesInWishlist
     }
 
@@ -526,10 +534,10 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
 
     const navBarProps: NavBarProps = {
       selectedTab: this.state.selectedTab,
-      handleChangeSelectedTab,
+      handleChangeSelectedTab: this.handleChangeSelectedTab,
       open: this.state.deckManagerOpened,
-      handleDeckManagerOpenClose,
-      handleWishlistOpenClose
+      handleDeckManagerOpenClose: this.handleDeckManagerOpenClose,
+      handleWishlistOpenClose: this.handleWishlistOpenClose
     }
 
     return (
