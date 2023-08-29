@@ -175,12 +175,12 @@ export const numberOfCardsAvailable = (entries: DeckCardEntryDTO[]): [number, nu
     }
     const available = entries
         .filter(entry => entry.copies > 0)
-        .filter(entry => numberOfMissingCards(entry) > 0 && entry.buyPrice !== undefined)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.buyPrice !== undefined)
         .map(entry => numberOfMissingCards(entry))
         .reduce((a, b) => a + b, 0)
     const unavailable = entries
         .filter(entry => entry.copies > 0)
-        .filter(entry => numberOfMissingCards(entry) > 0 && entry.buyPrice === undefined)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.buyPrice === undefined)
         .map(entry => numberOfMissingCards(entry))
         .reduce((a, b) => a + b, 0)
     return [available, unavailable]
@@ -192,10 +192,10 @@ export const costToFinishDeck = (entries: DeckCardEntryDTO[]): number => {
     }
     const result = entries
         .filter(entry => entry.copies > 0)
-        .filter(entry => numberOfMissingCards(entry) > 0 && entry.buyPrice !== undefined)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.buyPrice !== undefined)
         .map(entry => {
-            return entry.buyPrice === undefined ? 0 :
-                numberOfMissingCards(entry) * entry.buyPrice
+            return entry.card.buyPrice === undefined ? 0 :
+                numberOfMissingCards(entry) * entry.card.buyPrice
         })
         .reduce((a, b) => a + b, 0)
     return result

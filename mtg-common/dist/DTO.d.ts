@@ -32,7 +32,6 @@ export interface DeckCardEntryDTO {
     id: number | undefined;
     card: MTGCardDTO;
     copies: number;
-    buyPrice?: string;
 }
 export interface Color {
     name: string;

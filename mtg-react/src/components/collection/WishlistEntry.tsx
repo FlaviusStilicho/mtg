@@ -70,14 +70,14 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
             <Box style={{ width: "45%" }} sx={deckEntryTextBoxStyle}>
               {entry.card.name}
             </Box>            <Box
-              style={{ textAlign: "right", marginRight: 4, width: "15%" }}
+              style={{ textAlign: "left", marginRight: 4, width: "15%" }}
               sx={deckEntryTextBoxStyle}
             >
               {entry.card.buyPrice !== undefined ? `€ ${entry.card.buyPrice}` : "N/A"}
             </Box>
 
             <Box
-              style={{ textAlign: "right", marginRight: 4, width: "15%" }}
+              style={{ textAlign: "left", marginRight: 4, width: "25%" }}
               sx={deckEntryTextBoxStyle}
             >
               {manaCostArray.map((manaCost) => {
@@ -104,11 +104,11 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
             </Box>
 
             <Box
-              style={{ textAlign: "right", marginRight: 2, width: "25%" }}
+              style={{ textAlign: "right", marginRight: 2, width: "5%" }}
               sx={deckEntryTextBoxStyle}
             >{this.props.entry.card.ownedCopies}/{this.props.entry.desiredCopies}</Box>
             <Box
-              style={{ textAlign: "right", marginRight: 2, width: "25%" }}
+              style={{ textAlign: "right", marginRight: 2, width: "22%" }}
               sx={deckEntryTextBoxStyle}
             >
               <Button

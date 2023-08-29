@@ -130,7 +130,17 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       wishlistEntries.sort(wishlistSortFn)
       console.log(wishlistEntries)
       this.setState({wishlistEntries})
-      // console.log(`setting wishlistEntries ${wishlistEntries.length}`)
+
+      Promise.all(wishlistEntries.map(entry => {
+          return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
+            // console.log(`Price of card ${entry.card.name} is ${price}`)
+            entry.card.buyPrice = price
+            return entry
+          })
+      })).then(entries => {
+        console.log("collected card prices for wishlist")
+        this.setState({ wishlistEntries: entries})
+      })
     })
   }
 
@@ -210,9 +220,9 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       var queryParameters = this.state.selectedQueryParameters
 
       if (propName === "cardName" && typeof newValue === 'string') {
-        queryParameters = { ...queryParameters, cardName: newValue }
+        queryParameters = { ...queryParameters, cardName: newValue.trim().toLowerCase() }
       } else if (propName === "cardText" && typeof newValue === 'string') {
-        queryParameters = { ...queryParameters, cardText: newValue }
+        queryParameters = { ...queryParameters, cardText: newValue.trim().toLowerCase() }
       } else if (propName === "sets" && Array.isArray(newValue) && newValue.every(item => typeof item === 'number')) {
         var newSets: number[] = []
         if (newValue[newValue.length - 1] === 99999) {
@@ -228,13 +238,13 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       } else if (propName === "typeSearchSetting" && typeof newValue === 'string') {
         queryParameters = { ...queryParameters, typeSearchSetting: newValue }
       } else if (propName === "subType" && typeof newValue === 'string') {
-        queryParameters = { ...queryParameters, subType: newValue }
+        queryParameters = { ...queryParameters, subType: newValue.trim().toLowerCase() }
       } else if (propName === "colors" && Array.isArray(newValue) && newValue.every(item => typeof item === 'string')) {
         queryParameters = { ...queryParameters, colors: newValue }
       } else if (propName === "colorSearchSetting" && typeof newValue === 'string') {
         queryParameters = { ...queryParameters, colorSearchSetting: newValue }
       } else if (propName === "manaCost" && typeof newValue === 'string') {
-        queryParameters = { ...queryParameters, manaCost: newValue }
+        queryParameters = { ...queryParameters, manaCost: newValue.trim().toLowerCase() }
       } else if (propName === "format" && typeof newValue === 'string') {
         const newSets: number[] = getDefaultSetsForFormat(newValue)
         queryParameters = { ...queryParameters, format: newValue, sets: newSets }
@@ -278,16 +288,16 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
           Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
             if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
               return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
-                console.log(`Price of card ${entry.card.name} is ${price}`)
-                entry.buyPrice = price
+                // console.log(`Price of card ${entry.card.name} is ${price}`)
+                entry.card.buyPrice = price
                 return entry
               })
             } else {
-              entry.buyPrice = undefined
+              entry.card.buyPrice = undefined
               return entry
             }
           })).then(entries => {
-            console.log("done collecting card prices")
+            console.log(`collected prices for deck ${getDeck(newDeckId).name}`)
             this.setState({ selectedDeckEntries: entries})
           })
         }
@@ -422,7 +432,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       this.setState({cards: updatedCards})
     }
 
-    const updateCardCopiesInWishlist = (id: number, add: boolean) => {
+    const updateCardCopiesInWishlist = async (id: number, add: boolean) => {
       var updatedEntries: WishlistEntryDTO[] = this.state.wishlistEntries && this.state.wishlistEntries.length > 0 ? 
         this.state.wishlistEntries.map(entry => entry) : []
 
@@ -456,11 +466,15 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
           throw Error("Couldnt match card")
         } else {
           // console.log(`Adding entry to wishlist: ${matchingCards[0].name}`)
+          const card = matchingCards[0]
+          if(!card.buyPrice){
+            card.buyPrice = await fetchCardBuyPriceFromMagicersSingle(card)
+          } 
           updatedEntries.push({
-            card: matchingCards[0],
-            desiredCopies: matchingCards[0].ownedCopies + 1,
+            card: card,
+            desiredCopies: card.ownedCopies + 1,
             isInShoppingCart: false
-          })
+         })
         }
       }
       updatedEntries.sort(wishlistSortFn)

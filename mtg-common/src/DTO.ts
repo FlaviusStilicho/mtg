@@ -40,7 +40,6 @@ export interface DeckCardEntryDTO {
     copies: number
     sideboardCopies: number
     isCommander: boolean
-    buyPrice?: number | undefined //todo remove > move this to card dto
 }
 
 export interface Color {

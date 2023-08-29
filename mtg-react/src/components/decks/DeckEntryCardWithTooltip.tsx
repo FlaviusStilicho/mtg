@@ -107,7 +107,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
               style={{ textAlign: "right", marginRight: 4, width: "14%" }}
               sx={deckEntryTextBoxStyle}
             >
-              {entry.buyPrice !== undefined ? `€ ${entry.buyPrice}` : "N/A"}
+              {entry.card.buyPrice !== undefined ? `€ ${entry.card.buyPrice}` : "N/A"}
             </Box>
             <Box
               style={{ textAlign: "right", marginRight: 4, width: "25%" }}
