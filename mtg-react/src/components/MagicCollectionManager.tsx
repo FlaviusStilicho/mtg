@@ -14,7 +14,7 @@ import { CardQueryParameters, ListDecksResponse, UpdateCardOwnedCopiesQueryParam
 import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { searchBarDrawerWidth } from '../constants';
-import { isBasicLand, numberOfMissingCards, getDeckColorIdentity, wishlistSortFn } from '../functions/util';
+import { isBasicLand, numberOfMissingCards, getDeckColorIdentity, findDecksContainCard } from '../functions/util';
 import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
@@ -109,10 +109,9 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     this.fetchCardsDebounced({
       ...this.state.selectedQueryParameters,
     }, false)
-    this.fetchDecks()
   }
 
-  fetchData(){
+  fetchData = async () => {
     axios.get(`http://localhost:8000/sets`).then(response => {
       const setsFromApi: MTGSetDTO[] = response.data.data
       this.setState({sets: setsFromApi})
@@ -125,10 +124,9 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       const colors: Color[] = response.data.data
       this.setState({colors})
     })
+    const decks = await this.fetchDecks()
     axios.get(`http://localhost:8000/wishlist`).then(response => {
       const wishlistEntries: WishlistEntryDTO[] = response.data
-      wishlistEntries.sort(wishlistSortFn)
-      console.log(wishlistEntries)
       this.setState({wishlistEntries})
 
       Promise.all(wishlistEntries.map(entry => {
@@ -137,19 +135,31 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
             entry.card.buyPrice = price
             return entry
           })
-      })).then(entries => {
+      })).then(wishlistEntries => {
         console.log("collected card prices for wishlist")
-        this.setState({ wishlistEntries: entries})
+        Promise.all(decks).then(decks => {
+          for (const wishlistEntry of wishlistEntries) {
+            const inDecks: string[] = findDecksContainCard(wishlistEntry.card, decks)
+            wishlistEntry.inDecks = inDecks;
+          }
+          console.log("mapped decks to wishlist entries")
+          console.log(wishlistEntries)
+          this.setState({ wishlistEntries: wishlistEntries})
+        })
       })
     })
   }
 
-  fetchDecks(){
-    axios.get(`http://localhost:8000/decks/list`).then(response => {
+
+
+  fetchDecks = async (): Promise<DeckDTO[]> => {
+    return axios.get(`http://localhost:8000/decks/list`).then(response => {
       const data: ListDecksResponse = response.data
       const decks = data.decks
       decks.forEach(deck => { if (deck['cardEntries'] === undefined) deck['cardEntries'] = [] })
       this.setState({decks})
+      console.log("completed fethching decks")
+      return decks
     })
   }
 
@@ -473,11 +483,11 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
           updatedEntries.push({
             card: card,
             desiredCopies: card.ownedCopies + 1,
-            isInShoppingCart: false
+            isInShoppingCart: false,
+            inDecks: findDecksContainCard(card, this.state.decks)
          })
         }
       }
-      updatedEntries.sort(wishlistSortFn)
       this.setState({wishlistEntries: updatedEntries})
       axios.post(`http://localhost:8000/wishlist/`, updatedEntries).then(response => {
         console.log(`updated wishlist!`)

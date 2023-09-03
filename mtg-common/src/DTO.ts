@@ -63,4 +63,5 @@ export interface WishlistEntryDTO {
     card: MTGCardDTO
     desiredCopies: number
     isInShoppingCart: boolean
+    inDecks: string[]
 }

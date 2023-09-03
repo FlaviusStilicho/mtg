@@ -234,6 +234,37 @@ export function areSetsEqual(a: Set<string>, b: Set<string>){
     return a.size === b.size && [...a].every(value => b.has(value))
 }
 
-export function wishlistSortFn(a: WishlistEntryDTO, b: WishlistEntryDTO){ 
+export function wishlistSortFnAlphabetical(a: WishlistEntryDTO, b: WishlistEntryDTO): number { 
     return a.card.name.localeCompare(b.card.name)
 }
+
+
+export function wishlistSortFnPrice(a: WishlistEntryDTO, b: WishlistEntryDTO): number {
+    const priceA = a.card.buyPrice;
+    const priceB = b.card.buyPrice;
+  
+    if (priceA === undefined && priceB === undefined) {
+      return a.card.name.localeCompare(b.card.name);
+    }
+    if (priceA === undefined) {
+      return 1;
+    }
+    if (priceB === undefined) {
+      return -1;
+    }
+  
+    return priceB - priceA;
+  }
+
+export function findDecksContainCard(card: MTGCardDTO, decks: DeckDTO[]): string[] {
+    const inDecks: string[] = []
+    for (const deck of decks) {
+      for (const cardEntry of deck.cardEntries) {
+        if (card.id === cardEntry.card.id) {
+          inDecks.push(deck.name);
+          break;
+        }
+      }
+    }
+    return inDecks
+  }
