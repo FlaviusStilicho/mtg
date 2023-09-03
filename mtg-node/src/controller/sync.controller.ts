@@ -39,8 +39,26 @@ export const Sync = async (req: Request, res: Response) => {
 }
 
 export const SyncSets = async (): Promise<MTGSet[]> => {
-    return await got.get(getSetsUrl).json().then(response => {
-        const setPromiseArray = []
+    logger.info('Syncing sets')
+    return await getAndSaveSets().then(async (sets: MTGSet[]) => {
+        const setsFromDb: MTGSet[] = await MTGSetRepository.find();
+        const setsinDbSet = new Set(setsFromDb.map(set => set.shortName));
+        const newSetsSet = new Set(sets.map(set => set.shortName));
+        let _difference = setsinDbSet;
+        for (let elem of newSetsSet) {
+            _difference.delete(elem);
+        }
+        if (_difference.size == 0){
+            return setsFromDb
+        } else {
+        throw Error(`Couldnt find all sets. Missing ${_difference.size} sets.`);
+        }
+    })
+}
+
+const getAndSaveSets = async(): Promise<MTGSet[]> => {
+    return got.get(getSetsUrl).json().then(response => {
+        const setPromiseArray: Promise<MTGSet>[] = []
         response['data'].forEach(rawSet => {
             const set = new MTGSet(
                 rawSet['code'],
@@ -50,17 +68,13 @@ export const SyncSets = async (): Promise<MTGSet[]> => {
                 rawSet['icon_svg_uri'],
                 new Date(rawSet['released_at'])
             )
-            setPromiseArray.push(MTGSetRepository.saveOne(set))
+            const promise: Promise<MTGSet> = MTGSetRepository.saveOne(set)
+            setPromiseArray.push(promise)
         })
-        return setPromiseArray
-    }).then(async (sets: MTGSet[]) => {
-        while (true) {
-            const setsFromDb: MTGSet[] = await MTGSetRepository.find()
-            if (setsFromDb.length === sets.length) {
-                return await MTGSetRepository.find()
-            }
-            Sleep(100)
-        }
+        return Promise.all(setPromiseArray).then(sets => {
+            logger.info(`Downloaded and saved ${sets.length} sets`)
+            return sets
+        })
     })
 }
 

@@ -22,7 +22,7 @@ export const MTGSetRepository = DB.getRepository(MTGSet).extend({
             } else {
                 set.id = existingSet.id;
                 await this.save(set)
-                return this;
+                return set;
             }
         }).catch(async err => {
             if (err instanceof EntityNotFoundError) {
