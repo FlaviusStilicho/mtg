@@ -525,6 +525,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     const wishlistProps: WishlistProps = {
       wishlistOpened: this.state.wishlistOpened,
       wishlistEntries: this.state.wishlistEntries,
+      decks: this.state.decks,
       updateCardCopiesInWishlist
     }
 

@@ -1,20 +1,23 @@
 import { Component } from 'react';
-import { WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
-import { Box, Divider, Drawer, List, ListItem, SelectChangeEvent, ToggleButton, ToggleButtonGroup } from "@mui/material";
+import { DeckDTO, WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
+import { Box, Divider, Drawer, List, ListItem, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { drawerWidth, navBarHeight } from "../../constants";
 import { deckEntryTextBoxStyle, listItemStyle } from "../../style/styles";
 import { WishlistEntry } from "./WishlistEntry";
-import { wishlistSortFnAlphabetical, wishlistSortFnPrice } from '../../functions/util';
+import { findDeckByName, populateDeckWishlistEntryMap, wishlistSortFnAlphabetical, wishlistSortFnPrice } from '../../functions/util';
+import { renderDeckName } from '../decks/renderDeckName';
 
 export interface WishlistProps {
     wishlistOpened: boolean
     wishlistEntries: WishlistEntryDTO[]
+    decks: DeckDTO[]
     updateCardCopiesInWishlist: (id: number, add: boolean) => void
   }
 
 enum SortMethod {
   ALPHABETICAL = 'alphabetical',
-  PRICE = 'price'
+  PRICE = 'price',
+  DECK = 'deck'
 }
 
 interface WishlistState {
@@ -47,6 +50,8 @@ export class WishlistDrawer extends Component<WishlistProps, WishlistState> {
         if (sortMethod === SortMethod.ALPHABETICAL){
           sortFn = wishlistSortFnAlphabetical
         } else if (sortMethod === SortMethod.PRICE){
+          sortFn = wishlistSortFnPrice
+        } else if (sortMethod === SortMethod.DECK){
           sortFn = wishlistSortFnPrice
         } else {
           throw Error()
@@ -96,6 +101,7 @@ export class WishlistDrawer extends Component<WishlistProps, WishlistState> {
                 >
                   <ToggleButton value={SortMethod.ALPHABETICAL}>ABC</ToggleButton>
                   <ToggleButton value={SortMethod.PRICE}>Price</ToggleButton>
+                  <ToggleButton value={SortMethod.DECK}>Deck</ToggleButton>
                   {/* <ToggleButton value="ios">iOS</ToggleButton> */}
                 </ToggleButtonGroup>
               </ListItem>
@@ -103,7 +109,10 @@ export class WishlistDrawer extends Component<WishlistProps, WishlistState> {
                   style={{ textAlign: "left", width: "100%" }}
                   sx={deckEntryTextBoxStyle}
                 >
-                      {this.props.wishlistEntries && this.props.wishlistEntries.length > 0 ?
+                    {
+                      this.props.wishlistEntries && 
+                      this.props.wishlistEntries.length > 0 &&
+                      this.state.sortMethod !== SortMethod.DECK ?
 
                       (this.props.wishlistEntries.map((entry) => {
                         return ( 
@@ -115,10 +124,42 @@ export class WishlistDrawer extends Component<WishlistProps, WishlistState> {
                         );
                       })) : (<></>)
                     }
+                    {
+                      this.props.wishlistEntries && 
+                      this.props.wishlistEntries.length > 0 &&
+                      this.state.sortMethod === SortMethod.DECK ?
+                      this.renderWishlistEntriesByDeck() : (<></>)
+                    }
                 </Box>
               <Divider/>
             </List>
           </Drawer>
         </Box>)
     }
+
+    renderWishlistEntriesByDeck = () => {
+        const map = populateDeckWishlistEntryMap(this.props.wishlistEntries)
+
+        return Array.from(map.entries()).map(([key, wishlistEntries]) => (
+          <Box key={key}
+            style={{backgroundColor: 'rgba(255, 255, 255, 0.2)' }}
+            sx={{
+              width: "100%",
+              border: "1px solid",
+              borderRadius: "7px",
+              flexDirection: "column",
+              display: "flex",
+            }}
+          >
+            <div style={{ marginTop: '4px', marginBottom: '4px', marginLeft: '10px' }}>{ key === "unused" ? "Unused" : renderDeckName(findDeckByName(key, this.props.decks))}</div>
+            {wishlistEntries.map(entry => (
+              <WishlistEntry
+                key={entry.card.id}
+                entry={entry}
+                updateCardCopiesInWishlist={this.props.updateCardCopiesInWishlist}
+              />
+            ))}
+          </Box>
+        ));
+      }
 }

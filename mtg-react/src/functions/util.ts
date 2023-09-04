@@ -268,3 +268,36 @@ export function findDecksContainCard(card: MTGCardDTO, decks: DeckDTO[]): string
     }
     return inDecks
   }
+
+export function  populateDeckWishlistEntryMap(wishlist: WishlistEntryDTO[]): Map<string, WishlistEntryDTO[]> {
+    const deckWishlistEntryMap: Map<string, WishlistEntryDTO[]> = new Map();
+  
+    for (const entry of wishlist) {
+      if (entry.inDecks.length > 0) {
+        for (const deckName of entry.inDecks) {
+          if (deckWishlistEntryMap.has(deckName)) {
+            deckWishlistEntryMap.get(deckName)!.push(entry);
+          } else {
+            deckWishlistEntryMap.set(deckName, [entry]);
+          }
+        }
+      } else {
+        if (deckWishlistEntryMap.has('unused')) {
+          deckWishlistEntryMap.get('unused')!.push(entry);
+        } else {
+          deckWishlistEntryMap.set('unused', [entry]);
+        }
+      }
+    }
+  
+    return deckWishlistEntryMap;
+  };
+  
+export function findDeckByName(name: string, decks: DeckDTO[]): DeckDTO{
+    for (const deck of decks) {
+        if (deck.name === name){
+            return deck
+        }
+    }
+    throw Error("Deck not found")
+}

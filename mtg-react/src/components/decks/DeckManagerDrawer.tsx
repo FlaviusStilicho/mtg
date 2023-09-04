@@ -16,7 +16,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './windows/CreateDeckWindow';
 import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from '../../../../mtg-common/src/DTO';
-import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander, getDeckColorIdentity } from '../../functions/util';
+import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -26,10 +26,10 @@ import { DeleteDeckWindow, DeleteDeckWindowProps } from './windows/DeleteDeckWin
 import { EditDeckWindow, EditDeckWindowProps } from './windows/EditDeckWindow';
 import { CompareDeckWindow, CompareDeckWindowProps } from './windows/CompareDeckWindow';
 import { DevotionCountersBox } from './DevotionCountersBox';
-import ColorIcon from '../ColorIcon';
 import { SelectChangeEvent } from '@mui/material/Select';
+import { renderDeckName } from './renderDeckName';
 
-const deckNameFontSize = 10
+export const deckNameFontSize = 10
 
 export interface DeckManagerProps extends MuiAppBarProps {
   deckManagerOpened?: boolean;
@@ -257,21 +257,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               </MenuItem>
               {
                 props.decks.map((deck) => {
-                  const commander = getCommander(deck)
-                  var deckColorIdentity = getDeckColorIdentity(deck)
-                  return (
-                    <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id} >
-                      <Box sx={{ fontSize: deckNameFontSize, display: "flex", flexWrap: "wrap", gap: 1 }}>
-                        {commander ? `${deck.name} [${commander.name}]` : deck.name}
-                        <Box>
-                        {
-                        Array.from(deckColorIdentity).map((color) => (
-                            <ColorIcon color={color}/>
-                          ))}
-                        </Box>
-                      </Box>
-                    </MenuItem>
-                  )
+                  return renderDeckName(deck);
                 })}
             </Select>
             <IconButton
@@ -517,3 +503,5 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
     </Box>
   );
 }
+
+
