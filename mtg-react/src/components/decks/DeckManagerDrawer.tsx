@@ -42,6 +42,8 @@ export interface DeckManagerProps extends MuiAppBarProps {
   updateDeckEntries: (entry: DeckCardEntryDTO) => void
   updateCardCopiesInDeck: (card: MTGCardDTO, increment: number, isSideboard: boolean) => void
   saveDeck: () => void
+  isCardInWishlist: (card: MTGCardDTO) => boolean
+  updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
 }
 
 function useForceUpdate() {
@@ -345,6 +347,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterLands}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
 
           <DeckCardTypeCounter
@@ -357,6 +361,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterCreatures}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
 
           <DeckCardTypeCounter
@@ -369,6 +375,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterPlaneswalkers}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
 
           <DeckCardTypeCounter
@@ -381,6 +389,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterNoncreatureArtifacts}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
 
           <DeckCardTypeCounter
@@ -393,6 +403,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterSorceries}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
 
           <DeckCardTypeCounter
@@ -405,6 +417,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterInstants}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
 
           <DeckCardTypeCounter
@@ -417,6 +431,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterNoncreatureEnchantments}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
 
           <DeckCardTypeCounter
@@ -429,6 +445,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterBattles}
             setNewCommander={setNewCommander}
             isSideboardEntry={false}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
           
           <DevotionCountersBox entries={props.selectedDeckEntries}/>
@@ -451,6 +469,8 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             filterFn={filterSideboard}
             setNewCommander={setNewCommander}
             isSideboardEntry={true}
+            isCardInWishlist={props.isCardInWishlist}
+            updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
           />
           <Divider />
           {props.selectedDeck ?

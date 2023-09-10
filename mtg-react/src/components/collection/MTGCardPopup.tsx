@@ -12,7 +12,7 @@ import { largeFlipButtonStyle } from "../../style/styles";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import { MTGCardDTO, MTGCardVersionDTO } from '../../../../mtg-common/dist/DTO';
+import { MTGCardDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
 import {
   imageHeight,
   imageWidth,
@@ -29,7 +29,7 @@ export interface MTGCardPopupProps {
   onClose: () => void;
   buyPrice: number | undefined;
   sellPrice: string;
-  updateCardCopiesInWishlist: (id: number, add: boolean) => void;
+  updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void;
   card: MTGCardDTO
 }
 
@@ -160,7 +160,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                 disabled={Number.isNaN(this.props.buyPrice)}
                 onClick={() => {
                   console.log("buy");
-                  this.props.updateCardCopiesInWishlist(this.props.card.id, true)
+                  this.props.updateCardCopiesInWishlist(this.props.card, true)
                 }}
               >
                 {`${

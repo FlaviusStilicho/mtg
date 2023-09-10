@@ -15,6 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import { Component } from "react";
+import StarIcon from '@mui/icons-material/Star';
 
 export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO;
@@ -23,6 +24,8 @@ export interface DeckEntryComponentProps {
   updateCardCopiesInDeck: (card: MTGCardDTO, increment: number, isSideboard: boolean) => void
   isSideboardEntry: boolean;
   setNewCommander: (entry: DeckCardEntryDTO) => void;
+  isCardInWishlist: (card: MTGCardDTO) => boolean
+  updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
 }
 
 const iconWidth = 16;
@@ -61,8 +64,18 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
       .filter((mc) => mc !== "");
     const maxCardCopies = this.props.selectedDeck?.format === "Standard" ? 4 : 1;
     const missingCards = numberOfMissingCards(entry, isSideboardEntry) > 0;
-    const addButtonDisabled = isSideboardEntry
-      ? entry.sideboardCopies >= maxCardCopies && !isBasicLand(entry.card)
+    const onWishlist = missingCards ? this.props.isCardInWishlist(entry.card) : false
+    var bgcolor: string; 
+    if (missingCards && onWishlist){
+      bgcolor = "#e8e66b"
+    } else if (missingCards){
+      bgcolor = "#e3c2c2"
+    } else {
+      bgcolor = "White"
+    }
+
+    const addButtonDisabled = isSideboardEntry 
+    ? entry.sideboardCopies >= maxCardCopies && !isBasicLand(entry.card)
       : entry.copies >= maxCardCopies && !isBasicLand(entry.card);
     const subtractButtonDisabled = isSideboardEntry
       ? entry.sideboardCopies < 1
@@ -91,7 +104,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
           }
         >
           <Box
-            bgcolor={missingCards ? "#e3c2c2" : "White"}
+            bgcolor={ bgcolor }
             sx={{
               width: "100%",
               border: "1px solid",
@@ -139,6 +152,19 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
               style={{ textAlign: "right", marginRight: 2, width: "47%" }}
               sx={deckEntryTextBoxStyle}
             >
+              <Button
+                variant="contained"
+                sx={{
+                  borderRadius: "30%",
+                  height: iconHeight,
+                  width: iconWidth,
+                  minWidth: { xs: iconWidth, md: iconWidth },
+                }}
+                disabled={onWishlist}
+                onClick={() => this.props.updateCardCopiesInWishlist(entry.card, true)} //TODO update the function or use another
+              >
+                <StarIcon fontSize="small" />
+              </Button>
               <Button
                 variant="contained"
                 sx={{

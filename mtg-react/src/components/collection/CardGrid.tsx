@@ -17,7 +17,7 @@ export interface CardGridProps {
     updateCardCopiesInDeck: (card: MTGCardDTO, increment: number, isSideboard: boolean) => void
     getCurrentNumberOfCopiesForCard: (card: MTGCardDTO) => number
     updateCardCopiesInCollection: (id: number, copies: number) => void
-    updateCardCopiesInWishlist: (id: number, add: boolean) => void
+    updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
     handleLoadMore: any
 }
 

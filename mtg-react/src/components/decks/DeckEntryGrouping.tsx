@@ -14,6 +14,8 @@ export interface DeckEntryGroupingProps {
   filterFn: (entries: DeckCardEntryDTO[]) => DeckCardEntryDTO[];
   setNewCommander: (entry: DeckCardEntryDTO) => void;
   isSideboardEntry: boolean;
+  isCardInWishlist: (card: MTGCardDTO) => boolean
+  updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
 }
 
 export class DeckCardTypeCounter extends Component<DeckEntryGroupingProps> {
@@ -43,6 +45,8 @@ export class DeckCardTypeCounter extends Component<DeckEntryGroupingProps> {
               updateCardCopiesInDeck: this.props.updateCardCopiesInDeck,
               setNewCommander: this.props.setNewCommander,
               isSideboardEntry: this.props.isSideboardEntry,
+              isCardInWishlist: this.props.isCardInWishlist,
+              updateCardCopiesInWishlist: this.props.updateCardCopiesInWishlist,
             };
             return (
               <DeckEntryComponentWithTooltip

@@ -442,14 +442,14 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       this.setState({cards: updatedCards})
     }
 
-    const updateCardCopiesInWishlist = async (id: number, add: boolean) => {
+    const updateCardCopiesInWishlist = async (card: MTGCardDTO, add: boolean) => {
       var updatedEntries: WishlistEntryDTO[] = this.state.wishlistEntries && this.state.wishlistEntries.length > 0 ? 
         this.state.wishlistEntries.map(entry => entry) : []
 
       var matchingEntry: WishlistEntryDTO[] = []
       if(this.state.wishlistEntries && this.state.wishlistEntries.length > 0 ){
         matchingEntry = this.state.wishlistEntries.filter(entry => {
-            if (entry.card.id === id){
+            if (entry.card.id === card.id){
               return true
             }
             return false
@@ -462,36 +462,38 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         entry.desiredCopies = add ? entry.desiredCopies + 1 : entry.desiredCopies - 1
         if (entry.desiredCopies <= entry.card.ownedCopies){
           // console.log(`Removing entry fom wishlist: ${this.state.wishlistEntries.filter(entry => entry.card.id === id)[0].card.name}`)
-          updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== id)
+          updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== card.id)
         } else {
-          updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== id)
+          updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== card.id)
           updatedEntries.push(matchingEntry[0])
         }
       } else {
         if(!add) {
           throw Error("Cannot decrease number of copies on card that isnt on wishlist")
         }
-        const matchingCards: MTGCardDTO[] = this.state.cards.filter(card => card.id === id)
-        if(matchingCards.length > 1 || matchingCards.length === 0){
-          throw Error("Couldnt match card")
-        } else {
-          // console.log(`Adding entry to wishlist: ${matchingCards[0].name}`)
-          const card = matchingCards[0]
-          if(!card.buyPrice){
-            card.buyPrice = await fetchCardBuyPriceFromMagicersSingle(card)
-          } 
-          updatedEntries.push({
-            card: card,
-            desiredCopies: card.ownedCopies + 1,
-            isInShoppingCart: false,
-            inDecks: findDecksContainCard(card, this.state.decks)
-         })
-        }
+        if(!card.buyPrice){
+          card.buyPrice = await fetchCardBuyPriceFromMagicersSingle(card)
+        }           
+        updatedEntries.push({
+          card: card,
+          desiredCopies: card.ownedCopies + 1,
+          isInShoppingCart: false,
+          inDecks: findDecksContainCard(card, this.state.decks)
+        })
       }
       this.setState({wishlistEntries: updatedEntries})
       axios.post(`http://localhost:8000/wishlist/`, updatedEntries).then(response => {
         console.log(`updated wishlist!`)
       })
+    }
+
+    const isCardInWishlist = (card: MTGCardDTO): boolean => {
+      for (const entry of this.state.wishlistEntries) {
+        if(entry.card.id === card.id){
+          return true
+        }
+      }
+      return false
     }
 
     const handleLoadMore = async () => {
@@ -519,7 +521,9 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       handleChangeSelectedDeck,
       updateDeckEntries,
       updateCardCopiesInDeck,
-      saveDeck
+      saveDeck,
+      isCardInWishlist,
+      updateCardCopiesInWishlist
     }
 
     const wishlistProps: WishlistProps = {

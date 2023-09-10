@@ -3,7 +3,7 @@ import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
 import { Button, CardMedia, Tooltip } from "@mui/material";
-import { WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
+import { MTGCardDTO, WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
 import { v4 as uuidv4 } from "uuid";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
@@ -11,7 +11,7 @@ import { Component } from "react";
 
 export interface WishlistEntryProps {
   entry: WishlistEntryDTO;
-  updateCardCopiesInWishlist: (id: number, add: boolean) => void
+  updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
 }
 
 const iconWidth = 16;
@@ -20,7 +20,7 @@ const iconHeight = 16;
 export class WishlistEntry extends Component<WishlistEntryProps> {
 
   shouldComponentUpdate(nextProps: WishlistEntryProps) {
-    // TODO if this causes performance issues, try to fix it. The update on buyprice doesnt trigger an update!
+    // if this causes performance issues, try to fix it. The update on buyprice doesnt trigger an update!
     // return this.props.entry !== nextProps.entry ||
     // this.props.entry.buyPrice !== nextProps.entry.buyPrice
     return true
@@ -119,7 +119,7 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
                   width: iconWidth,
                   minWidth: iconWidth,
                 }}
-                onClick={() => { this.props.updateCardCopiesInWishlist(this.props.entry.card.id, false)} }
+                onClick={() => { this.props.updateCardCopiesInWishlist(this.props.entry.card, false)} }
               >
                 <RemoveIcon fontSize="small" />
               </Button>
@@ -131,7 +131,7 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
                   width: iconWidth,
                   minWidth: iconWidth,
                 }}
-                onClick={() => { this.props.updateCardCopiesInWishlist(this.props.entry.card.id, true)} }
+                onClick={() => { this.props.updateCardCopiesInWishlist(this.props.entry.card, true)} }
               >
                 <AddIcon fontSize="small" />
               </Button>

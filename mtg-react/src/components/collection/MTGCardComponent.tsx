@@ -19,7 +19,7 @@ export interface CardComponentProps {
     getCurrentNumberOfCopiesForCard: Function,
     updateCardCopiesInDeck: Function
     updateCardCopiesInCollection: (id: number, copies: number) => void
-    updateCardCopiesInWishlist: (id: number, add: boolean) => void
+    updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
 }
 
 interface CardComponentState {

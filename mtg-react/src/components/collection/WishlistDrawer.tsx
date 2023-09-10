@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { DeckDTO, WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
+import { DeckDTO, MTGCardDTO, WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
 import { Box, Divider, Drawer, List, ListItem, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { drawerWidth, navBarHeight } from "../../constants";
 import { deckEntryTextBoxStyle, listItemStyle } from "../../style/styles";
@@ -11,7 +11,7 @@ export interface WishlistProps {
     wishlistOpened: boolean
     wishlistEntries: WishlistEntryDTO[]
     decks: DeckDTO[]
-    updateCardCopiesInWishlist: (id: number, add: boolean) => void
+    updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
   }
 
 enum SortMethod {
