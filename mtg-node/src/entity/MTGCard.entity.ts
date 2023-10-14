@@ -249,6 +249,7 @@ export class MTGCard {
             id: this.id,
             name: this.name,
             type: this.type,
+            rarity: this.rarity,
             manaCost: this.manaCost,
             colorIdentity: this.colorIdentity.split(""),
             convertedManaCost: this.convertedManaCost,
@@ -289,8 +290,9 @@ export class MTGCard {
             qb.andWhere(`(card.name like "%${params.cardName}%" or card.backSideName like "%${params.cardName}%")`)
         }
         if (params.cardText) {
-            const words: string[] = params.cardText.split(" ")
-
+            var words: string[] = params.cardText.replaceAll("\"","'").match(/"(?:\\"|[^"])*"|'(?:\\'|[^'])*'|[^\s"']+/g);
+            words = words.map(word => word.replace(/^'|'$/g, ''));
+            logger.debug(words)
             if (words.length === 1) {
                 if (words[0].startsWith("!")) {
                     qb.andWhere(`(card.text not like "%${words[0].substring(1)}%" and card.backSideText not like "%${words[0].substring(1)}%")`)

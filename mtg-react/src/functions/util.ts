@@ -269,7 +269,7 @@ export function findDecksContainCard(card: MTGCardDTO, decks: DeckDTO[]): string
     return inDecks
   }
 
-export function  populateDeckWishlistEntryMap(wishlist: WishlistEntryDTO[]): Map<string, WishlistEntryDTO[]> {
+export function populateDeckWishlistEntryMap(wishlist: WishlistEntryDTO[]): Map<string, WishlistEntryDTO[]> {
     const deckWishlistEntryMap: Map<string, WishlistEntryDTO[]> = new Map();
   
     for (const entry of wishlist) {
@@ -300,4 +300,8 @@ export function findDeckByName(name: string, decks: DeckDTO[]): DeckDTO{
         }
     }
     throw Error("Deck not found")
+}
+
+export function countCardsByRarity(entries: DeckCardEntryDTO[], rarity: string): number {
+    return entries.filter(entry => entry.card.rarity === rarity).map(entry => entry.copies).reduce((a, b) => a + b, 0)
 }

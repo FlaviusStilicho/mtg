@@ -3,7 +3,7 @@ import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
 import { Button, CardMedia, Tooltip } from "@mui/material";
-import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from '../../../../mtg-common/src/DTO';
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from '../../../../mtg-common/src/DTO';
 import { v4 as uuidv4 } from "uuid";
 import {
   isBasicLand,
@@ -26,6 +26,7 @@ export interface DeckEntryComponentProps {
   setNewCommander: (entry: DeckCardEntryDTO) => void;
   isCardInWishlist: (card: MTGCardDTO) => boolean
   updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
+  wishlistEntries: WishlistEntryDTO[]
 }
 
 const iconWidth = 16;

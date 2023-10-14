@@ -19,6 +19,7 @@ import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
 import { WishlistDrawer, WishlistProps } from './collection/WishlistDrawer';
+import { Alert, Snackbar } from '@mui/material';
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
@@ -63,6 +64,10 @@ interface CollectionManagerState{
   // wishlist
   wishlistOpened: boolean 
   wishlistEntries: WishlistEntryDTO[] 
+
+  // snackbar
+  snackbarMessage: string
+  snackbarOpen: boolean
 }
 
 export class MagicCollectionManager extends Component<CollectionManagerProps, CollectionManagerState> {
@@ -100,7 +105,9 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       selectedDeckEntries: [],
       deckChanged: false,
       wishlistOpened: true,
-      wishlistEntries: []
+      wishlistEntries: [],
+      snackbarMessage: "",
+      snackbarOpen: false
     }
   }
 
@@ -396,6 +403,13 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       }
     }
 
+    const openSnackbar = (message: string) =>{
+      this.setState({
+        snackbarMessage: message,
+        snackbarOpen: true
+      })
+    }
+
     function checkEntryIllegal(entry: DeckCardEntryDTO, deck: DeckDTO) {
       const format = deck.format
       var maxCardCopies
@@ -413,7 +427,8 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       if (isBasicLand(entry.card)) {
         return
       } else if (entry.copies > maxCardCopies || entry.sideboardCopies > maxCardCopies) {
-        throw Error("Cannot exceed max card copies")
+        console.error("Cannot exceed max card copies")
+        openSnackbar("Cannot exceed max card copies")
       }
       return
     }
@@ -523,7 +538,8 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       updateCardCopiesInDeck,
       saveDeck,
       isCardInWishlist,
-      updateCardCopiesInWishlist
+      updateCardCopiesInWishlist,
+      wishlistEntries: this.state.wishlistEntries,
     }
 
     const wishlistProps: WishlistProps = {
@@ -592,6 +608,12 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
               </Box>
               <DeckManagerDrawer {...deckManagerProps} />
             </TabPanel>
+            <Snackbar
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                open={this.state.snackbarOpen}
+                autoHideDuration={3000}>
+                <Alert severity="error" sx={{ width: '100%' }}>{this.state.snackbarMessage}</Alert>
+            </Snackbar>
           </Box>
         </Box>
       </ThemeProvider>

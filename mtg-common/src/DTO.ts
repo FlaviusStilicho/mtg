@@ -2,6 +2,7 @@ export interface MTGCardDTO {
     id: number
     name: string
     type: string
+    rarity: string
     manaCost: string
     colorIdentity: string[]
     convertedManaCost: number

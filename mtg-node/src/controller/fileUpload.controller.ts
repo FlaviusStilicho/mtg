@@ -32,50 +32,55 @@ export const ProcessdDelverFile = async (req: Request, res: Response, additive: 
         if (!err) {
             const cards: MTGCard[] = [];
             var cardNameRow: number = null
-            // var scryfallIdRow: number = null
             var quantityRow: number = null
 
             const failedCards: string[] = [];
 
             createReadStream(`./uploads/delver/${req.file.filename}`)
-                .pipe(parse({ delimiter: ',' }))
+                .pipe(parse({ delimiter: ','}))
                 .on('data', async function (row: string[]) {
-                    // if (!scryfallIdRow && !quantityRow) {
                     if (!quantityRow) {
                         for (let i = 0; i < row.length; i++) {
-                            if (row[i] == "Name") { cardNameRow = i }
-                            // if (row[i] == "Scryfall ID") { scryfallIdRow = i }
-                            if (row[i] == "Quantity") { quantityRow = i }
+                            if (row[i] === "Name") { 
+                                cardNameRow = i 
+                                logger.info("Name column found")
+                            }
+                            if (row[i] === "Quantity") { 
+                                quantityRow = i 
+                                logger.info("Quantity column found")
+                            }
+
                         }
-                    } else {
-                        const cardCopies = parseInt(row[quantityRow]);
-                        // const scryfallId = row[scryfallIdRow]
-                        var cardName = row[cardNameRow]
-                        if (cardName.includes(" //")){
-                            cardName = cardName.substring(cardName.indexOf(" //") - 1);
-                        }
-                        try {
-                            // await MTGCard.findOneByScryfallIdAndName(scryfallId, cardName).then(
-                            await MTGCardRepository.findOneByName(cardName).then(
-                                async (card) => {
-                                    card.ownedCopies = additive ? card.ownedCopies + cardCopies : cardCopies
-                                    await MTGCardRepository.saveCard(card)
-                                    cards.push(card);
-                                    if (additive) {
-                                        logger.info(`Increased number of owned copies for card '${cardName}' by ${cardCopies} to ${card.ownedCopies}`)
-                                    } else {
-                                        logger.info(`Set number of owned copies for card '${cardName}' to ${card.ownedCopies}`)
-                                    }
-                                }
-                            ).catch(err => {
-                                logger.warn(`Error updating quantity for card '${cardName}': ${err}`)
-                                // failedCards.push([cardName, scryfallId])
-                                failedCards.push(cardName)
-                            });
-                        } catch (err) {
-                            logger.warn(`Error updating quantity for card '${cardName}': ${err}`)
-                        }
+                    } 
+                    // if (!cardNameRow || !quantityRow){
+                    //     throw Error("error parsing file")
+                    // }
+                    const cardCopies = parseInt(row[quantityRow]);
+                    var cardName = row[cardNameRow]
+                    if (cardName.includes(" //")){
+                        // Occurs for doublesided cards
+                        cardName = cardName.substring(cardName.indexOf(" //") - 1);
                     }
+                    try {
+                        await MTGCardRepository.findOneByName(cardName).then(
+                            async (card) => {
+                                card.ownedCopies = additive ? card.ownedCopies + cardCopies : cardCopies
+                                await MTGCardRepository.saveCard(card)
+                                cards.push(card);
+                                if (additive) {
+                                    logger.info(`Increased number of owned copies for card '${cardName}' by ${cardCopies} to ${card.ownedCopies}`)
+                                } else {
+                                    logger.info(`Set number of owned copies for card '${cardName}' to ${card.ownedCopies}`)
+                                }
+                            }
+                        ).catch(err => {
+                            logger.error(`Error updating quantity for card '${cardName}': ${err}`)
+                            failedCards.push(cardName)
+                        });
+                    } catch (err) {
+                        logger.error(`Error updating quantity for card '${cardName}': ${err}`)
+                    }
+                    
                 })
                 .on('error', function (err) {
                     logger.error(err.message);

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { deckEntryTextBoxStyle } from "../../style/styles";
-import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from "../../../../mtg-common/src/DTO";
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
 import { DeckEntryComponentWithTooltip } from "./DeckEntryCardWithTooltip";
 import { Component } from "react";
 
@@ -16,11 +16,13 @@ export interface DeckEntryGroupingProps {
   isSideboardEntry: boolean;
   isCardInWishlist: (card: MTGCardDTO) => boolean
   updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
+  wishlistEntries: WishlistEntryDTO[]
 }
 
 export class DeckCardTypeCounter extends Component<DeckEntryGroupingProps> {
   shouldComponentUpdate(nextProps: DeckEntryGroupingProps) {
-    return this.props.selectedDeckEntries !== nextProps.selectedDeckEntries;
+    return this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
+    this.props.wishlistEntries !== nextProps.wishlistEntries
   }
 
   render() {
@@ -47,6 +49,7 @@ export class DeckCardTypeCounter extends Component<DeckEntryGroupingProps> {
               isSideboardEntry: this.props.isSideboardEntry,
               isCardInWishlist: this.props.isCardInWishlist,
               updateCardCopiesInWishlist: this.props.updateCardCopiesInWishlist,
+              wishlistEntries: this.props.wishlistEntries,
             };
             return (
               <DeckEntryComponentWithTooltip

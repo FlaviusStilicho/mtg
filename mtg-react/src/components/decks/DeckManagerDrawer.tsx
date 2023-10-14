@@ -15,8 +15,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import SaveIcon from '@mui/icons-material/Save';
 import { useEffect, useState } from 'react';
 import { CreateDeckWindow, CreateDeckWindowProps } from './windows/CreateDeckWindow';
-import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from '../../../../mtg-common/src/DTO';
-import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander } from '../../functions/util';
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from '../../../../mtg-common/src/DTO';
+import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifacts, filterSorceries, getNumberOfCreatures, getNumberOfInstants, getNumberOfLands, getNumberOfNoncreatureArtifacts, getNumberOfPlaneswalkers, getNumberOfSorceries, filterPlaneswalkers, getNumberOfBattles, filterBattles, getNumberOfNoncreatureEnchantment, filterNoncreatureEnchantments, numberOfCardsAvailable, costToFinishDeck, filterSideboard, getNumberOfSideboardCards, getCommander, countCardsByRarity } from '../../functions/util';
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
@@ -28,6 +28,7 @@ import { CompareDeckWindow, CompareDeckWindowProps } from './windows/CompareDeck
 import { DevotionCountersBox } from './DevotionCountersBox';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { renderDeckName } from './renderDeckName';
+import RarityIcon from '../RarityIcon';
 
 export const deckNameFontSize = 10
 
@@ -44,6 +45,7 @@ export interface DeckManagerProps extends MuiAppBarProps {
   saveDeck: () => void
   isCardInWishlist: (card: MTGCardDTO) => boolean
   updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
+  wishlistEntries: WishlistEntryDTO[]
 }
 
 function useForceUpdate() {
@@ -335,6 +337,18 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
             {availableMissingCards > 0 || unavailableMissingCards > 0 ? `Cost to complete: € ${costToFinishDeck(props.selectedDeckEntries).toFixed(2)}` : ``}
           </Box>
+          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+          <RarityIcon rarity="Mythic"/> Mythic Rares: {countCardsByRarity(props.selectedDeckEntries, "mythic")}
+          </Box>
+          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            <RarityIcon rarity="Rare"/> Rares: {countCardsByRarity(props.selectedDeckEntries, "rare")}
+          </Box>
+          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            <RarityIcon rarity="Uncommon"/> Uncommons: {countCardsByRarity(props.selectedDeckEntries, "uncommon")}
+          </Box>
+          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            <RarityIcon rarity="Common"/> Commons: {countCardsByRarity(props.selectedDeckEntries, "common")}
+          </Box>
           <Divider />
 
           <DeckCardTypeCounter
@@ -349,6 +363,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
 
           <DeckCardTypeCounter
@@ -363,6 +378,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
 
           <DeckCardTypeCounter
@@ -377,6 +393,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
 
           <DeckCardTypeCounter
@@ -391,6 +408,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
 
           <DeckCardTypeCounter
@@ -405,6 +423,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
 
           <DeckCardTypeCounter
@@ -419,6 +438,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
 
           <DeckCardTypeCounter
@@ -433,6 +453,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
 
           <DeckCardTypeCounter
@@ -447,6 +468,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={false}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
           
           <DevotionCountersBox entries={props.selectedDeckEntries}/>
@@ -471,6 +493,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             isSideboardEntry={true}
             isCardInWishlist={props.isCardInWishlist}
             updateCardCopiesInWishlist={props.updateCardCopiesInWishlist}
+            wishlistEntries={props.wishlistEntries}
           />
           <Divider />
           {props.selectedDeck ?
