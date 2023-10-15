@@ -149,8 +149,8 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
             const inDecks: string[] = findDecksContainCard(wishlistEntry.card, decks)
             wishlistEntry.inDecks = inDecks;
           }
-          console.log("mapped decks to wishlist entries")
-          console.log(wishlistEntries)
+          // console.log("mapped decks to wishlist entries")
+          // console.log(wishlistEntries)
           this.setState({ wishlistEntries: wishlistEntries})
         })
       })
@@ -354,19 +354,32 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       }
     }
 
-    const getCurrentNumberOfCopiesForCard = (card: MTGCardDTO): number => {
+    const getCurrentNumberOfCopiesForCard = (card: MTGCardDTO, isSideboard: boolean = false): number => {
       const entry = getExistingEntry(card)
       if (!entry) {
         return 0
       } else {
-        return entry.copies
+        if (isSideboard) {
+          return entry.sideboardCopies
+        } else {
+          return entry.copies
+        }
       }
     }
 
     const updateDeckEntries = (entry: DeckCardEntryDTO) => {
       const currentEntriesList = this.state.selectedDeckEntries
-      const newEntriesList = currentEntriesList.filter(currentEntry => currentEntry.card.name !== entry.card.name)
-      newEntriesList.push(entry)
+      var newEntriesList = JSON.parse(JSON.stringify(currentEntriesList));
+      
+      newEntriesList = currentEntriesList.filter(currentEntry => currentEntry.card.name !== entry.card.name)
+        .filter(entry => entry.copies > 0 || entry.sideboardCopies > 0)
+      // console.log(newEntriesList)
+      
+      if (entry.copies > 0 || entry.sideboardCopies > 0) {
+        newEntriesList.push(entry)
+      }
+      // console.log(currentEntriesList)
+      // console.log(newEntriesList)
       this.setState({selectedDeckEntries: newEntriesList})
       doSaveDeck(newEntriesList)
     }
@@ -380,27 +393,30 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       }
       const existingCardEntry: DeckCardEntryDTO | null = getExistingEntry(card)
 
+      var newEntry = null
       if (!existingCardEntry) {
         if (increment === -1) {
           throw Error("Cannot remove cards from nonexistant entry")
         }
-        const newEntry = {
+        newEntry = {
           id: undefined,
           card: card,
           copies: isSideboard ? 0 : 1,
           sideboardCopies: isSideboard ? 1 : 0,
           isCommander: false
         }
-        updateDeckEntries(newEntry)
       } else {
-        if (isSideboard) {
-          existingCardEntry.sideboardCopies += increment
-        } else {
-          existingCardEntry.copies += increment
+        newEntry = {
+          id: existingCardEntry.id,
+          card: card,
+          copies: isSideboard ? existingCardEntry.copies : existingCardEntry.copies + increment,
+          sideboardCopies: isSideboard ? existingCardEntry.sideboardCopies + increment : existingCardEntry.sideboardCopies,
+          isCommander: false
         }
         checkEntryIllegal(existingCardEntry, this.state.selectedDeck)
-        updateDeckEntries(existingCardEntry)
+
       }
+      updateDeckEntries(newEntry)
     }
 
     const openSnackbar = (message: string) =>{
@@ -422,13 +438,12 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         throw Error("Unsupported format")
       }
       if (entry.copies < 0 || entry.sideboardCopies < 0) {
-        throw Error("Cannot have less than 0 copies")
+        openSnackbar("Cannot have fewer than 0 copies")
       }
       if (isBasicLand(entry.card)) {
         return
       } else if (entry.copies > maxCardCopies || entry.sideboardCopies > maxCardCopies) {
-        console.error("Cannot exceed max card copies")
-        openSnackbar("Cannot exceed max card copies")
+        openSnackbar(`Cannot exceed ${maxCardCopies} card copies`)
       }
       return
     }

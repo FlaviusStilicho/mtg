@@ -10,6 +10,7 @@ import { Component } from 'react';
 import { MTGCardCollectionCounterBox } from './MTGCardCollectionCounterBox';
 import { MTGCardPopup } from './MTGCardPopup';
 import { CardImageProps, MTGCardImage } from './MTGCardImage';
+import { hasDeckEntryChanges, shouldCardComponentUpdate } from '../../functions/util';
 export interface CardComponentProps {
     card: MTGCardDTO,
     enabledTab: EnabledTab
@@ -22,7 +23,7 @@ export interface CardComponentProps {
     updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
 }
 
-interface CardComponentState {
+export interface CardComponentState {
     cardPopupOpened: boolean,
     buyPrice: number | undefined
     sellPrice: string
@@ -50,16 +51,8 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
     };
 
     shouldComponentUpdate(nextProps: CardComponentProps, nextState: CardComponentState) {
-        return this.props.card.ownedCopies !== nextProps.card.ownedCopies ||
-        this.props.selectedDeckId !== nextProps.selectedDeckId ||
-        this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
-        this.props.getCurrentNumberOfCopiesForCard !== nextProps.getCurrentNumberOfCopiesForCard ||
-        // this.props.updateCardCopiesInDeck !== nextProps.updateCardCopiesInDeck ||
-        this.state.buyPrice !== nextState.buyPrice ||
-        this.state.sellPrice !== nextState.sellPrice ||
-        this.state.frontSideUp !== nextState.frontSideUp ||
-        this.state.cardPopupOpened !== nextState.cardPopupOpened
-      }
+        return shouldCardComponentUpdate(this.props, nextProps, this.state, nextState)
+    }
 
     flipCard = (): void => {
         const primaryImage = this.props.card.versions.filter(version => version.isPrimaryVersion).map(version => this.state.frontSideUp ? version.frontImageUri : version.backImageUri).filter(this.notEmpty)[0]

@@ -14,7 +14,7 @@ export function renderDeckName(deck: DeckDTO) {
         {commander ? `${deck.name} [${commander.name}]` : deck.name}
         <Box>
           {Array.from(deckColorIdentity).map((color) => (
-            <ColorIcon color={color} />
+            <ColorIcon color={`${color}DN`}/>
           ))}
         </Box>
       </Box>

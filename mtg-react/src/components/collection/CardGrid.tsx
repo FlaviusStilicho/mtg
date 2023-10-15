@@ -5,6 +5,7 @@ import { MTGCardComponent, CardComponentProps } from "./MTGCardComponent";
 import { gridCardSizeFactor, imageWidth, drawerWidth } from '../../constants';
 import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from '../../../../mtg-common/src/DTO';
 import { EnabledTab } from "../MagicCollectionManager";
+import { isEqual } from "lodash";
 
 export interface CardGridProps {
     cards: MTGCardDTO[]
@@ -50,9 +51,9 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
      }
 
     shouldComponentUpdate(nextProps: Readonly<CardGridProps>, nextState: Readonly<CardGridState>, nextContext: any): boolean {
-         return this.props.cards !== nextProps.cards ||
+         return !isEqual(this.props.cards, nextProps.cards) ||
+         !isEqual(this.props.selectedDeckEntries, nextProps.selectedDeckEntries) ||
          this.props.selectedDeckId !== nextProps.selectedDeckId ||
-         this.props.selectedDeckEntries.length !== nextProps.selectedDeckEntries.length ||
          this.state.gridMaxWidth !== nextState.gridMaxWidth ||
          this.props.deckManagerOpened !== nextProps.deckManagerOpened ||
          this.props.wishlistOpened !== nextProps.wishlistOpened

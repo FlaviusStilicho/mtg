@@ -1,4 +1,6 @@
+import { isEqual } from 'lodash';
 import { MTGCardDTO, DeckCardEntryDTO, DeckDTO, WishlistEntryDTO } from '../../../mtg-common/src/DTO';
+import { CardComponentProps, CardComponentState } from '../components/collection/MTGCardComponent';
 
 export const isBasicLand = (card: MTGCardDTO): boolean => {
     return card.type.startsWith('Basic Land')
@@ -305,3 +307,62 @@ export function findDeckByName(name: string, decks: DeckDTO[]): DeckDTO{
 export function countCardsByRarity(entries: DeckCardEntryDTO[], rarity: string): number {
     return entries.filter(entry => entry.card.rarity === rarity).map(entry => entry.copies).reduce((a, b) => a + b, 0)
 }
+
+export function hasDeckEntryChanges(card: MTGCardDTO, prevEntries: DeckCardEntryDTO[], nextEntries: DeckCardEntryDTO[]): boolean {
+    var hasChanges = false
+
+    const matchingPreviousEntries = prevEntries.filter(entry => entry.card.id ===  card.id)
+    const matchingNextEntries = nextEntries.filter(entry => entry.card.id ===  card.id)
+
+    if (matchingPreviousEntries.length === 0 && matchingNextEntries.length === 0) {
+        hasChanges = false
+    } else if (matchingPreviousEntries.length === 0 && matchingNextEntries.length !== 0) {
+        hasChanges = true
+        // console.log(`no prev entry ${card.name}`)
+    } else if (matchingNextEntries.length === 0 && matchingPreviousEntries.length !== 0) {
+        hasChanges = true
+        // console.log(`no next entry ${card.name}`)
+    } else {
+        const previousEntry = matchingPreviousEntries[0]
+        const nextEntry = matchingNextEntries[0]
+        hasChanges = !isEqual(previousEntry, nextEntry)
+    }
+    if (hasChanges){
+        // console.log(`Entry for ${card.name} has changes!`)
+    }
+    return hasChanges
+}
+
+
+export function shouldCardComponentUpdate(currProps: CardComponentProps, nextProps: CardComponentProps, currState: CardComponentState, nextState: CardComponentState): boolean {
+    var hasChanges: boolean = false
+
+    if (currProps.card.ownedCopies !== nextProps.card.ownedCopies) {
+        hasChanges = true
+        // console.log(`Card ownership has changed!`)
+    }
+    if (hasDeckEntryChanges(currProps.card, currProps.selectedDeckEntries, nextProps.selectedDeckEntries)) {
+        hasChanges = true
+        // console.log(`Deck entry has changed!`)
+    }
+    if (currState.buyPrice !== nextState.buyPrice) {
+        hasChanges = true
+        // console.log(`Buy price has changed!`)
+    }
+    if (currState.sellPrice !== nextState.sellPrice) {
+        hasChanges = true
+        // console.log(`Sell price has changed!`)
+    }
+    if (currState.frontSideUp !== nextState.frontSideUp) {
+        hasChanges = true
+        // console.log(`Front side has changed!`)
+    }
+    if (currState.cardPopupOpened !== nextState.cardPopupOpened) {
+        hasChanges = true
+        // console.log(`Card popup has changed!`)
+    }
+    if(hasChanges){
+        // console.log(`Card component ${currProps.card.name} has changes`)
+    }
+    return hasChanges
+  }

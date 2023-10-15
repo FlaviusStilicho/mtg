@@ -177,7 +177,7 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
                     {deck.name}
                     <Box>
                       {Array.from(deckColorIdentity).map((color) => (
-                        <ColorIcon color={color}/>
+                        <ColorIcon color={`${color}CDW`}/>
                       ))}
                     </Box>
                   </Box>

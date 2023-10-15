@@ -3,11 +3,12 @@ import AutorenewIcon from '@mui/icons-material/Autorenew';
 import { cardTextFieldStyle, flipButtonStyle, staticButtonStyle } from '../../style/styles';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { isBasicLand } from '../../functions/util';
+import { hasDeckEntryChanges, isBasicLand } from '../../functions/util';
 import { DeckFormat } from '../../enum';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import { Component } from 'react';
 import { DeckDTO, MTGCardDTO, DeckCardEntryDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
+import { isEqual } from 'lodash';
 
 export interface MTGCardDeckCounterBoxProps {
     card: MTGCardDTO
@@ -23,40 +24,30 @@ export interface MTGCardDeckCounterBoxProps {
 export class MTGCardDeckCounterBox extends Component<MTGCardDeckCounterBoxProps> {
 
     shouldComponentUpdate(nextProps: MTGCardDeckCounterBoxProps) {
-        const previousEntry = this.props.selectedDeckEntries.filter(entry => entry.card.id ===  this.props.card.id)[0]
-        const nextEntry =  nextProps.selectedDeckEntries.filter(entry => entry.card.id ===  nextProps.card.id)[0]
-        if (previousEntry == null && nextEntry == null){
-            return false
-        } else if (previousEntry == null || nextEntry == null){
-            return true
-        } else {
-            return this.props.card !== nextProps.card ||
-            this.props.card.ownedCopies !== nextProps.card.ownedCopies ||
-            this.props.selectedDeckId !== nextProps.selectedDeckId ||
-            this.props.selectedDeck !== nextProps.selectedDeck ||
-            this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
-            this.props.primaryVersion !== nextProps.primaryVersion ||
-            previousEntry.copies !== nextEntry.copies ||
-            previousEntry.sideboardCopies !== nextEntry.sideboardCopies 
-        }
-      }
+        return hasDeckEntryChanges(this.props.card, this.props.selectedDeckEntries, nextProps.selectedDeckEntries)
+    }
 
-    checkCanAddCopy = () => {
+    checkCanAddCopy = (isSideboard: boolean = false) => {
         const copiesInDeck = this.props.getCurrentNumberOfCopiesForCard(this.props.card);
+        const copiesInSideboard = this.props.getCurrentNumberOfCopiesForCard(this.props.card, true)
 
         if (this.props.selectedDeck === null) {
             return false;
         } else if (this.props.selectedDeck.format === DeckFormat.STANDARD) {
             if (isBasicLand(this.props.card)) {
                 return true;
+            } else if (isSideboard) {
+                return copiesInDeck + copiesInSideboard < 4 ? true : false;
             } else {
-                return copiesInDeck >= 4 ? true : false;
+                return copiesInDeck < 4 ? true : false;
             }
         } else if (this.props.selectedDeck.format === DeckFormat.COMMANDER) {
             if (isBasicLand(this.props.card)) {
                 return true;
+            } else if (isSideboard) {
+                return copiesInDeck + copiesInSideboard < 1 ? true : false;                
             } else {
-                return copiesInDeck === 0 ? true : false;
+                return copiesInDeck < 1 ? true : false;
             }
         } else {
             return false;
@@ -65,8 +56,10 @@ export class MTGCardDeckCounterBox extends Component<MTGCardDeckCounterBoxProps>
 
     render() {
         const canAddCopy = this.checkCanAddCopy();
+        const canAddSideboardCopy = this.checkCanAddCopy(true);
         const copiesInDeck = this.props.getCurrentNumberOfCopiesForCard(this.props.card)
 
+        // console.log(`Rendering counter box ${this.props.card.name}`)
         return (
             <Box style={{ alignItems: "center" }}>
                 <Button
@@ -108,7 +101,7 @@ export class MTGCardDeckCounterBox extends Component<MTGCardDeckCounterBoxProps>
                     name="sideboard-button"
                     variant="contained"
                     style={{ ...staticButtonStyle, backgroundColor: "#6497b1" }}
-                    disabled={!canAddCopy}
+                    disabled={!canAddSideboardCopy}
                     onClick={() => this.props.updateCardCopiesInDeck(this.props.card, 1, true)}
                 >
                     <ArchiveIcon fontSize="small" />
