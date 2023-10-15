@@ -62,6 +62,15 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
   const [deleteDeckWindowOpened, setDeleteDeckWindowOpened] = useState<boolean>(false);
   const [compareDeckWindowOpened, setCompareDeckWindowOpened] = useState<boolean>(false);
 
+  const commonCount = countCardsByRarity(props.selectedDeckEntries, "common")
+  const commonLandCount = countCardsByRarity(filterLands(props.selectedDeckEntries), "common")
+  const uncommonCount = countCardsByRarity(props.selectedDeckEntries, "uncommon")
+  const uncommonLandCount = countCardsByRarity(filterLands(props.selectedDeckEntries), "uncommon")
+  const rareCount = countCardsByRarity(props.selectedDeckEntries, "rare")
+  const rareLandCount = countCardsByRarity(filterLands(props.selectedDeckEntries), "rare")
+  const mythicCount = countCardsByRarity(props.selectedDeckEntries, "mythic")
+  const mythicLandCount = countCardsByRarity(filterLands(props.selectedDeckEntries), "mythic")
+
   const closeCreateDeckWindow = () => {
     setCreateDeckWindowOpened(false);
   };
@@ -337,18 +346,33 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
             {availableMissingCards > 0 || unavailableMissingCards > 0 ? `Cost to complete: € ${costToFinishDeck(props.selectedDeckEntries).toFixed(2)}` : ``}
           </Box>
+
+          <Divider/>
+
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-          <RarityIcon rarity="Mythic"/> Mythic Rares: {countCardsByRarity(props.selectedDeckEntries, "mythic")}
-          </Box>
-          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            <RarityIcon rarity="Rare"/> Rares: {countCardsByRarity(props.selectedDeckEntries, "rare")}
-          </Box>
-          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            <RarityIcon rarity="Uncommon"/> Uncommons: {countCardsByRarity(props.selectedDeckEntries, "uncommon")}
-          </Box>
-          <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
-            <RarityIcon rarity="Common"/> Commons: {countCardsByRarity(props.selectedDeckEntries, "common")}
-          </Box>
+            <RarityIcon rarity="Common"/> Commons: {commonCount} {commonLandCount > 0 && `(of which are lands: ${commonLandCount})`}
+        </Box>
+        <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            <RarityIcon rarity="Uncommon"/> Uncommons: {uncommonCount} {uncommonLandCount > 0 && `(of which are lands: ${uncommonLandCount})`}
+        </Box>
+        <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            <RarityIcon rarity="Rare"/> Rares: {rareCount} {rareLandCount > 0 && `(of which are lands: ${rareLandCount})`}
+        </Box>
+        <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
+            <RarityIcon rarity="Mythic"/> Mythic Rares: {mythicCount} {mythicLandCount > 0 && `(of which are lands: ${mythicLandCount})`}
+        </Box>
+
+          <Divider />
+
+          <DevotionCountersBox entries={props.selectedDeckEntries}/>
+
+          <Bar style={{
+            paddingLeft: 30,
+            paddingRight: 30,
+            color: "black"
+          }}
+            options={manaCurveChartOptions}
+            data={manaCurveChartData} />
           <Divider />
 
           <DeckCardTypeCounter
@@ -471,15 +495,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
           
-          <DevotionCountersBox entries={props.selectedDeckEntries}/>
-
-          <Bar style={{
-            paddingLeft: 30,
-            paddingRight: 30,
-            color: "black"
-          }}
-            options={manaCurveChartOptions}
-            data={manaCurveChartData} />
           <Divider />
           <DeckCardTypeCounter
             label="Sideboard"

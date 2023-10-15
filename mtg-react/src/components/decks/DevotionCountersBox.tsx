@@ -89,12 +89,12 @@ export interface DevotionCountersBoxProps {
         return (this.props.entries.length > 0) ? (
             <List>
             <Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}>Color devotion:</Box>
-            { colorDevotionMap.white > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="WD" key="w"/> {colorDevotionMap.white}</Box>) : <></> }
-            { colorDevotionMap.blue > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="UD" key="U"/> {colorDevotionMap.blue}</Box>) : <></> }
-            { colorDevotionMap.black > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="BD" key="B"/> {colorDevotionMap.black}</Box>) : <></> }
-            { colorDevotionMap.red > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="RD" key="R"/> {colorDevotionMap.red}</Box>) : <></> }
-            { colorDevotionMap.green > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="GD" key="G"/> {colorDevotionMap.green}</Box>) : <></> }
-            { colorDevotionMap.colorless > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}> <ColorIcon color="CD" key="C"/> {colorDevotionMap.colorless}</Box>) : <></> }
+            { colorDevotionMap.white > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="W" key="wD"/> {colorDevotionMap.white}</Box>) : <></> }
+            { colorDevotionMap.blue > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="U" key="UD"/> {colorDevotionMap.blue}</Box>) : <></> }
+            { colorDevotionMap.black > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="B" key="BD"/> {colorDevotionMap.black}</Box>) : <></> }
+            { colorDevotionMap.red > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="R" key="RD"/> {colorDevotionMap.red}</Box>) : <></> }
+            { colorDevotionMap.green > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}><ColorIcon color="G" key="GD"/> {colorDevotionMap.green}</Box>) : <></> }
+            { colorDevotionMap.colorless > 0 ? (<Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}> <ColorIcon color="C" key="CD"/> {colorDevotionMap.colorless}</Box>) : <></> }
             <Box style={{ textAlign: "left", marginLeft: 25 }} sx={colorDevotionBoxStyle}>Average mana cost: {colorDevotionMap.average.toFixed(1)}</Box>
             </List>
         ) : (<></>)

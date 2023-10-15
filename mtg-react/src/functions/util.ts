@@ -43,6 +43,11 @@ export const filterLands = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => 
         .filter(entry => isLand(entry) && !isCreature(entry))
 }
 
+export const filterNonLands = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
+    return entries.filter(entry => entry.copies > 0)
+        .filter(entry => !isLand(entry) || ( isLand(entry) && isCreature(entry)) )
+}
+
 export const filterCreatures = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
     return entries.filter(entry => entry.copies > 0)
         .filter(entry => isCreature(entry))
