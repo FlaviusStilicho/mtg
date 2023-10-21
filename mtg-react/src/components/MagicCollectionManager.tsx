@@ -6,20 +6,20 @@ import NavBar, { NavBarProps } from './NavBar';
 import { CardGrid } from './collection/CardGrid';
 import { theme } from '../style/theme';
 import { SelectChangeEvent } from '@mui/material/Select';
-import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO, WishlistEntryDTO } from '../../../mtg-common/src/DTO';
+import { Color, DeckCardEntryDTO, DeckDTO, MTGCardDTO, MTGSetDTO, WishlistEntryDTO } from "mtg-common";
 import axios from 'axios';
 import { CardGridProps } from './collection/CardGrid';
 import { Component, SyntheticEvent } from 'react';
-import { CardQueryParameters, ListDecksResponse, UpdateCardOwnedCopiesQueryParams } from '../../../mtg-common/src/requests';
+import { CardQueryParameters, ListDecksResponse, UpdateCardOwnedCopiesQueryParams } from "mtg-common";
 import { debounce } from "lodash";
 import DeckManagerDrawer, { DeckManagerProps } from './decks/DeckManagerDrawer';
 import { searchBarDrawerWidth } from '../constants';
 import { isBasicLand, numberOfMissingCards, getDeckColorIdentity, findDecksContainCard } from '../functions/util';
-import { fetchCardBuyPriceFromMagicersSingle } from '../functions/magicers';
 import { DeckFormat } from '../enum';
 import TabPanel from './TabPanel';
 import { WishlistDrawer, WishlistProps } from './collection/WishlistDrawer';
 import { Alert, Snackbar } from '@mui/material';
+import { fetchCardBuyPrice } from '../functions/magicers';
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133]
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"]
@@ -137,9 +137,8 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       this.setState({wishlistEntries})
 
       Promise.all(wishlistEntries.map(entry => {
-          return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
-            // console.log(`Price of card ${entry.card.name} is ${price}`)
-            entry.card.buyPrice = price
+          return fetchCardBuyPrice(entry.card).then(priceInfo => {
+            entry.card.priceInfo = priceInfo
             return entry
           })
       })).then(wishlistEntries => {
@@ -304,15 +303,12 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
           console.log("Collecting card prices")
           Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
             if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
-              return fetchCardBuyPriceFromMagicersSingle(entry.card).then(price => {
-                // console.log(`Price of card ${entry.card.name} is ${price}`)
-                entry.card.buyPrice = price
+              return fetchCardBuyPrice(entry.card).then(priceInfo => {
+                entry.card.priceInfo = priceInfo
                 return entry
               })
-            } else {
-              entry.card.buyPrice = undefined
-              return entry
-            }
+            } 
+            return entry
           })).then(entries => {
             console.log(`collected prices for deck ${getDeck(newDeckId).name}`)
             this.setState({ selectedDeckEntries: entries})
@@ -501,8 +497,8 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         if(!add) {
           throw Error("Cannot decrease number of copies on card that isnt on wishlist")
         }
-        if(!card.buyPrice){
-          card.buyPrice = await fetchCardBuyPriceFromMagicersSingle(card)
+        if(!card.priceInfo){
+          card.priceInfo = await fetchCardBuyPrice(card)
         }           
         updatedEntries.push({
           card: card,

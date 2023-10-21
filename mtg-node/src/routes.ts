@@ -8,7 +8,7 @@ import { GetColors } from './controller/color.controller.ts';
 import { CreateDeck, GetDeck, ListDecks, CheckDeck, ClearDecks, ListDeckNames, CopyDeck, UploadDeck } from './controller/deck.controller.ts';
 import { DeleteDeck, UpdateDeck } from './controller/deck.controller.ts';
 import { ClearCollection, CreateBuylistMultipleDecks, ExportCollection, GetCollection } from './controller/collection.controller.ts';
-import { AddWishlistEntry, GetWishlistEntries, RemoveWishlistEntry, SaveWishlist } from './controller/wishlist.controller.ts';
+import { GetWishlistEntries, SaveWishlist } from './controller/wishlist.controller.ts';
 
 export const routes = (router: Router) => {
     router.get("/types", GetTypes)   

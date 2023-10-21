@@ -1,5 +1,5 @@
 import { Alert, Button, Dialog, List, ListItem, ListItemText, MenuItem, Snackbar, TextField } from "@mui/material";
-import { DeckDTO } from '../../../../../mtg-common/src/DTO';
+import { DeckDTO } from "mtg-common";
 import axios from "axios";
 import { memo, useState } from "react";
 import { firstCharUpper } from "../../../functions/util";

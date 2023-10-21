@@ -1,3 +1,13 @@
+export interface PriceInformation {
+    buyPrice: number
+    store : Store
+}
+
+export enum Store {
+    MAGICERS = 'magicers',
+    SCRYFALL = 'scryfall'
+}
+
 export interface MTGCardDTO {
     id: number
     name: string
@@ -9,7 +19,7 @@ export interface MTGCardDTO {
     ownedCopies: number
     versions: MTGCardVersionDTO[]
     otherSide?: MTGCardDTO
-    buyPrice?: number | undefined
+    priceInfo: PriceInformation | null
 }
 
 export interface MTGCardVersionDTO {

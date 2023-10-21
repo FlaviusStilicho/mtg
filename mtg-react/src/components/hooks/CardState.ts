@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { MTGCardDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
-import { UpdateCardOwnedCopiesQueryParams } from '../../../../mtg-common/src/requests';
+import { MTGCardDTO, MTGCardVersionDTO } from 'mtg-common';
+import { UpdateCardOwnedCopiesQueryParams } from 'mtg-common';
 import axios from 'axios';
 import useConstant from 'use-constant';
 import { debounce } from 'lodash';

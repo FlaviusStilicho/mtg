@@ -8,11 +8,11 @@
     // "sourceMap": true,
     // "allowJs": true,
     "outDir": "dist",
-    // "outDir": "./dist/",
     "strict": true,
     "declaration": true,
   },
   "include": [
-    "src/*"
-, "dist/index.d.ts"  ]
+    "src/*", 
+    "dist/index.d.ts"  
+  ]
 }

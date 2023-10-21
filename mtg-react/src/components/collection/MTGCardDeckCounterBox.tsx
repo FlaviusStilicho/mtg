@@ -7,8 +7,7 @@ import { hasDeckEntryChanges, isBasicLand } from '../../functions/util';
 import { DeckFormat } from '../../enum';
 import ArchiveIcon from '@mui/icons-material/Archive';
 import { Component } from 'react';
-import { DeckDTO, MTGCardDTO, DeckCardEntryDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
-import { isEqual } from 'lodash';
+import { DeckDTO, MTGCardDTO, DeckCardEntryDTO, MTGCardVersionDTO } from 'mtg-common';
 
 export interface MTGCardDeckCounterBoxProps {
     card: MTGCardDTO

@@ -19,7 +19,7 @@ import {
   DeckDTO,
   DeckCardEntryDTO,
   MTGCardDTO,
-} from "../../../../../mtg-common/src/DTO";
+} from "mtg-common";
 import {
   buttonBackgroundStyle,
   searchTextFieldStyle,

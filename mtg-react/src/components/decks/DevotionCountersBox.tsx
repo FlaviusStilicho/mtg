@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
+import { DeckCardEntryDTO } from 'mtg-common';
 import { Box, List } from '@mui/material';
 import ColorIcon from '../ColorIcon';
 import { colorDevotionBoxStyle } from '../../style/styles';

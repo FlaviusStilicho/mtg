@@ -2,7 +2,7 @@ import { Alert, Button, Dialog, List, ListItem, MenuItem, Snackbar, TextField } 
 import { memo, useState } from "react";
 import axios from "axios";
 import { parseMTGGoldfishFile } from "../../../functions/parseNewDeck";
-import { UploadDeckDTO } from "../../../../../mtg-common/src/DTO";
+import { UploadDeckDTO } from "mtg-common";
 
 export interface CreateDeckWindowProps {
     opened: boolean;

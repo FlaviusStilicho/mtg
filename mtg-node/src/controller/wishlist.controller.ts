@@ -1,4 +1,4 @@
-import { WishlistEntryDTO } from '../../../mtg-common/src/DTO';
+import { WishlistEntryDTO } from 'mtg-common';
 import { WishlistEntryRepository } from '../repository/WishlistEntry.repository.ts';
 import { Request, Response } from "express";
 import { logger } from "./../index.ts"

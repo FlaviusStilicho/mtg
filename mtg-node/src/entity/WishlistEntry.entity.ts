@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { MTGCard } from './MTGCard.entity.ts';
 import { Deck } from './Deck.entity.ts';
-import { WishlistEntryDTO } from '../../../mtg-common/src/DTO';
+import { WishlistEntryDTO } from 'mtg-common';
 import { MTGCardRepository } from '../repository/MTGCard.repository.ts';
 import { DeckRepository } from '../repository/Deck.repository.ts';
 

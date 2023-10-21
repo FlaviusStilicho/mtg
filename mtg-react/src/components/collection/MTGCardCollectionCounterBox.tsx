@@ -9,7 +9,7 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import { CardState } from "../hooks/CardState";
 import { Component } from "react";
-import { MTGCardDTO, MTGCardVersionDTO } from "../../../../mtg-common/src/DTO";
+import { MTGCardDTO, MTGCardVersionDTO } from "mtg-common";
 
 export interface CollectionCounterBoxProps {
   card: MTGCardDTO

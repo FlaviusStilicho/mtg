@@ -12,7 +12,7 @@ import { largeFlipButtonStyle } from "../../style/styles";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import { MTGCardDTO, MTGCardVersionDTO } from '../../../../mtg-common/src/DTO';
+import { MTGCardDTO, MTGCardVersionDTO } from 'mtg-common';
 import {
   imageHeight,
   imageWidth,

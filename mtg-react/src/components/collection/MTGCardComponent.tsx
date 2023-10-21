@@ -1,16 +1,16 @@
 import { Box } from '@mui/material';
-import { MTGCardDTO, DeckDTO, MTGCardVersionDTO, DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
+import { MTGCardDTO, DeckDTO, MTGCardVersionDTO, DeckCardEntryDTO } from 'mtg-common';
 import axios from 'axios';
 import HTMLParser from 'node-html-parser';
 import { imageWidth, gridCardSizeFactor, imageHeight, numberFormat } from '../../constants';
 import { EnabledTab } from '../MagicCollectionManager';
 import { MTGCardDeckCounterBox, MTGCardDeckCounterBoxProps } from './MTGCardDeckCounterBox';
-import { fetchCardBuyPriceFromMagicersSingle } from '../../functions/magicers';
+import { fetchCardBuyPrice } from '../../functions/magicers';
 import { Component } from 'react';
 import { MTGCardCollectionCounterBox } from './MTGCardCollectionCounterBox';
 import { MTGCardPopup } from './MTGCardPopup';
 import { CardImageProps, MTGCardImage } from './MTGCardImage';
-import { hasDeckEntryChanges, shouldCardComponentUpdate } from '../../functions/util';
+import { shouldCardComponentUpdate } from '../../functions/util';
 export interface CardComponentProps {
     card: MTGCardDTO,
     enabledTab: EnabledTab
@@ -77,9 +77,12 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
     }
 
     fetchBuyPrice = (): void => {
-        if (this.state.buyPrice === undefined) {
-            // fetchCardBuyPriceFromMagicersSingle
-            fetchCardBuyPriceFromMagicersSingle(this.props.card).then(price => this.setState({buyPrice: price}))
+        if (this.props.card.priceInfo == null) {
+            fetchCardBuyPrice(this.props.card).then(priceInfo => {
+                this.props.card.priceInfo = priceInfo
+                this.forceUpdate();
+                // this.setState({buyPrice})
+            })
         }
     }
 
@@ -128,7 +131,7 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
     handleOpenPopup = (): void => {
         this.setState({ cardPopupOpened: true});
         this.fetchBuyPrice()
-        this.fetchSellPrice()
+        // this.fetchSellPrice()
     };
 
     handleClose = (): void => {

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { deckEntryTextBoxStyle } from "../../style/styles";
-import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from "mtg-common";
 import { DeckEntryComponentWithTooltip } from "./DeckEntryCardWithTooltip";
 import { Component } from "react";
 

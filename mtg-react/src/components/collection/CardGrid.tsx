@@ -3,7 +3,7 @@ import { Component, RefObject, createRef } from "react";
 import { Button, Grid } from '@mui/material';
 import { MTGCardComponent, CardComponentProps } from "./MTGCardComponent";
 import { gridCardSizeFactor, imageWidth, drawerWidth } from '../../constants';
-import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from '../../../../mtg-common/src/DTO';
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO } from 'mtg-common';
 import { EnabledTab } from "../MagicCollectionManager";
 import { isEqual } from "lodash";
 

@@ -5,12 +5,13 @@ export interface CardQueryParameters {
     sets: number[];
     rarities: string[];
     types: string[];
-    typeSearchSetting: string
+    typeSearchSetting: string;
     subType: string;
     colors: string[];
     colorSearchSetting: string;
     manaCost: string;
     format: String;
+    minOwnedCopies: number;
 }
 export interface UpdateCardOwnedCopiesQueryParams {
     cardId: number;
@@ -24,7 +25,15 @@ export interface CopyDeckRequest {
     deckId: number;
     name: string;
 }
-
+export interface DeckMetadata {
+    id: number;
+    name: string;
+    totalCards: number;
+}
+export interface ListDeckNamesResponse {
+    decks: DeckMetadata[];
+    total: number;
+}
 export interface CreateDeckResponse {
     id: number;
 }

@@ -1,14 +1,12 @@
 {
   "name": "mtg-common",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "description": "Common classes",
-  "main": "dist/index",
-  "types": "dist/index",
-  "type": "module",
-  "files": [
-    "/dist"
-  ],
+  "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  }
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build"
+  },
+  "author": "alex",
+  "license": "ISC"
 }

@@ -1,8 +1,8 @@
 import { Alert, Button, Dialog, List, ListItem, Snackbar, TextField } from "@mui/material";
 import { memo, useState } from "react";
 import axios from "axios";
-import { DeckDTO } from "../../../../../mtg-common/src/DTO";
-import { CopyDeckRequest } from "../../../../../mtg-common/src/requests";
+import { DeckDTO } from "mtg-common";
+import { CopyDeckRequest } from "mtg-common";
 
 export interface CopyDeckWindowProps {
     opened: boolean;

@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash';
-import { MTGCardDTO, DeckCardEntryDTO, DeckDTO, WishlistEntryDTO } from '../../../mtg-common/src/DTO';
+import { MTGCardDTO, DeckCardEntryDTO, DeckDTO, WishlistEntryDTO, Store } from 'mtg-common';
 import { CardComponentProps, CardComponentState } from '../components/collection/MTGCardComponent';
 
 export const isBasicLand = (card: MTGCardDTO): boolean => {
@@ -182,12 +182,12 @@ export const numberOfCardsAvailable = (entries: DeckCardEntryDTO[]): [number, nu
     }
     const available = entries
         .filter(entry => entry.copies > 0)
-        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.buyPrice !== undefined)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.priceInfo?.store === Store.MAGICERS)
         .map(entry => numberOfMissingCards(entry))
         .reduce((a, b) => a + b, 0)
     const unavailable = entries
         .filter(entry => entry.copies > 0)
-        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.buyPrice === undefined)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.priceInfo?.store !== Store.MAGICERS)
         .map(entry => numberOfMissingCards(entry))
         .reduce((a, b) => a + b, 0)
     return [available, unavailable]
@@ -199,10 +199,10 @@ export const costToFinishDeck = (entries: DeckCardEntryDTO[]): number => {
     }
     const result = entries
         .filter(entry => entry.copies > 0)
-        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.buyPrice !== undefined)
+        .filter(entry => numberOfMissingCards(entry) > 0 && entry.card.priceInfo != null)
         .map(entry => {
-            return entry.card.buyPrice === undefined ? 0 :
-                numberOfMissingCards(entry) * entry.card.buyPrice
+            return entry.card.priceInfo == null ? 0 :
+                numberOfMissingCards(entry) * entry.card.priceInfo.buyPrice
         })
         .reduce((a, b) => a + b, 0)
     return result
@@ -247,20 +247,20 @@ export function wishlistSortFnAlphabetical(a: WishlistEntryDTO, b: WishlistEntry
 
 
 export function wishlistSortFnPrice(a: WishlistEntryDTO, b: WishlistEntryDTO): number {
-    const priceA = a.card.buyPrice;
-    const priceB = b.card.buyPrice;
+    const priceInfoA = a.card.priceInfo;
+    const priceInfoB = b.card.priceInfo;
   
-    if (priceA === undefined && priceB === undefined) {
+    if (priceInfoA === null && priceInfoB === null) {
       return a.card.name.localeCompare(b.card.name);
     }
-    if (priceA === undefined) {
+    if (priceInfoA === null) {
       return 1;
     }
-    if (priceB === undefined) {
+    if (priceInfoB === null) {
       return -1;
     }
   
-    return priceB - priceA;
+    return priceInfoB.buyPrice - priceInfoA.buyPrice;
   }
 
 export function findDecksContainCard(card: MTGCardDTO, decks: DeckDTO[]): string[] {

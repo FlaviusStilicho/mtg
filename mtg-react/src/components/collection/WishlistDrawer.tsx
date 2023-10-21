@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { DeckDTO, MTGCardDTO, WishlistEntryDTO } from "../../../../mtg-common/src/DTO";
+import { DeckDTO, MTGCardDTO, WishlistEntryDTO } from "mtg-common";
 import { Box, Divider, Drawer, List, ListItem, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { drawerWidth, navBarHeight } from "../../constants";
 import { deckEntryTextBoxStyle, listItemStyle } from "../../style/styles";

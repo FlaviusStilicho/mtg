@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import { MenuItem } from '@mui/material';
-import { DeckDTO } from '../../../../mtg-common/src/DTO';
+import { DeckDTO } from 'mtg-common';
 import { getCommander, getDeckColorIdentity } from '../../functions/util';
 import ColorIcon from '../ColorIcon';
 import { deckNameFontSize } from './DeckManagerDrawer';

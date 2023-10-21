@@ -3,8 +3,7 @@ import { DB } from "../datasource.ts";
 import { MTGCardTag } from './MTGCardTag.entity.ts';
 import { logger } from "../index.ts"
 import { MTGSet } from './MTGSet.entity.ts';
-import { MTGCardDTO, MTGCardVersionDTO } from "mtg-common";
-import { CardQueryParameters } from 'mtg-common';
+import { MTGCardDTO, MTGCardVersionDTO, CardQueryParameters } from 'mtg-common';
 import { colors as allColors } from "../controller/color.controller.ts";
 import assert from "node:assert";
 

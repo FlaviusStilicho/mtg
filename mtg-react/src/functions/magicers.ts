@@ -1,6 +1,8 @@
 import axios from 'axios';
-import { MTGCardDTO } from '../../../mtg-common/src/DTO';
+import { MTGCardDTO, PriceInformation, Store } from "mtg-common";
 import HTMLParser from 'node-html-parser';
+import { fetchCardBuyPriceFromScryfall } from './scryfall';
+
 
 interface MagicersProduct {
     name: string
@@ -68,50 +70,26 @@ export const fetchCardBuyPriceFromMagicersSingle = async (card: MTGCardDTO): Pro
     })
 }
 
-
-export const fetchCardBuyPriceFromMagickast = async (card: MTGCardDTO): Promise<number[]> => {
-    const cardName = card.name
-
-    return await axios.get(`https://magickast.nl/cards/search/${cardName}`).then(async (response) => {
-        const root = HTMLParser.parse(response.data);
-        console.log(root)
-        const tokenElement = root.querySelector('meta[name="csrf-token"]')
-        if(tokenElement === null){
-            console.error("Couldn't fetch Magickast CSRF token")
-            return []
-        }
-        const csrfToken = tokenElement['rawAttributes']['content']
-        console.log(csrfToken)
-
-        var bodyFormData = new FormData();
-        bodyFormData.append('search', cardName);
-        bodyFormData.append('_token', csrfToken);
-    
-        return await axios.post(`https://magickast.nl/cards/ajax/index?page=1`, {
-            data: bodyFormData,
-            headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "referer": `https://magickast.nl/cards/search/${cardName}`
-        }}).then(response => {
-            const root = HTMLParser.parse(response.data);
-            console.log(root)
-            // TODO: Continue here. Request gives a session expired error. Session token is called magickast_session. Perhaps it's embedd in html.
-            return []
-        })
-    })
-};
-
-export const fetchCardBuyPriceFromMagickastSingle = async (card: MTGCardDTO): Promise<number | undefined> => { 
-    if (card.name === 'Island' || card.name === 'Swamp' || card.name === 'Forest' || card.name === 'Plains' || card.name === 'Mountain') {
-        return 0
-    }
-    return await fetchCardBuyPriceFromMagickast(card).then((prices: number[]) => {
-        if (prices.length === 0) {
-            return (undefined)
-        } else if (prices.length === 1) {
-            return prices[0]
+export const fetchCardBuyPrice  = async (card: MTGCardDTO): Promise<PriceInformation | null> => {
+    return fetchCardBuyPriceFromMagicersSingle(card).then(price => {
+        if(price) {
+            return {
+                buyPrice: price,
+                store: Store.MAGICERS
+            }
+            
         } else {
-            return Math.min(...prices)
+            // console.log('fetching price from scryfall')
+            return fetchCardBuyPriceFromScryfall(card).then(price => {
+                if(price) {
+                    return {
+                        buyPrice: price,
+                        store: Store.SCRYFALL
+                    }
+                } else {
+                    return null
+                }
+            })
         }
-    })    
+    })
 }

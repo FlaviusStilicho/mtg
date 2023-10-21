@@ -3,7 +3,7 @@ import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
 import { Button, CardMedia, Tooltip } from "@mui/material";
-import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from '../../../../mtg-common/src/DTO';
+import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from "mtg-common";
 import { v4 as uuidv4 } from "uuid";
 import {
   isBasicLand,
@@ -121,7 +121,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
               style={{ textAlign: "right", marginRight: 4, width: "14%" }}
               sx={deckEntryTextBoxStyle}
             >
-              {entry.card.buyPrice !== undefined ? `€ ${entry.card.buyPrice}` : "N/A"}
+              {entry.card.priceInfo != null ? `€ ${entry.card.priceInfo.buyPrice}` : "N/A"}
             </Box>
             <Box
               style={{ textAlign: "right", marginRight: 4, width: "25%" }}

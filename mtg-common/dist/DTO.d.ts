@@ -1,12 +1,23 @@
+export interface PriceInformation {
+    buyPrice: number;
+    store: Store;
+}
+export declare enum Store {
+    MAGICERS = "magicers",
+    SCRYFALL = "scryfall"
+}
 export interface MTGCardDTO {
     id: number;
     name: string;
     type: string;
+    rarity: string;
     manaCost: string;
+    colorIdentity: string[];
     convertedManaCost: number;
     ownedCopies: number;
     versions: MTGCardVersionDTO[];
     otherSide?: MTGCardDTO;
+    priceInfo: PriceInformation | null;
 }
 export interface MTGCardVersionDTO {
     isPrimaryVersion: boolean;
@@ -32,9 +43,26 @@ export interface DeckCardEntryDTO {
     id: number | undefined;
     card: MTGCardDTO;
     copies: number;
+    sideboardCopies: number;
+    isCommander: boolean;
 }
 export interface Color {
     name: string;
     displayName: string;
     iconUrl: string;
+}
+export interface UploadDeckDTO {
+    name: string;
+    format: string;
+    entries: NewDeckEntryDTO[];
+}
+export interface NewDeckEntryDTO {
+    quantity: number;
+    cardName: string;
+}
+export interface WishlistEntryDTO {
+    card: MTGCardDTO;
+    desiredCopies: number;
+    isInShoppingCart: boolean;
+    inDecks: string[];
 }

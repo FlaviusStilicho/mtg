@@ -1,4 +1,4 @@
-import { DeckDTO, MTGCardDTO, DeckCardEntryDTO } from '../../../../mtg-common/src/DTO';
+import { DeckDTO, MTGCardDTO, DeckCardEntryDTO } from 'mtg-common';
 import { SelectChangeEvent } from "@mui/material";
 
 export interface DeckState {

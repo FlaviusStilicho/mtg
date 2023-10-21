@@ -8,10 +8,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import TextField from '@mui/material/TextField';
 import { buttonBackgroundStyle, searchBarListItemStyle, searchTextFieldStyle } from '../style/styles';
 import { CardMedia, Checkbox, Divider, MenuItem, Select } from '@mui/material';
-import { Color, MTGSetDTO } from '../../../mtg-common/src/DTO';
+import { Color, MTGSetDTO } from 'mtg-common';
 import { searchBarDrawerWidth } from '../constants';
 import { DeckFormat } from "../enum";
-import { CardQueryParameters } from '../../../mtg-common/src/requests';
+import { CardQueryParameters } from 'mtg-common';
 import { firstCharUpper } from '../functions/util';
 
 export interface SearchWindowProps {
@@ -106,7 +106,7 @@ export default function SearchBar(props: SearchWindowProps) {
             value={props.selectedQueryParameters.sets}
             renderValue={
               (selected) => props.selectedQueryParameters.sets.map(
-                setId => props.sets.filter(set => setId == set.id).map(set => set.fullName))
+                setId => props.sets.filter(set => setId === set.id).map(set => set.fullName))
                 .join(", ")
             }
             onChange={props.handleChangeSelectedQueryParameters}

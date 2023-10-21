@@ -1,4 +1,4 @@
-import { NewDeckEntryDTO } from "../../../mtg-common/src/DTO";
+import { NewDeckEntryDTO } from "mtg-common";
 
 export async function parseMTGGoldfishFile(file: File): Promise<NewDeckEntryDTO[]> {
     const fileContent = await file.text();

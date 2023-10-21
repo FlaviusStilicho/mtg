@@ -4,8 +4,8 @@ import { CheckDeckRequest, CreateDeckResponse, DeleteDeckRequest, GetDeckRequest
 import { DeckRepository } from '../repository/Deck.repository.ts';
 import { logger } from "../index.ts";
 import { DeckCardEntryRepository } from "../repository/DeckCardEntry.repository.ts";
-import { CopyDeckRequest } from '../../../mtg-common/src/requests';
-import { UploadDeckDTO } from '../../../mtg-common/src/DTO';
+import { CopyDeckRequest } from 'mtg-common';
+import { UploadDeckDTO } from 'mtg-common';
 import { MTGCardRepository } from '../repository/MTGCard.repository.ts';
 
 
@@ -96,7 +96,7 @@ export const UpdateDeck = async (req: Request<{}, {}, DeckDTO, {}>, res: Respons
     )
 }
 
-export const CopyDeck = async (req: Request<{}, CopyDeckRequest, {}>, res: Response<CreateDeckResponse>) => {
+export const CopyDeck = async (req: Request<{}, CopyDeckRequest, {}>, res: Response) => {
     DeckRepository.findOneByOrFail({ id: req.body['deckId'] }).then(
         deckInDb => {
             const deckCopy = deckInDb.copy(req.body['name'])
