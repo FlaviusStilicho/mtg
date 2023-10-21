@@ -27,7 +27,6 @@ export interface MTGCardPopupProps {
   flipCard: () => void
   opened: boolean;
   onClose: () => void;
-  buyPrice: number | undefined;
   sellPrice: string;
   updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void;
   card: MTGCardDTO
@@ -37,7 +36,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
   shouldComponentUpdate(nextProps: MTGCardPopupProps) {
     return this.props.primaryImage !== nextProps.primaryImage || 
     this.props.opened !== nextProps.opened ||
-    this.props.buyPrice !== nextProps.buyPrice ||
+    this.props.card.priceInfo !== nextProps.card.priceInfo ||
     this.props.sellPrice !== nextProps.sellPrice
   }
 
@@ -157,15 +156,15 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                 startIcon={<ShoppingCartIcon />}
                 name="buy-button"
                 sx={{ margin: 2 }}
-                disabled={Number.isNaN(this.props.buyPrice)}
+                disabled={this.props.card.priceInfo == null}
                 onClick={() => {
                   console.log("buy");
                   this.props.updateCardCopiesInWishlist(this.props.card, true)
                 }}
               >
                 {`${
-                  this.props.buyPrice
-                    ? "€ " + this.props.buyPrice
+                  this.props.card.priceInfo?.buyPrice
+                    ? "€ " + this.props.card.priceInfo?.buyPrice
                     : "Not available"
                 }`}
               </Button>
@@ -174,7 +173,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                 startIcon={<CurrencyExchangeIcon />}
                 name="sell-button"
                 sx={{ margin: 2 }}
-                disabled={Number.isNaN(this.props.buyPrice)}
+                disabled={Number.isNaN(this.props.sellPrice)}
                 onClick={() => {
                   console.log("sell");
                 }}

@@ -28,6 +28,10 @@ export interface SearchWindowProps {
 export default function SearchBar(props: SearchWindowProps) {
   const formats: DeckFormat[] = [DeckFormat.STANDARD, DeckFormat.COMMANDER]
 
+  const allSetsCount = props.sets.length
+  const selectedSetsCount = props.selectedQueryParameters.sets.length
+  const newerSetsCount = props.sets.filter(set => new Date(set.releaseDate) > new Date("2020-01-01")).length
+
   return (
     <Drawer
       variant="permanent"
@@ -115,12 +119,26 @@ export default function SearchBar(props: SearchWindowProps) {
             <MenuItem value={99999}>
               <ListItemIcon>
                 <Checkbox
-                  checked={props.selectedQueryParameters.sets.length > 0 && props.selectedQueryParameters.sets.length === props.selectedQueryParameters.sets.length}
-                  indeterminate={props.selectedQueryParameters.sets.length > 0 && props.selectedQueryParameters.sets.length < props.selectedQueryParameters.sets.length}
+                  checked={selectedSetsCount > 0 && allSetsCount === selectedSetsCount}
+                  indeterminate={selectedSetsCount > 0 && allSetsCount < selectedSetsCount}
                 />
               </ListItemIcon>
               <ListItemText
                 primary="Select All"
+                disableTypography
+                sx={{
+                  mx: 0.3,
+                  fontSize: 11,
+                }} />
+            </MenuItem>
+            <MenuItem value={99998}>
+              <ListItemIcon>
+                <Checkbox
+                  checked={selectedSetsCount === newerSetsCount}
+                />
+              </ListItemIcon>
+              <ListItemText
+                primary="2020+"
                 disableTypography
                 sx={{
                   mx: 0.3,

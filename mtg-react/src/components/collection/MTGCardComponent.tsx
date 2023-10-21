@@ -185,7 +185,6 @@ export class MTGCardComponent extends Component<CardComponentProps, CardComponen
                         flipCard={this.flipCard}
                         opened={this.state.cardPopupOpened}
                         onClose={this.handleClose}
-                        buyPrice={this.state.buyPrice}
                         sellPrice={this.state.sellPrice}
                         updateCardCopiesInWishlist={this.props.updateCardCopiesInWishlist}
                         card={this.props.card}

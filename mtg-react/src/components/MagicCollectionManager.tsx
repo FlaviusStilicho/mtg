@@ -100,7 +100,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       cards: [],
       deckManagerOpened: true,
       decks: [],
-      selectedDeckId: 99999,
+      selectedDeckId: 99998,
       selectedDeck: null,
       selectedDeckEntries: [],
       deckChanged: false,
@@ -243,6 +243,8 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         var newSets: number[] = []
         if (newValue[newValue.length - 1] === 99999) {
           newSets = queryParameters.sets.length > 0 ? [] : this.state.sets.map(set => set.id);
+        } else if (newValue[newValue.length - 1] === 99998) {
+          newSets = this.state.sets.filter(set => new Date(set.releaseDate) > new Date("2020-01-01")).map(set => set.id);
         } else {
           newSets = newValue;
         }
