@@ -66,8 +66,10 @@ interface CollectionManagerState{
   wishlistEntries: WishlistEntryDTO[] 
 
   // snackbar
-  snackbarMessage: string
-  snackbarOpen: boolean
+  snackbarInfoMessage: string
+  snackbarInfoOpen: boolean
+  snackbarErrorMessage: string
+  snackbarErrorOpen: boolean
 }
 
 export class MagicCollectionManager extends Component<CollectionManagerProps, CollectionManagerState> {
@@ -106,8 +108,10 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       deckChanged: false,
       wishlistOpened: true,
       wishlistEntries: [],
-      snackbarMessage: "",
-      snackbarOpen: false
+      snackbarInfoMessage: "",
+      snackbarInfoOpen: false,
+      snackbarErrorMessage: "",
+      snackbarErrorOpen: false
     }
   }
 
@@ -417,10 +421,19 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       updateDeckEntries(newEntry)
     }
 
-    const openSnackbar = (message: string) =>{
+
+    const openInfoSnackbar = (message: string) =>{
       this.setState({
-        snackbarMessage: message,
-        snackbarOpen: true
+        snackbarInfoMessage: message,
+        snackbarInfoOpen: true
+      })
+    }
+
+
+    const openErrorSnackbar = (message: string) =>{
+      this.setState({
+        snackbarErrorMessage: message,
+        snackbarErrorOpen: true
       })
     }
 
@@ -436,12 +449,12 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         throw Error("Unsupported format")
       }
       if (entry.copies < 0 || entry.sideboardCopies < 0) {
-        openSnackbar("Cannot have fewer than 0 copies")
+        openErrorSnackbar("Cannot have fewer than 0 copies")
       }
       if (isBasicLand(entry.card)) {
         return
       } else if (entry.copies > maxCardCopies || entry.sideboardCopies > maxCardCopies) {
-        openSnackbar(`Cannot exceed ${maxCardCopies} card copies`)
+        openErrorSnackbar(`Cannot exceed ${maxCardCopies} card copies`)
       }
       return
     }
@@ -491,9 +504,11 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         if (entry.desiredCopies <= entry.card.ownedCopies){
           // console.log(`Removing entry fom wishlist: ${this.state.wishlistEntries.filter(entry => entry.card.id === id)[0].card.name}`)
           updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== card.id)
+          openInfoSnackbar(`Removed ${card.name} from wishlist`)
         } else {
           updatedEntries = this.state.wishlistEntries.filter(entry => entry.card.id !== card.id)
           updatedEntries.push(matchingEntry[0])
+          openInfoSnackbar(`Set desired copies for ${card.name} on wishlist to ${entry.desiredCopies}`)
         }
       } else {
         if(!add) {
@@ -508,6 +523,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
           isInShoppingCart: false,
           inDecks: findDecksContainCard(card, this.state.decks)
         })
+        openInfoSnackbar(`Added ${card.name} to wishlist`)
       }
       this.setState({wishlistEntries: updatedEntries})
       axios.post(`http://localhost:8000/wishlist/`, updatedEntries).then(response => {
@@ -623,9 +639,15 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
             </TabPanel>
             <Snackbar
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
-                open={this.state.snackbarOpen}
+                open={this.state.snackbarErrorOpen}
                 autoHideDuration={3000}>
-                <Alert severity="error" sx={{ width: '100%' }}>{this.state.snackbarMessage}</Alert>
+                <Alert severity="error" sx={{ width: '100%' }}>{this.state.snackbarErrorMessage}</Alert>
+            </Snackbar>
+            <Snackbar
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                open={this.state.snackbarInfoOpen}
+                autoHideDuration={3000}>
+                <Alert severity="info" sx={{ width: '100%' }}>{this.state.snackbarInfoMessage}</Alert>
             </Snackbar>
           </Box>
         </Box>
