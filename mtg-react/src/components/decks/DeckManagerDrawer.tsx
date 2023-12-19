@@ -20,7 +20,7 @@ import { filterCreatures, filterInstants, filterLands, filterNoncreatureArtifact
 import { exportToCsv } from '../../functions/exportToCsv';
 import { Bar } from 'react-chartjs-2';
 import 'chart.js/auto';
-import { DeckCardTypeCounter } from './DeckEntryGrouping';
+import { DeckEntriesPanel } from './DeckEntryGrouping';
 import { CopyDeckWindow, CopyDeckWindowProps } from './windows/CopyDeckWindow';
 import { DeleteDeckWindow, DeleteDeckWindowProps } from './windows/DeleteDeckWindow';
 import { EditDeckWindow, EditDeckWindowProps } from './windows/EditDeckWindow';
@@ -260,14 +260,9 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               style={searchTextFieldStyle}
               sx={{ ...buttonBackgroundStyle }}
               value={props.selectedDeckId ? props.selectedDeckId : undefined}
-              // renderValue={selectedDeckId => deckState.selectedDeck !== null ? deckState.selectedDeck.name : "Select a deck"}
+              renderValue={selectedDeckId => props.selectedDeck !== null ? props.selectedDeck.name : "Select a deck"}
               onChange={props.handleChangeSelectedDeck}
             >
-              <MenuItem key="all" value={99999}>
-                <Box sx={{ fontSize: deckNameFontSize }}>
-                  Select a deck
-                </Box>
-              </MenuItem>
               {
                 props.decks.map((deck) => {
                   return renderDeckName(deck);
@@ -375,7 +370,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             data={manaCurveChartData} />
           <Divider />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Lands"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -390,7 +385,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Creatures"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -405,7 +400,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Planeswalkers"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -420,7 +415,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Noncreature artifacts"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -435,7 +430,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Sorceries"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -450,7 +445,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Instants"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -465,7 +460,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Enchantments"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -480,7 +475,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             wishlistEntries={props.wishlistEntries}
           />
 
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Battles"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}
@@ -496,7 +491,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           />
           
           <Divider />
-          <DeckCardTypeCounter
+          <DeckEntriesPanel
             label="Sideboard"
             selectedDeckEntries={props.selectedDeckEntries}
             selectedDeck={props.selectedDeck}

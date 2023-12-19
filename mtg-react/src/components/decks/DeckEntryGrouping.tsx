@@ -19,7 +19,7 @@ export interface DeckEntryGroupingProps {
   wishlistEntries: WishlistEntryDTO[]
 }
 
-export class DeckCardTypeCounter extends Component<DeckEntryGroupingProps> {
+export class DeckEntriesPanel extends Component<DeckEntryGroupingProps> {
   shouldComponentUpdate(nextProps: DeckEntryGroupingProps) {
     return this.props.selectedDeckEntries !== nextProps.selectedDeckEntries ||
     this.props.wishlistEntries !== nextProps.wishlistEntries

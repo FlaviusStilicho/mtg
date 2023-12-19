@@ -148,9 +148,6 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
             value={targetDeck}
             onChange={handleChangeTargetDeck}
           >
-            <MenuItem value={99999}>
-              <Box sx={{ fontSize: deckNameFontSize }}>Select a deck</Box>
-            </MenuItem>
             {props.decks.map((deck) => {
               // const commander = getCommander(deck)
               var deckColorIdentity: Set<string>;

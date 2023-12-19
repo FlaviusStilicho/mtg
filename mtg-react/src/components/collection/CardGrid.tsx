@@ -107,7 +107,8 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
                     name="load-button"
                     variant="contained"
                     style={{
-                        backgroundColor: "3C00E0"
+                        backgroundColor: "3C00E0",
+                        display: this.props.cards.length === 0 ? 'none' : 'inline-block'
                     }}
                     sx={{ borderRadius: '20%' }}
                     onClick={this.props.handleLoadMore}>

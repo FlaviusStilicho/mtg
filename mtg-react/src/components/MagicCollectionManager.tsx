@@ -212,11 +212,11 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     this.setState({selectedTab});
   };
 
-  handleDeckManagerOpenClose(){
+  handleDeckManagerOpenClose = () => {
     this.setState({deckManagerOpened: !this.state.deckManagerOpened})
   };
 
-  handleWishlistOpenClose(){
+  handleWishlistOpenClose = () => {
     this.setState({wishlistOpened: !this.state.wishlistOpened})
   };
 
@@ -284,42 +284,34 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       if (typeof newDeckId === 'string') {
         console.error("help!")
       } else {
-        if (newDeckId === 99999) {
-          this.setState({
-            selectedDeckId: 99999,
-            selectedDeck: null,
-            selectedDeckEntries: []
-          })
-        } else {
-          const newDeck = this.state.decks.filter(deck => deck.id === newDeckId)[0]
-          const colorIdentity: string[] = Array.from(getDeckColorIdentity(newDeck))
-          this.setState({
-            selectedDeckId: newDeckId,
-            selectedDeck: newDeck,
-            selectedDeckEntries: getDeck(newDeckId).cardEntries,
-            selectedQueryParameters: {
-              ...this.state.selectedQueryParameters,
-              format: newDeck.format, 
-              sets: getDefaultSetsForFormat(newDeck.format),
-              colors: colorIdentity,
-              colorSearchSetting: colorIdentity.length > 0 ? "Includes at most" : this.state.selectedQueryParameters.colorSearchSetting 
-            }
-          })
+        const newDeck = this.state.decks.filter(deck => deck.id === newDeckId)[0]
+        const colorIdentity: string[] = Array.from(getDeckColorIdentity(newDeck))
+        this.setState({
+          selectedDeckId: newDeckId,
+          selectedDeck: newDeck,
+          selectedDeckEntries: getDeck(newDeckId).cardEntries,
+          selectedQueryParameters: {
+            ...this.state.selectedQueryParameters,
+            format: newDeck.format, 
+            sets: getDefaultSetsForFormat(newDeck.format),
+            colors: colorIdentity,
+            colorSearchSetting: colorIdentity.length > 0 ? "Includes at most" : this.state.selectedQueryParameters.colorSearchSetting 
+          }
+        })
 
-          console.log("Collecting card prices")
-          Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
-            if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
-              return fetchCardBuyPrice(entry.card).then(priceInfo => {
-                entry.card.priceInfo = priceInfo
-                return entry
-              })
-            } 
-            return entry
-          })).then(entries => {
-            console.log(`collected prices for deck ${getDeck(newDeckId).name}`)
-            this.setState({ selectedDeckEntries: entries})
-          })
-        }
+        console.log("Collecting card prices")
+        Promise.all(getDeck(newDeckId).cardEntries.map(entry => {
+          if (numberOfMissingCards(entry, true) > 0 || numberOfMissingCards(entry, false) > 0) {
+            return fetchCardBuyPrice(entry.card).then(priceInfo => {
+              entry.card.priceInfo = priceInfo
+              return entry
+            })
+          } 
+          return entry
+        })).then(entries => {
+          console.log(`collected prices for deck ${getDeck(newDeckId).name}`)
+          this.setState({ selectedDeckEntries: entries})
+        })
       }
     }
 

@@ -41,6 +41,7 @@ export const isBattle = (entry: DeckCardEntryDTO): boolean => {
 export const filterLands = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {
     return entries.filter(entry => entry.copies > 0)
         .filter(entry => isLand(entry) && !isCreature(entry))
+        .sort(sortDeckEntriesFn)
 }
 
 export const filterNonLands = (entries: DeckCardEntryDTO[]): DeckCardEntryDTO[] => {

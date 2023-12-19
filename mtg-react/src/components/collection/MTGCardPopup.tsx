@@ -114,6 +114,18 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
             }}
           >
             <Box>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  fontSize: "1.2em", // Increase the font size as desired
+                  fontWeight: "bold", // Make the text bold
+                  color: "white", // Set the text color to white
+                }}
+              >
+                {this.props.card.name}
+              </div>
               <CardMedia
                 key={`popup-image-${this.props.primaryImage}`}
                 sx={{
