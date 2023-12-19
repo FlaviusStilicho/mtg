@@ -1,6 +1,6 @@
 import { CardMedia } from '@mui/material';
 import { imageHeight, imageWidth } from "../../constants";
-import { Component } from 'react';
+import { Component, SyntheticEvent } from 'react';
 
 export interface CardImageProps {
     image: string;
@@ -12,6 +12,10 @@ export class MTGCardImage extends Component<CardImageProps> {
     shouldComponentUpdate(nextProps: CardImageProps) {
         return this.props.image !== nextProps.image
     }
+
+    handleError = (event: SyntheticEvent<HTMLImageElement, Event>) => {
+        event.currentTarget.src = "/placeholder-card.jpg";
+    };
 
     render() {
         return (
@@ -25,9 +29,11 @@ export class MTGCardImage extends Component<CardImageProps> {
                     backgroundColor: "White",
                     borderRadius: '10px'
                 }}
-                image={this.props.image}
+                component="img"
+                src={this.props.image}
+                onError={this.handleError}
                 onClick={() => this.props.handleOpenPopup ? this.props.handleOpenPopup() : null}
             />
         );
     }
-};
+}
