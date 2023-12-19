@@ -25,7 +25,6 @@ export class MTGCardImage extends Component<CardImageProps> {
                     width: imageWidth * this.props.sizeFactor
                 }}
                 style={{
-                    padding: 5,
                     backgroundColor: "White",
                     borderRadius: '10px'
                 }}
