@@ -286,6 +286,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       } else {
         const newDeck = this.state.decks.filter(deck => deck.id === newDeckId)[0]
         const colorIdentity: string[] = Array.from(getDeckColorIdentity(newDeck))
+        colorIdentity.push("C")
         this.setState({
           selectedDeckId: newDeckId,
           selectedDeck: newDeck,

@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import { navBarHeight, drawerWidth, manaCurveChartOptions, imageHeight, imageWidth } from '../../constants';
 import { buttonBackgroundStyle, deckEntryTextBoxStyle, listItemStyle, searchTextFieldStyle } from '../../style/styles';
-import { Button, CardMedia, IconButton, MenuItem, Select } from '@mui/material';
+import { Button, CardMedia, IconButton, Select } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
@@ -253,21 +253,6 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             >
               <AddIcon />
             </IconButton>
-          </ListItem>
-          <ListItem sx={{ ...listItemStyle }}>
-            <Select
-              id="select-deck"
-              style={searchTextFieldStyle}
-              sx={{ ...buttonBackgroundStyle }}
-              value={props.selectedDeckId ? props.selectedDeckId : undefined}
-              renderValue={selectedDeckId => props.selectedDeck !== null ? props.selectedDeck.name : "Select a deck"}
-              onChange={props.handleChangeSelectedDeck}
-            >
-              {
-                props.decks.map((deck) => {
-                  return renderDeckName(deck);
-                })}
-            </Select>
             <IconButton
               color="inherit"
               aria-label="edit-deck-metadata"
@@ -305,7 +290,22 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               <DeleteIcon />
             </IconButton>
           </ListItem>
-
+          <ListItem sx={{ ...listItemStyle }}>
+            <Select
+              id="select-deck"
+              style={searchTextFieldStyle}
+              sx={{ ...buttonBackgroundStyle }}
+              value={props.selectedDeckId ? props.selectedDeckId : undefined}
+              renderValue={selectedDeckId => props.selectedDeck !== null ? props.selectedDeck.name : "Select a deck"}
+              onChange={props.handleChangeSelectedDeck}
+            >
+              {
+                props.decks.map((deck) => {
+                  return renderDeckName(deck);
+                })}
+            </Select>
+          </ListItem>
+          
           {currentCommander !== null ? (
             <List>
               <ListItem sx={{ ...listItemStyle, fontSize: 18 }}>

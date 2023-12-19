@@ -227,14 +227,16 @@ export function getDeckColorIdentity(deck: DeckDTO | null): Set<string>{
     }
     var deckColorIdentity: Set<string>
     const commander = getCommander(deck)
+
     if (commander) {
         deckColorIdentity = new Set(commander.colorIdentity)
-        deckColorIdentity.add("C")
     } else {
         deckColorIdentity = new Set()
         deck.cardEntries.forEach(entry => entry.card.colorIdentity.forEach(color => deckColorIdentity.add(color)))
-        deckColorIdentity.add("C")
     }
+    if (deckColorIdentity.has("C") && deckColorIdentity.size > 1) {
+        deckColorIdentity.delete("C");
+      }
     return deckColorIdentity
 }
 

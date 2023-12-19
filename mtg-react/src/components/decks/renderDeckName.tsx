@@ -11,12 +11,12 @@ export function renderDeckName(deck: DeckDTO) {
   return (
     <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id}>
       <Box sx={{ fontSize: deckNameFontSize, display: "flex", flexWrap: "wrap", gap: 1 }}>
-        {commander ? `${deck.name} [${commander.name}]` : deck.name}
-        <Box>
+      <Box>
           {Array.from(deckColorIdentity).map((color) => (
-            <ColorIcon color={`${color}DN`}/>
+            <ColorIcon color={`${color}`}/>
           ))}
         </Box>
+        {commander ? `${deck.name} [${commander.name}]` : deck.name}
       </Box>
     </MenuItem>
   );
