@@ -4,6 +4,7 @@ export interface PriceInformation {
 }
 export declare enum Store {
     MAGICERS = "magicers",
+    MAGICKAST = "magickast",
     SCRYFALL = "scryfall"
 }
 export interface MTGCardDTO {
@@ -36,6 +37,7 @@ export interface MTGSetDTO {
 export interface DeckDTO {
     id: number | undefined;
     name: string;
+    notes: string | null
     format: string;
     cardEntries: DeckCardEntryDTO[];
 }

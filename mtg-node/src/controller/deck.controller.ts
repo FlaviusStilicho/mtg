@@ -137,6 +137,7 @@ export const UploadDeck = async (req: Request<{}, {}, UploadDeckDTO, {}>, res: R
     const deck = new Deck(
         null,
         dto.name,
+        null,
         dto.format,
         entries
     )

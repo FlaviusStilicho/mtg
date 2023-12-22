@@ -4,3 +4,4 @@ mtg-node/static
 mtg-node/uploads
 mtg-react/node_modules
 mtg-node/backup*.sql
+.venv

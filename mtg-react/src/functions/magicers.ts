@@ -52,7 +52,10 @@ export const fetchCardBuyPriceFromMagicers = async (card: MTGCardDTO): Promise<n
             .filter(product => product.stock > 1)
             .map(product => product.price)
             .filter(price => price > 0);
-    });
+    }).catch( function (error) {
+        console.error(error)
+        return []
+    })
 };
 
 export const fetchCardBuyPriceFromMagicersSingle = async (card: MTGCardDTO): Promise<number | undefined> => {

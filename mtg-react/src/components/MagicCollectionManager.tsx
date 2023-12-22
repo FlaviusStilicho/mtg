@@ -59,6 +59,7 @@ interface CollectionManagerState{
   selectedDeckId: number
   selectedDeck: DeckDTO | null;
   selectedDeckEntries: DeckCardEntryDTO[]
+  selectedDeckNotes: string
   deckChanged: boolean;
 
   // wishlist
@@ -105,6 +106,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       selectedDeckId: 99998,
       selectedDeck: null,
       selectedDeckEntries: [],
+      selectedDeckNotes: "",
       deckChanged: false,
       wishlistOpened: true,
       wishlistEntries: [],
@@ -290,6 +292,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         this.setState({
           selectedDeckId: newDeckId,
           selectedDeck: newDeck,
+          selectedDeckNotes: newDeck.notes !== null ? newDeck.notes : "",
           selectedDeckEntries: getDeck(newDeckId).cardEntries,
           selectedQueryParameters: {
             ...this.state.selectedQueryParameters,
@@ -317,13 +320,14 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
     }
 
     const saveDeck = () => {
-      doSaveDeck(this.state.selectedDeckEntries)
+      doSaveDeck(this.state.selectedDeckEntries, this.state.selectedDeckNotes)
     }
 
-    const doSaveDeck = (entries: DeckCardEntryDTO[]) => {
+    const doSaveDeck = (entries: DeckCardEntryDTO[], notes: string) => {
       console.log('Saving deck')
       const deck = getDeck(this.state.selectedDeckId)
       deck.cardEntries = entries
+      deck.notes = notes
 
       // make a clone, submit it without version data
       const deckClone = JSON.parse(JSON.stringify(deck));
@@ -376,9 +380,17 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       // console.log(currentEntriesList)
       // console.log(newEntriesList)
       this.setState({selectedDeckEntries: newEntriesList})
-      doSaveDeck(newEntriesList)
+      doSaveDeck(newEntriesList, this.state.selectedDeckNotes)
     }
 
+    const updateDeckNotes = (text: string, deckId: number) => {
+      this.setState({selectedDeckNotes: text})
+      const deck = getDeck(deckId)
+      // deck.notes = text
+      console.log(`Updated notes for deck ${deck.name} to ${text}`)
+      doSaveDeck(this.state.selectedDeckEntries, text)
+    }
+    
     const updateCardCopiesInDeck = (card: MTGCardDTO, increment: number, isSideboard: boolean) => {
       if (increment !== -1 && increment !== 1) {
         throw Error("Unexpected increment")
@@ -555,8 +567,10 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       selectedDeck: this.state.selectedDeck,
       selectedDeckId: this.state.selectedDeckId,
       selectedDeckEntries: this.state.selectedDeckEntries,
+      selectedDeckNotes: this.state.selectedDeckNotes,
       handleChangeSelectedDeck,
       updateDeckEntries,
+      updateDeckNotes,
       updateCardCopiesInDeck,
       saveDeck,
       isCardInWishlist,

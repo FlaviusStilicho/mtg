@@ -22,6 +22,11 @@ export class Deck {
     @Column()
     name: string
     @Column({
+        nullable: true,
+        type: "text"
+     })
+    notes: string
+    @Column({
         type: 'enum',
         enum: DeckFormat,
         default: DeckFormat.STANDARD
@@ -71,11 +76,13 @@ export class Deck {
     constructor(
         id: number,
         name: string,
+        notes: string = null,
         format: string,
         cardEntries: DeckCardEntry[]
     ) {
         this.id = id
         this.name = name
+        this.notes = notes
         this.format = format as DeckFormat
         this.cardEntries = cardEntries
     }
@@ -84,6 +91,7 @@ export class Deck {
         const dto: DeckDTO = {
             id: this.id,
             name: this.name,
+            notes: this.notes,
             format: this.format.toString(),
             cardEntries: this.cardEntries ? this.cardEntries.map(entry => entry.toDTO()) : []
         }
@@ -105,6 +113,7 @@ export class Deck {
             return new Deck(
                 dto.id ? dto.id : undefined,
                 dto.name,
+                dto.notes,
                 dto.format,
                 entries)
         })
@@ -130,6 +139,7 @@ export class Deck {
         const deck = new Deck(
             null,
             newName,
+            this.notes,
             this.format,
             this.cardEntries.map(entry => entry.copy())
         )

@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import { navBarHeight, drawerWidth, manaCurveChartOptions, imageHeight, imageWidth } from '../../constants';
 import { buttonBackgroundStyle, deckEntryTextBoxStyle, listItemStyle, searchTextFieldStyle } from '../../style/styles';
-import { Button, CardMedia, IconButton, Select } from '@mui/material';
+import { Button, CardMedia, IconButton, Select, Typography } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
@@ -29,6 +29,8 @@ import { DevotionCountersBox } from './DevotionCountersBox';
 import { SelectChangeEvent } from '@mui/material/Select';
 import { renderDeckName } from './renderDeckName';
 import RarityIcon from '../RarityIcon';
+import { Accordion, AccordionDetails, AccordionSummary, TextField } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 
 export const deckNameFontSize = 10
 
@@ -39,8 +41,10 @@ export interface DeckManagerProps extends MuiAppBarProps {
   selectedDeck: DeckDTO | null
   selectedDeckId: number | null
   selectedDeckEntries: DeckCardEntryDTO[]
+  selectedDeckNotes: string 
   handleChangeSelectedDeck: (event: SelectChangeEvent<number>) => void
   updateDeckEntries: (entry: DeckCardEntryDTO) => void
+  updateDeckNotes: (text: string, deckId: number) => void
   updateCardCopiesInDeck: (card: MTGCardDTO, increment: number, isSideboard: boolean) => void
   saveDeck: () => void
   isCardInWishlist: (card: MTGCardDTO) => boolean
@@ -61,6 +65,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
   const [copyDeckWindowOpened, setCopyDeckWindowOpened] = useState<boolean>(false);
   const [deleteDeckWindowOpened, setDeleteDeckWindowOpened] = useState<boolean>(false);
   const [compareDeckWindowOpened, setCompareDeckWindowOpened] = useState<boolean>(false);
+  
 
   const commonCount = countCardsByRarity(props.selectedDeckEntries, "common")
   const commonLandCount = countCardsByRarity(filterLands(props.selectedDeckEntries), "common")
@@ -218,6 +223,20 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
   const currentCommander = getCommander(props.selectedDeck)
   const [availableMissingCards, unavailableMissingCards] = numberOfCardsAvailable(props.selectedDeckEntries)
 
+
+  const [isNotesOpened, setExpanded] = useState<boolean>(false);
+
+  const toggleNotes = () => {
+    setExpanded(!isNotesOpened);
+  };
+
+  const handleDeckNotesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (props.selectedDeckId === null || props.selectedDeckId === undefined){
+      throw Error("Cannot update notes when no deck is selected")
+    }
+    props.updateDeckNotes(event.target.value, props.selectedDeckId);
+  };
+
   return (
     <Box sx={{
       display: 'flex',
@@ -328,9 +347,41 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
                 />
               </ListItem>
             </List>
-          ) : (<></>)
+            ) : (<></>)
           }
           <Divider/>
+
+        {props.selectedDeck != null ? (
+            <Accordion expanded={isNotesOpened} 
+            onChange={toggleNotes} 
+            style= {{ 
+              textAlign: "left", 
+              marginLeft: 25, 
+              width: "90%",
+              borderRadius: "10px", 
+              overflow: "hidden",
+            }}
+            disabled={props.selectedDeckId===null}>
+              <AccordionSummary expandIcon={<ExpandMore />} 
+              aria-controls="deck-notes" 
+              style={{ minHeight: "unset", height: "40px" }}
+              id="deck-notes-header">
+                <Typography>Notes</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <TextField
+                  id="deck-notes-input"
+                  multiline
+                  // rows={4}
+                  value={props.selectedDeckNotes}
+                  onChange={handleDeckNotesChange}
+                  style={{ textAlign: "left", width: "90%"}}
+                />
+              </AccordionDetails>
+            </Accordion>
+              ) : (<></>)
+          }
+
           <Divider />
           <Box style={{ textAlign: "left", marginLeft: 25, width: "100%" }} sx={deckEntryTextBoxStyle}>
             Total: {props.selectedDeckEntries.length > 0 ? props.selectedDeckEntries.map(entry => entry.copies).reduce((a, b) => a + b) : 0} cards

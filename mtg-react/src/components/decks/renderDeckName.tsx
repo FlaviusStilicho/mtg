@@ -13,7 +13,7 @@ export function renderDeckName(deck: DeckDTO) {
       <Box sx={{ fontSize: deckNameFontSize, display: "flex", flexWrap: "wrap", gap: 1 }}>
       <Box>
           {Array.from(deckColorIdentity).map((color) => (
-            <ColorIcon color={`${color}`}/>
+            <ColorIcon key={`${deck.id}-${color}-${Date.now()}`} color={`${color}`}/>
           ))}
         </Box>
         {commander ? `${deck.name} [${commander.name}]` : deck.name}
