@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { MTGCardDTO, PriceInformation, Store } from "mtg-common";
 import HTMLParser from 'node-html-parser';
-import { fetchCardBuyPriceFromScryfall } from './scryfall';
+import { fetchCardBuyPriceFromMagickastSingle } from './magickast';
 
 
 interface MagicersProduct {
@@ -71,25 +71,43 @@ export const fetchCardBuyPriceFromMagicersSingle = async (card: MTGCardDTO): Pro
 }
 
 export const fetchCardBuyPrice  = async (card: MTGCardDTO): Promise<PriceInformation | null> => {
-    return fetchCardBuyPriceFromMagicersSingle(card).then(price => {
-        if(price) {
-            return {
-                buyPrice: price,
-                store: Store.MAGICERS
-            }
-            
-        } else {
-            // console.log('fetching price from scryfall')
-            return fetchCardBuyPriceFromScryfall(card).then(price => {
-                if(price) {
-                    return {
-                        buyPrice: price,
-                        store: Store.SCRYFALL
-                    }
-                } else {
-                    return null
-                }
-            })
-        }
-    })
+    console.log("Fetching buy price for " + card.name)
+    const magicersPrice = await fetchCardBuyPriceFromMagicersSingle(card);
+    // const magickastPrice = await fetchCardBuyPriceFromMagickastSingle(card);
+    // const scryfallPrice = await fetchCardBuyPriceFromScryfall(card);
+
+    const prices: number[] = [];
+    if (magicersPrice) {
+        prices.push(magicersPrice);
+    }
+    // if (magickastPrice) {
+    //     prices.push(magickastPrice);
+    // }
+    // if (scryfallPrice) {
+    //     prices.push(scryfallPrice);
+    // }
+
+    const lowestPrice = Math.min(...prices);
+
+    if (lowestPrice === magicersPrice) {
+        return {
+            buyPrice: lowestPrice,
+            store: Store.MAGICERS
+        };
+    } 
+    // else if (lowestPrice === magickastPrice) {
+    //     return {
+    //         buyPrice: lowestPrice,
+    //         store: Store.MAGICKAST
+    //     }
+    // } 
+    // else if (lowestPrice === scryfallPrice) {
+    //     return {
+    //         buyPrice: lowestPrice,
+    //         store: Store.SCRYFALL
+    //     }
+    // } 
+    else {
+        return null
+    }
 }
