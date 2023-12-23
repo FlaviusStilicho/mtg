@@ -33,7 +33,7 @@ export const CreateDeckWindow = memo((props: CreateDeckWindowProps) => {
 
     const submitNewDeck = () => {
         if (file === null) {
-            axios.post(`http://localhost:8000/decks`, {
+            axios.post(`http://localhost:8000/deck`, {
                 name,
                 format: selectedFormat
             }).then(response => {
@@ -49,7 +49,7 @@ export const CreateDeckWindow = memo((props: CreateDeckWindowProps) => {
                     format: selectedFormat,
                     entries
                 }
-                axios.post(`http://localhost:8000/decks/upload`, request).then(response => {
+                axios.post(`http://localhost:8000/deck/upload`, request).then(response => {
                     onSuccessfulSubmit()
                 }).catch(req => {
                     setSnackbarOpen(true)

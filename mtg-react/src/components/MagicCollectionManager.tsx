@@ -53,6 +53,8 @@ interface CollectionManagerState{
   // lastPage: number
   cards: MTGCardDTO[]
 
+  collectionUploadWindowOpened: boolean
+
   // deck state
   deckManagerOpened: boolean
   decks: DeckDTO[]
@@ -100,6 +102,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         minOwnedCopies: 0
       },
       page: 1,
+      collectionUploadWindowOpened: false,
       cards: [],
       deckManagerOpened: true,
       decks: [],
@@ -165,7 +168,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
 
 
   fetchDecks = async (): Promise<DeckDTO[]> => {
-    return axios.get(`http://localhost:8000/decks/list`).then(response => {
+    return axios.get(`http://localhost:8000/decks/`).then(response => {
       const data: ListDecksResponse = response.data
       const decks = data.decks
       decks.forEach(deck => { if (deck['cardEntries'] === undefined) deck['cardEntries'] = [] })
@@ -213,6 +216,10 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
   handleChangeSelectedTab = (event: SyntheticEvent, selectedTab: number) => {
     this.setState({selectedTab});
   };
+
+  handleCollectionUploadWindowOpenClose = () => {
+    this.setState({collectionUploadWindowOpened: !this.state.collectionUploadWindowOpened})
+  }
 
   handleDeckManagerOpenClose = () => {
     this.setState({deckManagerOpened: !this.state.deckManagerOpened})
@@ -335,7 +342,7 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         deckClone.cardEntries[i].card.versions = []
       }
 
-      axios.put(`http://localhost:8000/decks/`, deckClone).then(response => {
+      axios.put(`http://localhost:8000/deck/`, deckClone).then(response => {
         console.log(`updated deck ${deckClone.name}!`)
       })
     }
@@ -433,7 +440,6 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
         snackbarInfoOpen: true
       })
     }
-
 
     const openErrorSnackbar = (message: string) =>{
       this.setState({
@@ -617,9 +623,14 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
       selectedTab: this.state.selectedTab,
       handleChangeSelectedTab: this.handleChangeSelectedTab,
       open: this.state.deckManagerOpened,
+      collectionUploadWindowOpened: this.state.collectionUploadWindowOpened,
+      handleCollectionUploadWindowOpenClose: this.handleCollectionUploadWindowOpenClose,
       handleDeckManagerOpenClose: this.handleDeckManagerOpenClose,
-      handleWishlistOpenClose: this.handleWishlistOpenClose
+      handleWishlistOpenClose: this.handleWishlistOpenClose,
+      openInfoSnackbar: openInfoSnackbar,
+      openErrorSnackbar: openErrorSnackbar
     }
+
 
     return (
       <ThemeProvider theme={theme}>
@@ -647,13 +658,17 @@ export class MagicCollectionManager extends Component<CollectionManagerProps, Co
             <Snackbar
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
                 open={this.state.snackbarErrorOpen}
-                autoHideDuration={3000}>
+                onClose={() => this.setState({ snackbarErrorOpen: false })}
+                style={{ whiteSpace: 'pre-line' }}
+                autoHideDuration={5000}>
                 <Alert severity="error" sx={{ width: '100%' }}>{this.state.snackbarErrorMessage}</Alert>
             </Snackbar>
             <Snackbar
                 anchorOrigin={{ vertical: "top", horizontal: "center" }}
                 open={this.state.snackbarInfoOpen}
-                autoHideDuration={3000}>
+                onClose={() => this.setState({ snackbarInfoOpen: false })}
+                style={{ whiteSpace: 'pre-line' }}
+                autoHideDuration={5000}>
                 <Alert severity="info" sx={{ width: '100%' }}>{this.state.snackbarInfoMessage}</Alert>
             </Snackbar>
           </Box>

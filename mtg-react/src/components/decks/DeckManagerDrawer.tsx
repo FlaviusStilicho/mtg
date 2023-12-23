@@ -355,7 +355,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             <Accordion expanded={isNotesOpened} 
             onChange={toggleNotes} 
             style= {{ 
-              textAlign: "left", 
+              textAlign: "center", 
               marginLeft: 25, 
               width: "90%",
               borderRadius: "10px", 
@@ -364,7 +364,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
             disabled={props.selectedDeckId===null}>
               <AccordionSummary expandIcon={<ExpandMore />} 
               aria-controls="deck-notes" 
-              style={{ minHeight: "unset", height: "40px" }}
+              style={{ minHeight: "unset", height: "30px" }}
               id="deck-notes-header">
                 <Typography>Notes</Typography>
               </AccordionSummary>
@@ -372,10 +372,9 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
                 <TextField
                   id="deck-notes-input"
                   multiline
-                  // rows={4}
                   value={props.selectedDeckNotes}
                   onChange={handleDeckNotesChange}
-                  style={{ textAlign: "left", width: "90%"}}
+                  style={{ textAlign: "left", width: "90%", paddingRight: 0}}
                 />
               </AccordionDetails>
             </Accordion>

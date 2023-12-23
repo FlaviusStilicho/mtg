@@ -25,7 +25,7 @@ export const CopyDeckWindow = memo((props: CopyDeckWindowProps) => {
                 deckId: props.deck.id,
                 name: newName
             }
-            axios.post(`http://localhost:8000/decks/copy`, request).then(response => {
+            axios.post(`http://localhost:8000/deck/copy`, request).then(response => {
                 props.onClose()
                 props.fetchDecks()
             }).catch(req => {

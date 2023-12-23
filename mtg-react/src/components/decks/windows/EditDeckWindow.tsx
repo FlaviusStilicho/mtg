@@ -28,7 +28,7 @@ export const EditDeckWindow = memo((props: EditDeckWindowProps) => {
         deckClone.name = newName
         deckClone.format = newFormat
     
-        axios.put(`http://localhost:8000/decks/`, deckClone).then(response => {
+        axios.put(`http://localhost:8000/deck/`, deckClone).then(response => {
             props.onClose()
             props.fetchDecks()
         }).catch(req => {

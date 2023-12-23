@@ -16,7 +16,7 @@ export const DeleteDeckWindow = memo((props: DeleteDeckWindowProps) => {
 
     const submitDeleteDeck = () => {
         props.onClose()
-        axios.delete(`http://localhost:8000/decks?id=${props.deck.id}`
+        axios.delete(`http://localhost:8000/deck?id=${props.deck.id}`
         ).then(response => {
             props.fetchDecks()
         }).catch(req => {
