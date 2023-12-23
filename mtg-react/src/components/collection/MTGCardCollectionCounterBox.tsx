@@ -12,17 +12,19 @@ import { Component } from "react";
 import { MTGCardDTO, MTGCardVersionDTO } from "mtg-common";
 
 export interface CollectionCounterBoxProps {
-  card: MTGCardDTO
-  primaryVersion: MTGCardVersionDTO
-  addOwnedCopy: () => void
-  subtractOwnedCopy: () => void
-  flipCard: () => void
+  card: MTGCardDTO;
+  primaryVersion: MTGCardVersionDTO;
+  addOwnedCopy: () => void;
+  subtractOwnedCopy: () => void;
+  flipCard: () => void;
 }
 export class MTGCardCollectionCounterBox extends Component<CollectionCounterBoxProps> {
   shouldComponentUpdate(nextProps: CardState) {
     //todo replace cardState
-    return this.props.card !== nextProps.card ||
-    this.props.card.ownedCopies !== nextProps.card.ownedCopies
+    return (
+      this.props.card !== nextProps.card ||
+      this.props.card.ownedCopies !== nextProps.card.ownedCopies
+    );
   }
 
   render() {

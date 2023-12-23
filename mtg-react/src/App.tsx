@@ -1,12 +1,12 @@
-import './App.css';
-import 'bootstrap/dist/css/bootstrap.min.css'
-import MagicCollectionManager from './components/MagicCollectionManager';
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import MagicCollectionManager from "./components/MagicCollectionManager";
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-      <MagicCollectionManager/>
+        <MagicCollectionManager />
       </header>
     </div>
   );

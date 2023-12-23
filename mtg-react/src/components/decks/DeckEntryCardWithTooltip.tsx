@@ -3,7 +3,12 @@ import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
 import { Button, CardMedia, Tooltip } from "@mui/material";
-import { DeckCardEntryDTO, DeckDTO, MTGCardDTO, WishlistEntryDTO } from "mtg-common";
+import {
+  DeckCardEntryDTO,
+  DeckDTO,
+  MTGCardDTO,
+  WishlistEntryDTO,
+} from "mtg-common";
 import { v4 as uuidv4 } from "uuid";
 import {
   isBasicLand,
@@ -15,18 +20,22 @@ import AddIcon from "@mui/icons-material/Add";
 import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import { Component } from "react";
-import StarIcon from '@mui/icons-material/Star';
+import StarIcon from "@mui/icons-material/Star";
 
 export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO;
   selectedDeck: DeckDTO | null;
-  updateDeckEntries: (entry: DeckCardEntryDTO) => void
-  updateCardCopiesInDeck: (card: MTGCardDTO, increment: number, isSideboard: boolean) => void
+  updateDeckEntries: (entry: DeckCardEntryDTO) => void;
+  updateCardCopiesInDeck: (
+    card: MTGCardDTO,
+    increment: number,
+    isSideboard: boolean,
+  ) => void;
   isSideboardEntry: boolean;
   setNewCommander: (entry: DeckCardEntryDTO) => void;
-  isCardInWishlist: (card: MTGCardDTO) => boolean
-  updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void
-  wishlistEntries: WishlistEntryDTO[]
+  isCardInWishlist: (card: MTGCardDTO) => boolean;
+  updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void;
+  wishlistEntries: WishlistEntryDTO[];
 }
 
 const iconWidth = 16;
@@ -50,7 +59,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
     // TODO if this causes performance issues, try to fix it. The update on buyprice doesnt trigger an update!
     // return this.props.entry !== nextProps.entry ||
     // this.props.entry.buyPrice !== nextProps.entry.buyPrice
-    return true
+    return true;
   }
 
   render() {
@@ -63,30 +72,30 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
       .split("}")
       .map((mc) => mc.substring(1))
       .filter((mc) => mc !== "");
-    const maxCardCopies = this.props.selectedDeck?.format === "Standard" ? 4 : 1;
+    const maxCardCopies =
+      this.props.selectedDeck?.format === "Standard" ? 4 : 1;
     const missingCards = numberOfMissingCards(entry, isSideboardEntry) > 0;
-    const onWishlist = missingCards ? this.props.isCardInWishlist(entry.card) : false
-    var bgcolor: string; 
-    if (missingCards && onWishlist){
-      bgcolor = "#e8e66b"
-    } else if (missingCards){
-      bgcolor = "#e3c2c2"
+    const onWishlist = missingCards
+      ? this.props.isCardInWishlist(entry.card)
+      : false;
+    var bgcolor: string;
+    if (missingCards && onWishlist) {
+      bgcolor = "#e8e66b";
+    } else if (missingCards) {
+      bgcolor = "#e3c2c2";
     } else {
-      bgcolor = "White"
+      bgcolor = "White";
     }
 
-    const addButtonDisabled = isSideboardEntry 
-    ? entry.sideboardCopies >= maxCardCopies && !isBasicLand(entry.card)
+    const addButtonDisabled = isSideboardEntry
+      ? entry.sideboardCopies >= maxCardCopies && !isBasicLand(entry.card)
       : entry.copies >= maxCardCopies && !isBasicLand(entry.card);
     const subtractButtonDisabled = isSideboardEntry
       ? entry.sideboardCopies < 1
       : entry.copies < 1;
 
     return (
-      <ListItem
-        key={`entry-listitem-${entry.card.name}`}
-        sx={{ py: 0.2 }}
-      >
+      <ListItem key={`entry-listitem-${entry.card.name}`} sx={{ py: 0.2 }}>
         <Tooltip
           arrow
           placement="left"
@@ -105,7 +114,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
           }
         >
           <Box
-            bgcolor={ bgcolor }
+            bgcolor={bgcolor}
             sx={{
               width: "100%",
               border: "1px solid",
@@ -121,7 +130,9 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
               style={{ textAlign: "right", marginRight: 4, width: "14%" }}
               sx={deckEntryTextBoxStyle}
             >
-              {entry.card.priceInfo != null ? `€ ${entry.card.priceInfo.buyPrice}` : "N/A"}
+              {entry.card.priceInfo != null
+                ? `€ ${entry.card.priceInfo.buyPrice}`
+                : "N/A"}
             </Box>
             <Box
               style={{ textAlign: "right", marginRight: 4, width: "25%" }}
@@ -162,7 +173,9 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
                   minWidth: { xs: iconWidth, md: iconWidth },
                 }}
                 disabled={onWishlist}
-                onClick={() => this.props.updateCardCopiesInWishlist(entry.card, true)} //TODO update the function or use another
+                onClick={() =>
+                  this.props.updateCardCopiesInWishlist(entry.card, true)
+                } //TODO update the function or use another
               >
                 <StarIcon fontSize="small" />
               </Button>
@@ -201,7 +214,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
                   this.props.updateCardCopiesInDeck(
                     entry.card,
                     -1,
-                    this.props.isSideboardEntry
+                    this.props.isSideboardEntry,
                   )
                 }
               >
@@ -220,7 +233,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
                   this.props.updateCardCopiesInDeck(
                     entry.card,
                     1,
-                    this.props.isSideboardEntry
+                    this.props.isSideboardEntry,
                   )
                 }
               >

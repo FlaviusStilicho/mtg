@@ -12,7 +12,7 @@ import { largeFlipButtonStyle } from "../../style/styles";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
-import { MTGCardDTO, MTGCardVersionDTO } from 'mtg-common';
+import { MTGCardDTO, MTGCardVersionDTO } from "mtg-common";
 import {
   imageHeight,
   imageWidth,
@@ -21,33 +21,35 @@ import {
 } from "../../constants";
 
 export interface MTGCardPopupProps {
-  primaryImage: string
-  variantImages: string[]
-  primaryVersion: MTGCardVersionDTO
-  flipCard: () => void
+  primaryImage: string;
+  variantImages: string[];
+  primaryVersion: MTGCardVersionDTO;
+  flipCard: () => void;
   opened: boolean;
   onClose: () => void;
   sellPrice: string;
   updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void;
-  card: MTGCardDTO
+  card: MTGCardDTO;
 }
 
 export class MTGCardPopup extends Component<MTGCardPopupProps> {
   shouldComponentUpdate(nextProps: MTGCardPopupProps) {
-    return this.props.primaryImage !== nextProps.primaryImage || 
-    this.props.opened !== nextProps.opened ||
-    this.props.card.priceInfo !== nextProps.card.priceInfo ||
-    this.props.sellPrice !== nextProps.sellPrice
+    return (
+      this.props.primaryImage !== nextProps.primaryImage ||
+      this.props.opened !== nextProps.opened ||
+      this.props.card.priceInfo !== nextProps.card.priceInfo ||
+      this.props.sellPrice !== nextProps.sellPrice
+    );
   }
 
   escFunction = (event: any): void => {
     if (event.key !== null && this.props.opened) {
-      this.props.onClose()
+      this.props.onClose();
     }
-  }
+  };
 
-  componentDidUpdate(){
-    if(this.props.opened){
+  componentDidUpdate() {
+    if (this.props.opened) {
       document.addEventListener("keydown", this.escFunction, false);
     }
   }
@@ -101,7 +103,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                     image={variantImage}
                   />
                 </ListItem>
-              )
+              ),
             )}
           </List>
         </Box>
@@ -171,7 +173,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                 disabled={this.props.card.priceInfo == null}
                 onClick={() => {
                   console.log("buy");
-                  this.props.updateCardCopiesInWishlist(this.props.card, true)
+                  this.props.updateCardCopiesInWishlist(this.props.card, true);
                 }}
               >
                 {`${

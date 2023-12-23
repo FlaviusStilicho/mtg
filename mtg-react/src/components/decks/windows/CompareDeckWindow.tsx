@@ -15,11 +15,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { memo, useState } from "react";
-import {
-  DeckDTO,
-  DeckCardEntryDTO,
-  MTGCardDTO,
-} from "mtg-common";
+import { DeckDTO, DeckCardEntryDTO, MTGCardDTO } from "mtg-common";
 import {
   buttonBackgroundStyle,
   searchTextFieldStyle,
@@ -46,7 +42,7 @@ export interface CompareTableRow {
 export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
   const [targetDeck, setTargetDeck] = useState<DeckDTO | null>(null);
   const [compareTableRows, setCompareTableRows] = useState<CompareTableRow[]>(
-    []
+    [],
   );
 
   function getCardEntry(deck: DeckDTO, cardName: string): DeckCardEntryDTO[] {
@@ -122,13 +118,13 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
     <Dialog
       open={props.opened}
       onClose={props.onClose}
-    //   PaperProps={{
-    //     sx: {
-    //       width: "100%",
-    //       maxWidth: "1500px!important",
-    //     },
-    //   }}
-      >
+      //   PaperProps={{
+      //     sx: {
+      //       width: "100%",
+      //       maxWidth: "1500px!important",
+      //     },
+      //   }}
+    >
       <List>
         <ListItem
           sx={{ py: 1.5, fontSize: 20 }}
@@ -157,8 +153,8 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
               deckColorIdentity = new Set();
               deck.cardEntries.forEach((entry) =>
                 entry.card.colorIdentity.forEach((color) =>
-                  deckColorIdentity.add(color)
-                )
+                  deckColorIdentity.add(color),
+                ),
               );
               // }
               return (
@@ -174,7 +170,7 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
                     {deck.name}
                     <Box>
                       {Array.from(deckColorIdentity).map((color) => (
-                        <ColorIcon color={`${color}CDW`}/>
+                        <ColorIcon color={`${color}CDW`} />
                       ))}
                     </Box>
                   </Box>
@@ -215,15 +211,21 @@ export const CompareDeckWindow = memo((props: CompareDeckWindowProps) => {
                     <TableRow
                       key={row.card.name}
                       sx={{
-                        "&:last-child td, &:last-child th": { border: 0 }
+                        "&:last-child td, &:last-child th": { border: 0 },
                       }}
                       style={{
-                        height: "8px"
+                        height: "8px",
                       }}
                     >
-                      <TableCell align="left" style={{height: "8px"}}>{row.deckName}</TableCell>
-                      <TableCell align="left" style={{height: "8px"}}>{row.card.name}</TableCell>
-                      <TableCell align="left" style={{height: "8px"}}>{row.quantity}</TableCell>
+                      <TableCell align="left" style={{ height: "8px" }}>
+                        {row.deckName}
+                      </TableCell>
+                      <TableCell align="left" style={{ height: "8px" }}>
+                        {row.card.name}
+                      </TableCell>
+                      <TableCell align="left" style={{ height: "8px" }}>
+                        {row.quantity}
+                      </TableCell>
                     </TableRow>
                   </Tooltip>
                 );

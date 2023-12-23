@@ -1,11 +1,4 @@
-import {
-  Alert,
-  Button,
-  Dialog,
-  List,
-  ListItem,
-  Snackbar,
-} from "@mui/material";
+import { Alert, Button, Dialog, List, ListItem, Snackbar } from "@mui/material";
 import { useState, memo } from "react";
 import axios from "axios";
 
@@ -32,23 +25,22 @@ export const UploadCollectionWindow = memo(
         let formData = new FormData();
         formData.append("csv", file);
 
-        axios.post("http://localhost:8000/uploads/delver/additive", 
-            formData, 
-            {
-              headers: {
+        axios
+          .post("http://localhost:8000/uploads/delver/additive", formData, {
+            headers: {
               "Content-Type": "multipart/form-data",
-              }
-            })
-          .then(response => {
-            const result: string[] = response.data['result'];
+            },
+          })
+          .then((response) => {
+            const result: string[] = response.data["result"];
             onSuccessfulSubmit(result);
           })
-          .catch(err => {
-            props.openErrorSnackbar(err); 
+          .catch((err) => {
+            props.openErrorSnackbar(err);
           });
       }
     };
-  
+
     return (
       <Dialog
         open={props.opened}
@@ -83,5 +75,5 @@ export const UploadCollectionWindow = memo(
         </List>
       </Dialog>
     );
-  }
+  },
 );

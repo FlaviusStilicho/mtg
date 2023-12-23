@@ -1,11 +1,11 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme } from "@mui/material/styles";
 
 export let theme = createTheme({
   palette: {
     primary: {
-      light: '#63ccff',
-      main: '#009be5',
-      dark: '#006db3',
+      light: "#63ccff",
+      main: "#009be5",
+      dark: "#006db3",
 
       //       light: '#63ccff',
       // main: '#85271c',
@@ -13,7 +13,7 @@ export let theme = createTheme({
 
       // main: '#63ccff',
       // dark: '#63ccff',
-    }
+    },
   },
   typography: {
     h5: {
@@ -37,7 +37,6 @@ export let theme = createTheme({
       minHeight: 48,
     },
   },
-
 });
 theme = {
   ...theme,
@@ -45,23 +44,23 @@ theme = {
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#081627',
+          backgroundColor: "#081627",
         },
       },
     },
     MuiButton: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
+          textTransform: "none",
           "&.Mui-disabled": {
             background: "#f3f3f3",
-            color: "#dadada"
-          }
+            color: "#dadada",
+          },
         },
         contained: {
-          boxShadow: 'none',
-          '&:active': {
-            boxShadow: 'none',
+          boxShadow: "none",
+          "&:active": {
+            boxShadow: "none",
           },
         },
       },
@@ -82,11 +81,11 @@ theme = {
     MuiTab: {
       styleOverrides: {
         root: {
-          textTransform: 'none',
-          margin: '0 16px',
+          textTransform: "none",
+          margin: "0 16px",
           minWidth: 0,
           padding: 0,
-          [theme.breakpoints.up('md')]: {
+          [theme.breakpoints.up("md")]: {
             padding: 0,
             minWidth: 0,
           },
@@ -97,16 +96,16 @@ theme = {
       styleOverrides: {
         root: {
           padding: theme.spacing(1),
-          fontSize: 14
+          fontSize: 14,
         },
       },
     },
     MuiCheckbox: {
       styleOverrides: {
         root: {
-          padding: "0"
-        }
-      }
+          padding: "0",
+        },
+      },
     },
     MuiTooltip: {
       styleOverrides: {
@@ -118,8 +117,8 @@ theme = {
     MuiDivider: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgb(255,255,255,0.15)',
-          borderBottomWidth: 20
+          backgroundColor: "rgb(255,255,255,0.15)",
+          borderBottomWidth: 20,
         },
       },
     },
@@ -127,8 +126,8 @@ theme = {
     MuiListItemButton: {
       styleOverrides: {
         root: {
-          '&.Mui-selected': {
-            color: '#4fc3f7',
+          "&.Mui-selected": {
+            color: "#4fc3f7",
           },
         },
       },
@@ -144,10 +143,10 @@ theme = {
     MuiListItemIcon: {
       styleOverrides: {
         root: {
-          color: 'inherit',
-          minWidth: 'auto',
+          color: "inherit",
+          minWidth: "auto",
           marginRight: theme.spacing(2),
-          '& svg': {
+          "& svg": {
             fontSize: 20,
           },
         },
@@ -162,5 +161,4 @@ theme = {
       },
     },
   },
-
 };

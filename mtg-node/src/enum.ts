@@ -1,4 +1,4 @@
 export enum DeckFormat {
-    STANDARD = 'standard',
-    COMMANDER = 'commander'
+  STANDARD = "standard",
+  COMMANDER = "commander",
 }

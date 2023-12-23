@@ -32,7 +32,7 @@ interface ParsedCollectionEntry {
 export const ProcessdDelverFile = async (
   req: Request,
   res: Response,
-  additive: boolean
+  additive: boolean,
 ) => {
   logger.info(`Processing uploaded Delver file! additive=${additive}`);
 
@@ -51,7 +51,7 @@ export const ProcessdDelverFile = async (
 
   processFile(req, res, (err) => {
     if (!err) {
-    //   const cards: MTGCard[] = [];
+      //   const cards: MTGCard[] = [];
       var cardNameColumn: number = null;
       var quantityColumn: number = null;
       const parsedCollectionEntries: ParsedCollectionEntry[] = [];
@@ -85,24 +85,26 @@ export const ProcessdDelverFile = async (
       });
 
       reader.on("close", async () => {
-        const promises: Promise<string>[] = parsedCollectionEntries.map(async (entry) => {
-          return await MTGCardRepository.findOneByName(entry.cardName)
-            .then(async (card) => {
-              card.ownedCopies = additive
-                ? card.ownedCopies + entry.quantity
-                : entry.quantity;
-              await MTGCardRepository.saveCard(card);
-            //   cards.push(card);
-              if (additive) {
-                return `Increased number of owned copies for card '${entry.cardName}' by ${entry.quantity} to ${card.ownedCopies}`;
-              } else {
-                return `Set number of owned copies for card '${entry.cardName}' to ${card.ownedCopies}`;
-              }
-            })
-            .catch((err) => {
-              return `Error updating quantity for card '${entry.cardName}': ${err}`;
-            });
-        });
+        const promises: Promise<string>[] = parsedCollectionEntries.map(
+          async (entry) => {
+            return await MTGCardRepository.findOneByName(entry.cardName)
+              .then(async (card) => {
+                card.ownedCopies = additive
+                  ? card.ownedCopies + entry.quantity
+                  : entry.quantity;
+                await MTGCardRepository.saveCard(card);
+                //   cards.push(card);
+                if (additive) {
+                  return `Increased number of owned copies for card '${entry.cardName}' by ${entry.quantity} to ${card.ownedCopies}`;
+                } else {
+                  return `Set number of owned copies for card '${entry.cardName}' to ${card.ownedCopies}`;
+                }
+              })
+              .catch((err) => {
+                return `Error updating quantity for card '${entry.cardName}': ${err}`;
+              });
+          },
+        );
 
         const resultSet = await Promise.all(promises);
         logger.info(resultSet.join("\n"));
@@ -110,7 +112,6 @@ export const ProcessdDelverFile = async (
           result: resultSet,
         });
       });
-
     } else if (err.code === "LIMIT_UNEXPECTED_FILE") {
       logger.error("Uploaded file has unexpected key");
       return res.sendStatus(400);

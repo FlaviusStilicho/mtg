@@ -1,22 +1,26 @@
-import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
-import Box from '@mui/material/Box';
-import ListItem from '@mui/material/ListItem';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import SearchIcon from '@mui/icons-material/Search';
-import TextField from '@mui/material/TextField';
-import { buttonBackgroundStyle, searchBarListItemStyle, searchTextFieldStyle } from '../style/styles';
-import { CardMedia, Checkbox, Divider, MenuItem, Select } from '@mui/material';
-import { Color, MTGSetDTO } from 'mtg-common';
-import { searchBarDrawerWidth } from '../constants';
+import Drawer from "@mui/material/Drawer";
+import List from "@mui/material/List";
+import Box from "@mui/material/Box";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import SearchIcon from "@mui/icons-material/Search";
+import TextField from "@mui/material/TextField";
+import {
+  buttonBackgroundStyle,
+  searchBarListItemStyle,
+  searchTextFieldStyle,
+} from "../style/styles";
+import { CardMedia, Checkbox, Divider, MenuItem, Select } from "@mui/material";
+import { Color, MTGSetDTO } from "mtg-common";
+import { searchBarDrawerWidth } from "../constants";
 import { DeckFormat } from "../enum";
-import { CardQueryParameters } from 'mtg-common';
-import { firstCharUpper } from '../functions/util';
+import { CardQueryParameters } from "mtg-common";
+import { firstCharUpper } from "../functions/util";
 
 export interface SearchWindowProps {
-  selectedQueryParameters: CardQueryParameters,
-  handleChangeSelectedQueryParameters: any,
+  selectedQueryParameters: CardQueryParameters;
+  handleChangeSelectedQueryParameters: any;
   sets: MTGSetDTO[];
   rarities: string[];
   types: string[];
@@ -26,11 +30,13 @@ export interface SearchWindowProps {
 }
 
 export default function SearchBar(props: SearchWindowProps) {
-  const formats: DeckFormat[] = [DeckFormat.STANDARD, DeckFormat.COMMANDER]
+  const formats: DeckFormat[] = [DeckFormat.STANDARD, DeckFormat.COMMANDER];
 
-  const allSetsCount = props.sets.length
-  const selectedSetsCount = props.selectedQueryParameters.sets.length
-  const newerSetsCount = props.sets.filter(set => new Date(set.releaseDate) > new Date("2020-01-01")).length
+  const allSetsCount = props.sets.length;
+  const selectedSetsCount = props.selectedQueryParameters.sets.length;
+  const newerSetsCount = props.sets.filter(
+    (set) => new Date(set.releaseDate) > new Date("2020-01-01"),
+  ).length;
 
   return (
     <Drawer
@@ -38,12 +44,12 @@ export default function SearchBar(props: SearchWindowProps) {
       PaperProps={{ style: { width: searchBarDrawerWidth } }}
     >
       <List disablePadding>
-        <ListItem sx={{ py: 1.5, fontSize: 18, color: '#fff' }}>
+        <ListItem sx={{ py: 1.5, fontSize: 18, color: "#fff" }}>
           <Box style={{ paddingRight: 10, borderRadius: "20px" }}>
             <CardMedia
               style={{
                 padding: 30,
-                borderRadius: '25%',
+                borderRadius: "25%",
               }}
               image="/magic_icon.jpeg"
             />
@@ -51,13 +57,12 @@ export default function SearchBar(props: SearchWindowProps) {
           Collection Manager
         </ListItem>
 
-        <ListItem sx={{ ...searchBarListItemStyle, py: 1.5, }}>
+        <ListItem sx={{ ...searchBarListItemStyle, py: 1.5 }}>
           <ListItemIcon>
             <SearchIcon />
           </ListItemIcon>
           <ListItemText>Search for cards</ListItemText>
         </ListItem>
-
 
         <ListItem sx={{ ...searchBarListItemStyle }}>
           <ListItemText>Card Name</ListItemText>
@@ -73,8 +78,9 @@ export default function SearchBar(props: SearchWindowProps) {
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
-              }
-            }} />
+              },
+            }}
+          />
         </ListItem>
         <Divider />
 
@@ -92,8 +98,9 @@ export default function SearchBar(props: SearchWindowProps) {
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
-              }
-            }} />
+              },
+            }}
+          />
         </ListItem>
         <Divider />
 
@@ -108,9 +115,13 @@ export default function SearchBar(props: SearchWindowProps) {
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
             value={props.selectedQueryParameters.sets}
-            renderValue={
-              (selected) => props.selectedQueryParameters.sets.map(
-                setId => props.sets.filter(set => setId === set.id).map(set => set.fullName))
+            renderValue={(selected) =>
+              props.selectedQueryParameters.sets
+                .map((setId) =>
+                  props.sets
+                    .filter((set) => setId === set.id)
+                    .map((set) => set.fullName),
+                )
                 .join(", ")
             }
             onChange={props.handleChangeSelectedQueryParameters}
@@ -119,8 +130,12 @@ export default function SearchBar(props: SearchWindowProps) {
             <MenuItem value={99999}>
               <ListItemIcon>
                 <Checkbox
-                  checked={selectedSetsCount > 0 && allSetsCount === selectedSetsCount}
-                  indeterminate={selectedSetsCount > 0 && allSetsCount < selectedSetsCount}
+                  checked={
+                    selectedSetsCount > 0 && allSetsCount === selectedSetsCount
+                  }
+                  indeterminate={
+                    selectedSetsCount > 0 && allSetsCount < selectedSetsCount
+                  }
                 />
               </ListItemIcon>
               <ListItemText
@@ -129,13 +144,12 @@ export default function SearchBar(props: SearchWindowProps) {
                 sx={{
                   mx: 0.3,
                   fontSize: 11,
-                }} />
+                }}
+              />
             </MenuItem>
             <MenuItem value={99998}>
               <ListItemIcon>
-                <Checkbox
-                  checked={selectedSetsCount === newerSetsCount}
-                />
+                <Checkbox checked={selectedSetsCount === newerSetsCount} />
               </ListItemIcon>
               <ListItemText
                 primary="2020+"
@@ -143,12 +157,16 @@ export default function SearchBar(props: SearchWindowProps) {
                 sx={{
                   mx: 0.3,
                   fontSize: 11,
-                }} />
+                }}
+              />
             </MenuItem>
             {props.sets.map((set) => (
               <MenuItem key={set.id} value={set.id}>
                 <Checkbox
-                  checked={props.selectedQueryParameters.sets.indexOf(set.id) > -1} />
+                  checked={
+                    props.selectedQueryParameters.sets.indexOf(set.id) > -1
+                  }
+                />
                 <ListItemText
                   primary={set.fullName}
                   disableTypography
@@ -158,8 +176,7 @@ export default function SearchBar(props: SearchWindowProps) {
                   }}
                 />
               </MenuItem>
-            ))
-            }
+            ))}
           </Select>
         </ListItem>
         <Divider />
@@ -177,7 +194,7 @@ export default function SearchBar(props: SearchWindowProps) {
             value={props.selectedQueryParameters.rarities}
             onChange={props.handleChangeSelectedQueryParameters}
             multiple
-            renderValue={(selected) =>
+            renderValue={(selected) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                 {selected.map((rarity) => (
                   <Box
@@ -190,17 +207,21 @@ export default function SearchBar(props: SearchWindowProps) {
                       maxWidth: { xs: 25, md: 25 },
                     }}
                     style={{
-                      borderRadius: "10px"
+                      borderRadius: "10px",
                     }}
                     src={`http://localhost:3000/${rarity}.png`}
-                  />))}
+                  />
+                ))}
               </Box>
-            }
+            )}
           >
             {props.rarities.map((rarity) => (
               <MenuItem key={rarity} value={rarity}>
                 <Checkbox
-                  checked={props.selectedQueryParameters.rarities.indexOf(rarity) > -1} />
+                  checked={
+                    props.selectedQueryParameters.rarities.indexOf(rarity) > -1
+                  }
+                />
                 <Box
                   component="img"
                   sx={{
@@ -210,7 +231,7 @@ export default function SearchBar(props: SearchWindowProps) {
                     maxWidth: { xs: 25, md: 25 },
                   }}
                   style={{
-                    borderRadius: "10px"
+                    borderRadius: "10px",
                   }}
                   src={`http://localhost:3000/${rarity}.png`}
                 />
@@ -247,15 +268,18 @@ export default function SearchBar(props: SearchWindowProps) {
             name="types"
             style={searchTextFieldStyle}
             sx={{ ...buttonBackgroundStyle }}
-
             value={props.selectedQueryParameters.types}
             onChange={props.handleChangeSelectedQueryParameters}
             multiple
-            renderValue={(selected) => selected.join(', ')}
+            renderValue={(selected) => selected.join(", ")}
           >
             {props.types.map((type) => (
               <MenuItem key={type} value={type}>
-                <Checkbox checked={props.selectedQueryParameters.types.indexOf(type) > -1} />
+                <Checkbox
+                  checked={
+                    props.selectedQueryParameters.types.indexOf(type) > -1
+                  }
+                />
                 <ListItemText primary={type} />
               </MenuItem>
             ))}
@@ -277,8 +301,9 @@ export default function SearchBar(props: SearchWindowProps) {
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
-              }
-            }} />
+              },
+            }}
+          />
         </ListItem>
         <Divider />
 
@@ -313,7 +338,7 @@ export default function SearchBar(props: SearchWindowProps) {
             onChange={props.handleChangeSelectedQueryParameters}
             multiple
             label="Any"
-            renderValue={(selected) =>
+            renderValue={(selected) => (
               <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                 {selected.map((color) => (
                   <Box
@@ -326,14 +351,19 @@ export default function SearchBar(props: SearchWindowProps) {
                       maxWidth: { xs: 25, md: 25 },
                     }}
                     src={`http://localhost:3000/mana/${color}.png`}
-                  />))}
+                  />
+                ))}
               </Box>
-            }
+            )}
           >
             {props.colors.map((color) => (
               <MenuItem key={color.name} value={color.name}>
                 <Checkbox
-                  checked={props.selectedQueryParameters.colors.indexOf(color.name) > -1} />
+                  checked={
+                    props.selectedQueryParameters.colors.indexOf(color.name) >
+                    -1
+                  }
+                />
                 <Box
                   component="img"
                   sx={{
@@ -364,8 +394,9 @@ export default function SearchBar(props: SearchWindowProps) {
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
-              }
-            }} />
+              },
+            }}
+          />
         </ListItem>
 
         <ListItem sx={{ ...searchBarListItemStyle }}>
@@ -380,15 +411,14 @@ export default function SearchBar(props: SearchWindowProps) {
             sx={{ ...buttonBackgroundStyle }}
             value={props.selectedQueryParameters.format.toString()}
             // renderValue={props.selectedDeckFormat.toString()}
-            onChange={props.handleChangeSelectedQueryParameters}>
+            onChange={props.handleChangeSelectedQueryParameters}
+          >
             {formats.map((format) => (
               <MenuItem key={format.toString()} value={format.toString()}>
-                <ListItemText
-                  primary={firstCharUpper(format)}
-                />
+                <ListItemText primary={firstCharUpper(format)} />
               </MenuItem>
             ))}
-            </Select>
+          </Select>
         </ListItem>
 
         <ListItem sx={{ ...searchBarListItemStyle }}>
@@ -406,8 +436,9 @@ export default function SearchBar(props: SearchWindowProps) {
             InputProps={{
               inputProps: {
                 style: { textAlign: "center" },
-              }
-            }} />
+              },
+            }}
+          />
         </ListItem>
         <Divider />
       </List>
