@@ -1,12 +1,9 @@
 export interface PriceInformation {
-    buyPrice: number;
-    store: Store;
+    inStock: boolean
+    buyPrice: number | null;
+    store: string;
 }
-export declare enum Store {
-    MAGICERS = "magicers",
-    MAGICKAST = "magickast",
-    SCRYFALL = "scryfall"
-}
+
 export interface MTGCardDTO {
     id: number;
     name: string;

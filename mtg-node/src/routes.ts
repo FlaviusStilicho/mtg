@@ -11,6 +11,7 @@ import {
   AddCardCategory,
   RemoveCardCategory,
   UpdateCardOwnedCopies,
+  GetCardPrice,
 } from "./controller/card.controller.ts";
 import {
   UploadDelverFile,
@@ -62,6 +63,8 @@ export const routes = (router: Router) => {
   router.put("/deck", UpdateDeck);
   router.delete("/deck", DeleteDeck);
   router.delete("/decks/clear", ClearDecks);
+
+  router.get("/price/:cardName", GetCardPrice);
 
   router.get("/wishlist", GetWishlistEntries);
   // router.post("/wishlist", AddWishlistEntry)

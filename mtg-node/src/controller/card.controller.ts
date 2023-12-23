@@ -10,8 +10,11 @@ import {
   MTGCardDTO,
   CardQueryParameters,
   UpdateCardOwnedCopiesQueryParams,
+  PriceInformation,
 } from "mtg-common";
+
 import { MTGCardRepository } from "../repository/MTGCard.repository.ts";
+import { fetchCardBuyPriceFromMagicers } from "../clients/magicers.ts";
 
 interface GetCardsQueryParams {
   take: number;
@@ -66,6 +69,27 @@ export const UpdateCardOwnedCopies = async (
   );
   card.ownedCopies = req.body.ownedCopies;
   await MTGCardRepository.saveCard(card);
+};
+
+
+export const GetCardPrice = async (
+  req: Request,
+  res: Response,
+) => {
+  const cardName: string = req.params.cardName;
+  logger.info(`Fetching buy price for ${cardName}`);
+
+  const magicersPrice: PriceInformation = await fetchCardBuyPriceFromMagicers(cardName);
+  // const magickastPrice = await fetchCardBuyPriceFromMagickastSingle(card);
+  // const scryfallPrice = await fetchCardBuyPriceFromScryfall(card);
+
+  const priceInfo: PriceInformation[] = [];
+
+  if (magicersPrice) {
+    priceInfo.push(magicersPrice);
+  }
+
+  res.send(priceInfo);
 };
 
 export const AddCardCategory = async (req: Request, res: Response) => {
