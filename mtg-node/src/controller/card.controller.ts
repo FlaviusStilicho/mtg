@@ -15,6 +15,7 @@ import {
 
 import { MTGCardRepository } from "../repository/MTGCard.repository.ts";
 import { fetchCardBuyPriceFromMagicers } from "../clients/magicers.ts";
+import { fetchCardBuyPriceFromMagickast } from "../clients/magickast.ts";
 
 interface GetCardsQueryParams {
   take: number;
@@ -71,25 +72,15 @@ export const UpdateCardOwnedCopies = async (
   await MTGCardRepository.saveCard(card);
 };
 
-
-export const GetCardPrice = async (
-  req: Request,
-  res: Response,
-) => {
-  const cardName: string = req.params.cardName;
+export const GetCardPrice = async (req: Request, res: Response) => {
+  const cardName: string = req.params.cardName.replace("--", "//");
   logger.info(`Fetching buy price for ${cardName}`);
 
-  const magicersPrice: PriceInformation = await fetchCardBuyPriceFromMagicers(cardName);
-  // const magickastPrice = await fetchCardBuyPriceFromMagickastSingle(card);
+  const magicersPrice = await fetchCardBuyPriceFromMagicers(cardName);
+  const magickastPrice = await fetchCardBuyPriceFromMagickast(cardName);
   // const scryfallPrice = await fetchCardBuyPriceFromScryfall(card);
 
-  const priceInfo: PriceInformation[] = [];
-
-  if (magicersPrice) {
-    priceInfo.push(magicersPrice);
-  }
-
-  res.send(priceInfo);
+  res.send([magicersPrice, magickastPrice]);
 };
 
 export const AddCardCategory = async (req: Request, res: Response) => {

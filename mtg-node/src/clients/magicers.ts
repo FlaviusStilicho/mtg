@@ -53,17 +53,14 @@ export const fetchCardBuyPriceFromMagicers = async (
         const priceNode: any = parsedNodes[i + 1];
         const stockNode: any = parsedNodes[i + 2];
         parsedProducts.push({
-          name: productNameNode["rawAttributes"]["value"].replace("//", ""),
+          name: productNameNode["rawAttributes"]["value"],
           price: Number(priceNode["rawAttributes"]["value"].replace(",", ".")),
           stock: Number(stockNode["rawAttributes"]["value"]),
         });
       }
 
       const filteredProducts = parsedProducts
-        .filter(
-          product =>
-            product.name.split("(")[0].trim() == cardNameFull
-        )
+        .filter((product) => product.name.split("(")[0].trim() == cardNameFull)
         .filter((product) => product.stock > 0);
 
       if (filteredProducts.length === 0) {
