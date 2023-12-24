@@ -19,6 +19,7 @@ import {
   popupImageSizeFactor,
   variantImageSizeFactor,
 } from "../../constants";
+import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
 
 export interface MTGCardPopupProps {
   primaryImage: string;
@@ -176,11 +177,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                   this.props.updateCardCopiesInWishlist(this.props.card, true);
                 }}
               >
-                {`${
-                  this.props.card.priceInfo?.buyPrice
-                    ? "€ " + this.props.card.priceInfo?.buyPrice
-                    : "Not available"
-                }`}
+                {getLowestCardPriceStr(this.props.card.priceInfo)}
               </Button>
               <Button
                 variant="contained"

@@ -77,12 +77,14 @@ export const GetCardPrice = async (req: Request, res: Response) => {
   const cardName: string = req.params.cardName.replace("--", "//");
   logger.info(`Fetching buy price for ${cardName}`);
 
-  if (["Island", "Swamp", "Forest", "Plains", "Mountain"].includes(cardName)){
-    res.send([{
-      inStock: false,
-      store: "Magicers",
-      buyPrice: 0
-    }])
+  if (["Island", "Swamp", "Forest", "Plains", "Mountain"].includes(cardName)) {
+    res.send([
+      {
+        inStock: false,
+        store: "Magicers",
+        buyPrice: 0,
+      },
+    ]);
   } else {
     const magicersPrice = await fetchCardBuyPriceFromMagicers(cardName);
     const magickastPrice = await fetchCardBuyPriceFromMagickast(cardName);

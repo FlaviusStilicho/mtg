@@ -51,11 +51,8 @@ async function parseTokens(): Promise<{ csrfToken: string; cookies: string }> {
 }
 
 function getCookies(cookie: string) {
-  console.log(cookie);
   const sessionTokenMatch = cookie.match(/magickast_session=([^;]+)/);
   const xsrfTokenMatch = cookie.match(/XSRF-TOKEN=([^;]+)/);
-  console.log(sessionTokenMatch);
-  console.log(xsrfTokenMatch);
   return `XSRF-TOKEN=${xsrfTokenMatch![1]};magickast_session=${
     sessionTokenMatch![1]
   }`;

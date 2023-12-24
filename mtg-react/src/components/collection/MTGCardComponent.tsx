@@ -18,12 +18,12 @@ import {
   MTGCardDeckCounterBox,
   MTGCardDeckCounterBoxProps,
 } from "./MTGCardDeckCounterBox";
-import { fetchCardBuyPrice } from "../../functions/magicers";
 import { Component } from "react";
 import { MTGCardCollectionCounterBox } from "./MTGCardCollectionCounterBox";
 import { MTGCardPopup } from "./MTGCardPopup";
 import { CardImageProps, MTGCardImage } from "./MTGCardImage";
 import { shouldCardComponentUpdate } from "../../functions/util";
+import { fetchCardPrice } from "../../functions/fetchCardPrice";
 export interface CardComponentProps {
   card: MTGCardDTO;
   enabledTab: EnabledTab;
@@ -122,7 +122,7 @@ export class MTGCardComponent extends Component<
 
   fetchBuyPrice = (): void => {
     if (this.props.card.priceInfo == null) {
-      fetchCardBuyPrice(this.props.card).then((priceInfo) => {
+      fetchCardPrice(this.props.card.name).then((priceInfo) => {
         this.props.card.priceInfo = priceInfo;
         this.forceUpdate();
         // this.setState({buyPrice})

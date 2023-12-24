@@ -21,6 +21,7 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import { Component } from "react";
 import StarIcon from "@mui/icons-material/Star";
+import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
 
 export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO;
@@ -130,9 +131,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
               style={{ textAlign: "right", marginRight: 4, width: "14%" }}
               sx={deckEntryTextBoxStyle}
             >
-              {entry.card.priceInfo != null
-                ? `€ ${entry.card.priceInfo.buyPrice}`
-                : "N/A"}
+              {getLowestCardPriceStr(entry.card.priceInfo)}
             </Box>
             <Box
               style={{ textAlign: "right", marginRight: 4, width: "25%" }}

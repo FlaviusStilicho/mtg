@@ -12,6 +12,7 @@ import {
   DeckDTO,
   MTGCardDTO,
   MTGSetDTO,
+  PriceInformation,
   WishlistEntryDTO,
 } from "mtg-common";
 import axios from "axios";
@@ -35,7 +36,7 @@ import { DeckFormat } from "../enum";
 import TabPanel from "./TabPanel";
 import { WishlistDrawer, WishlistProps } from "./collection/WishlistDrawer";
 import { Alert, Snackbar } from "@mui/material";
-import { fetchCardBuyPrice } from "../functions/magicers";
+import { fetchCardPrice } from "../functions/fetchCardPrice";
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133];
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"];
@@ -164,37 +165,37 @@ export class MagicCollectionManager extends Component<
       const colors: Color[] = response.data.data;
       this.setState({ colors });
     });
-    const decks = await this.fetchDecks();
+    await this.fetchDecks();
     axios.get(`http://localhost:8000/wishlist`).then((response) => {
       const wishlistEntries: WishlistEntryDTO[] = response.data;
       this.setState({ wishlistEntries });
 
-      Promise.all(
-        wishlistEntries.map((entry) => {
-          return fetchCardBuyPrice(entry.card).then((priceInfo) => {
-            entry.card.priceInfo = priceInfo;
-            return entry;
-          });
-        }),
-      ).then((wishlistEntries) => {
-        console.log("collected card prices for wishlist");
-        Promise.all(decks).then((decks) => {
-          for (const wishlistEntry of wishlistEntries) {
-            const inDecks: string[] = findDecksContainCard(
-              wishlistEntry.card,
-              decks,
-            );
-            wishlistEntry.inDecks = inDecks;
-          }
-          // console.log("mapped decks to wishlist entries")
-          // console.log(wishlistEntries)
-          this.setState({ wishlistEntries: wishlistEntries });
-        });
-      });
+      // Promise.all(
+      //   wishlistEntries.map((entry) => {
+      //     return fetchCardBuyPrice(entry.card).then((priceInfo) => {
+      //       entry.card.priceInfo = priceInfo;
+      //       return entry;
+      //     });
+      //   }),
+      // ).then((wishlistEntries) => {
+      //   console.log("collected card prices for wishlist");
+      //   Promise.all(decks).then((decks) => {
+      //     for (const wishlistEntry of wishlistEntries) {
+      //       const inDecks: string[] = findDecksContainCard(
+      //         wishlistEntry.card,
+      //         decks,
+      //       );
+      //       wishlistEntry.inDecks = inDecks;
+      //     }
+      //     // console.log("mapped decks to wishlist entries")
+      //     // console.log(wishlistEntries)
+      //     this.setState({ wishlistEntries: wishlistEntries });
+      //   });
+      // });
     });
   };
 
-  fetchDecks = async (): Promise<DeckDTO[]> => {
+  fetchDecks = async (): Promise<void> => {
     return axios.get(`http://localhost:8000/decks/`).then((response) => {
       const data: ListDecksResponse = response.data;
       const decks = data.decks;
@@ -203,7 +204,6 @@ export class MagicCollectionManager extends Component<
       });
       this.setState({ decks });
       console.log("completed fethching decks");
-      return decks;
     });
   };
 
@@ -413,10 +413,12 @@ export class MagicCollectionManager extends Component<
               numberOfMissingCards(entry, true) > 0 ||
               numberOfMissingCards(entry, false) > 0
             ) {
-              return fetchCardBuyPrice(entry.card).then((priceInfo) => {
-                entry.card.priceInfo = priceInfo;
-                return entry;
-              });
+              return fetchCardPrice(entry.card.name).then(
+                (priceInfo: PriceInformation[]) => {
+                  entry.card.priceInfo = priceInfo;
+                  return entry;
+                },
+              );
             }
             return entry;
           }),
@@ -661,7 +663,7 @@ export class MagicCollectionManager extends Component<
           );
         }
         if (!card.priceInfo) {
-          card.priceInfo = await fetchCardBuyPrice(card);
+          card.priceInfo = await fetchCardPrice(card.name);
         }
         updatedEntries.push({
           card: card,

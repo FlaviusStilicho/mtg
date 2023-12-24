@@ -3,7 +3,7 @@ import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
 import { Button, CardMedia, Tooltip } from "@mui/material";
-import { MTGCardDTO, WishlistEntryDTO, Store } from "mtg-common";
+import { MTGCardDTO, WishlistEntryDTO } from "mtg-common";
 import { v4 as uuidv4 } from "uuid";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
@@ -71,15 +71,17 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
                 marginRight: 4,
                 width: "15%",
                 color:
-                  entry.card.priceInfo?.store === Store.SCRYFALL
-                    ? "red"
-                    : "inherit",
+                  // entry.card.priceInfo?.store === Store.SCRYFALL
+                  // ? "red" :
+                  "inherit",
               }}
               sx={deckEntryTextBoxStyle}
             >
-              {entry.card.priceInfo != null
-                ? `€ ${entry.card.priceInfo.buyPrice}`
-                : "N/A"}
+              {
+                // entry.card.priceInfo != null
+                // ? `€ ${entry.card.priceInfo.buyPrice}` :
+                "N/A"
+              }
             </Box>
             <Box
               style={{ textAlign: "left", marginRight: 4, width: "25%" }}

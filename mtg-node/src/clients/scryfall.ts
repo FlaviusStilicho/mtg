@@ -13,12 +13,12 @@ export const fetchCardBuyPriceFromScryfall = async (
       inStock: true,
       store: "Cardmarket",
       buyPrice: data.prices["eur"],
-    }
+    };
   } else {
     return {
       inStock: false,
       store: "Cardmarket",
       buyPrice: null,
-    }
+    };
   }
 };

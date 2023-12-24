@@ -4,12 +4,12 @@ import {
   DeckCardEntryDTO,
   DeckDTO,
   WishlistEntryDTO,
-  Store,
 } from "mtg-common";
 import {
   CardComponentProps,
   CardComponentState,
 } from "../components/collection/MTGCardComponent";
+import { getLowestCardPrice, isCardInStock } from "./fetchCardPrice";
 
 export const isBasicLand = (card: MTGCardDTO): boolean => {
   return card.type.startsWith("Basic Land");
@@ -250,17 +250,16 @@ export const numberOfCardsAvailable = (
     .filter((entry) => entry.copies > 0)
     .filter(
       (entry) =>
-        numberOfMissingCards(entry) > 0 &&
-        entry.card.priceInfo?.store === Store.MAGICERS,
+        numberOfMissingCards(entry) > 0 && isCardInStock(entry.card.priceInfo),
     )
     .map((entry) => numberOfMissingCards(entry))
     .reduce((a, b) => a + b, 0);
+
   const unavailable = entries
     .filter((entry) => entry.copies > 0)
     .filter(
       (entry) =>
-        numberOfMissingCards(entry) > 0 &&
-        entry.card.priceInfo?.store !== Store.MAGICERS,
+        numberOfMissingCards(entry) > 0 && !isCardInStock(entry.card.priceInfo),
     )
     .map((entry) => numberOfMissingCards(entry))
     .reduce((a, b) => a + b, 0);
@@ -278,9 +277,8 @@ export const costToFinishDeck = (entries: DeckCardEntryDTO[]): number => {
         numberOfMissingCards(entry) > 0 && entry.card.priceInfo != null,
     )
     .map((entry) => {
-      return entry.card.priceInfo == null
-        ? 0
-        : numberOfMissingCards(entry) * entry.card.priceInfo.buyPrice;
+      const price = getLowestCardPrice(entry.card.priceInfo);
+      return price == null ? 0 : numberOfMissingCards(entry) * price;
     })
     .reduce((a, b) => a + b, 0);
   return result;
@@ -336,20 +334,20 @@ export function wishlistSortFnPrice(
   a: WishlistEntryDTO,
   b: WishlistEntryDTO,
 ): number {
-  const priceInfoA = a.card.priceInfo;
-  const priceInfoB = b.card.priceInfo;
+  const priceA: number | null = getLowestCardPrice(a.card.priceInfo);
+  const priceB: number | null = getLowestCardPrice(b.card.priceInfo);
 
-  if (priceInfoA === null && priceInfoB === null) {
+  if (priceA === null && priceB === null) {
     return a.card.name.localeCompare(b.card.name);
   }
-  if (priceInfoA === null) {
+  if (priceA === null) {
     return 1;
   }
-  if (priceInfoB === null) {
+  if (priceB === null) {
     return -1;
+  } else {
+    return priceB - priceA;
   }
-
-  return priceInfoB.buyPrice - priceInfoA.buyPrice;
 }
 
 export function findDecksContainCard(

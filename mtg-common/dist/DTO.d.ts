@@ -15,7 +15,7 @@ export interface MTGCardDTO {
     ownedCopies: number;
     versions: MTGCardVersionDTO[];
     otherSide?: MTGCardDTO;
-    priceInfo: PriceInformation | null;
+    priceInfo: PriceInformation[];
 }
 export interface MTGCardVersionDTO {
     isPrimaryVersion: boolean;
