@@ -1,18 +1,24 @@
 import axios from "axios";
-import { MTGCardDTO } from "mtg-common";
+import { PriceInformation } from "mtg-common";
 
 export const fetchCardBuyPriceFromScryfall = async (
-  card: MTGCardDTO,
-): Promise<number | undefined> => {
+  cardName: string,
+): Promise<PriceInformation> => {
   const response = await axios.get(
-    `https://api.scryfall.com/cards/named?exact=${card.name}`,
+    `https://api.scryfall.com/cards/named?exact=${cardName}`,
   );
   const data = response.data;
-  // console.log(data)
   if (data && data.prices && data.prices["eur"]) {
-    // console.log(data.prices['eur']);
-    return data.prices["eur"];
+    return {
+      inStock: true,
+      store: "Cardmarket",
+      buyPrice: data.prices["eur"],
+    }
   } else {
-    return undefined;
+    return {
+      inStock: false,
+      store: "Cardmarket",
+      buyPrice: null,
+    }
   }
 };

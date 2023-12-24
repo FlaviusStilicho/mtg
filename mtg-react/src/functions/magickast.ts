@@ -110,26 +110,3 @@ function parseCardEntry(entry: HTMLElement, cardName: string): number | null {
     return null;
   }
 }
-
-export const fetchCardBuyPriceFromMagickastSingle = async (
-  card: MTGCardDTO,
-): Promise<number | undefined> => {
-  if (
-    card.name === "Island" ||
-    card.name === "Swamp" ||
-    card.name === "Forest" ||
-    card.name === "Plains" ||
-    card.name === "Mountain"
-  ) {
-    return 0;
-  }
-  return await fetchCardBuyPriceFromMagickast(card).then((prices: number[]) => {
-    if (prices.length === 0) {
-      return undefined;
-    } else if (prices.length === 1) {
-      return prices[0];
-    } else {
-      return Math.min(...prices);
-    }
-  });
-};
