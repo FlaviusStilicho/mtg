@@ -10,7 +10,6 @@ import {
   MTGCardDTO,
   CardQueryParameters,
   UpdateCardOwnedCopiesQueryParams,
-  PriceInformation,
 } from "mtg-common";
 
 import { MTGCardRepository } from "../repository/MTGCard.repository.ts";

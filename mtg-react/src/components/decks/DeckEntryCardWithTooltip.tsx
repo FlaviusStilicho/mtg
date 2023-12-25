@@ -31,7 +31,10 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import { Component } from "react";
 import StarIcon from "@mui/icons-material/Star";
-import { getLowestCardPriceStr, sortPriceInfo } from "../../functions/fetchCardPrice";
+import {
+  getLowestCardPriceStr,
+  sortPriceInfo,
+} from "../../functions/fetchCardPrice";
 
 export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO;
@@ -156,16 +159,20 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
                       </TableHead>
                       <TableBody>
                         {this.props.entry.card.priceInfo
-                        .sort(sortPriceInfo)
-                        .map((priceInfo) => (
-                          <TableRow key={priceInfo.store}>
-                            <TableCell>
-                              {priceInfo.inStock ? "Yes" : "No"}
-                            </TableCell>
-                            <TableCell>{priceInfo.buyPrice !== null ? `€ ${priceInfo.buyPrice}` : "N/A"}</TableCell>
-                            <TableCell>{priceInfo.store}</TableCell>
-                          </TableRow>
-                        ))}
+                          .sort(sortPriceInfo)
+                          .map((priceInfo) => (
+                            <TableRow key={priceInfo.store}>
+                              <TableCell>
+                                {priceInfo.inStock ? "Yes" : "No"}
+                              </TableCell>
+                              <TableCell>
+                                {priceInfo.buyPrice !== null
+                                  ? `€ ${priceInfo.buyPrice}`
+                                  : "N/A"}
+                              </TableCell>
+                              <TableCell>{priceInfo.store}</TableCell>
+                            </TableRow>
+                          ))}
                       </TableBody>
                     </Table>
                   </TableContainer>

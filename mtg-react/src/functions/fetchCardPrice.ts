@@ -4,7 +4,9 @@ import { PriceInformation } from "../../../mtg-common/dist/DTO";
 export const fetchCardPrice = async (
   cardName: string,
 ): Promise<PriceInformation[]> => {
-  return await axios.get(`http://localhost:8000/price/${cardName.replace("//", "--")}`).then((res) => res.data);
+  return await axios
+    .get(`http://localhost:8000/price/${cardName.replace("//", "--")}`)
+    .then((res) => res.data);
 };
 
 export const getLowestCardPrice = (
@@ -15,10 +17,10 @@ export const getLowestCardPrice = (
   }
 
   const inStock: PriceInformation[] = priceInformation.filter(
-    priceInfo => priceInfo.inStock,
+    (priceInfo) => priceInfo.inStock,
   );
   const hasPrice: PriceInformation[] = inStock.filter(
-    priceInfo => priceInfo.buyPrice !== null,
+    (priceInfo) => priceInfo.buyPrice !== null,
   );
   const prices: number[] = hasPrice.map((info) => info.buyPrice!);
   if (prices.length === 0) {

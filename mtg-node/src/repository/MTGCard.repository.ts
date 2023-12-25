@@ -33,6 +33,11 @@ export const MTGCardRepository = DB.getRepository(MTGCard).extend({
     logger.debug(`Saved card '${card.name}'`);
     return this.save(card);
   },
+  async findOwnedCards(): Promise<MTGCard[]> {
+    return this.createQueryBuilder("card")
+      .where("card.ownedCopies > 0")
+      .getMany();
+  },
   async clear(): Promise<UpdateResult> {
     return await this.createQueryBuilder("card")
       .update()

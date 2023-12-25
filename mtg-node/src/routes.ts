@@ -41,6 +41,7 @@ import {
   GetWishlistEntries,
   SaveWishlist,
 } from "./controller/wishlist.controller.ts";
+import { CreateBackup } from "./controller/backup.controller.ts";
 
 export const routes = (router: Router) => {
   router.get("/types", GetTypes);
@@ -86,4 +87,6 @@ export const routes = (router: Router) => {
   router.get("/collection/export", ExportCollection);
   router.post("/collection/buyList", CreateBuylistMultipleDecks);
   router.delete("/collection/clear", ClearCollection);
+
+  router.get("/backup", CreateBackup);
 };
