@@ -2,7 +2,17 @@ import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
-import { Button, CardMedia, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
+import {
+  Button,
+  CardMedia,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+} from "@mui/material";
 import {
   DeckCardEntryDTO,
   DeckDTO,
@@ -21,7 +31,7 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import { Component } from "react";
 import StarIcon from "@mui/icons-material/Star";
-import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
+import { getLowestCardPriceStr, sortPriceInfo } from "../../functions/fetchCardPrice";
 
 export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO;
@@ -100,53 +110,65 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
         <Tooltip
           arrow
           placement="left"
+          sx={{
+            backgroundColor: "transparent", // Set background color to transparent
+            p: 0, // Remove padding
+          }}
           title={
             <Box>
-            <CardMedia
-              key={`tooltip-${entry.card.name}`}
-              sx={{
-                height: imageHeight * 0.5,
-                width: imageWidth * 0.5,
-              }}
-              style={{
-                backgroundColor: "White",
-              }}
-              image={entry.card.versions[0].frontImageUri}
-            />
-              {this.props.entry.card.priceInfo && this.props.entry.card.priceInfo.length > 0 && (
-              <TableContainer
-              sx={{
-                backgroundColor: "white",
-                borderRadius: "10px",
-              }}>
-                <Table
-                        sx={{
-                          "& th": {
-                            padding: "8px",
-                          },
-                          "& td": {
-                            padding: "8px",
-                          },
-                        }}
-                      >
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>In Stock</TableCell>
-                      <TableCell>Price</TableCell>
-                      <TableCell>Store</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {this.props.entry.card.priceInfo.map((priceInfo) => (
-                      <TableRow key={priceInfo.store}>
-                        <TableCell>{priceInfo.inStock ? 'Yes' : 'No'}</TableCell>
-                        <TableCell>{priceInfo.buyPrice}</TableCell>
-                        <TableCell>{priceInfo.store}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <CardMedia
+                key={`tooltip-${entry.card.name}`}
+                sx={{
+                  height: imageHeight * 0.5,
+                  width: imageWidth * 0.5,
+                }}
+                style={{
+                  backgroundColor: "White",
+                }}
+                image={entry.card.versions[0].frontImageUri}
+              />
+              {this.props.entry.card.priceInfo &&
+                this.props.entry.card.priceInfo.length > 0 && (
+                  <TableContainer
+                    sx={{
+                      backgroundColor: "white",
+                      borderRadius: "10px",
+                      marginTop: "10px",
+                      border: "3px solid black", // Add black border
+                    }}
+                  >
+                    <Table
+                      sx={{
+                        "& th": {
+                          padding: "6px",
+                        },
+                        "& td": {
+                          padding: "6px",
+                        },
+                      }}
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>In Stock</TableCell>
+                          <TableCell>Price</TableCell>
+                          <TableCell>Store</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {this.props.entry.card.priceInfo
+                        .sort(sortPriceInfo)
+                        .map((priceInfo) => (
+                          <TableRow key={priceInfo.store}>
+                            <TableCell>
+                              {priceInfo.inStock ? "Yes" : "No"}
+                            </TableCell>
+                            <TableCell>{priceInfo.buyPrice}</TableCell>
+                            <TableCell>{priceInfo.store}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 )}
             </Box>
           }

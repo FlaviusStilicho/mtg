@@ -47,3 +47,19 @@ export const isCardInStock = (
   );
   return inStock.length > 0;
 };
+
+export const sortPriceInfo = (a: PriceInformation, b: PriceInformation) => {
+  if (a.inStock && !b.inStock) {
+    return -1;
+  } else if (!a.inStock && b.inStock) {
+    return 1;
+  } else {
+    if (a.buyPrice && !b.buyPrice) {
+      return -1;
+    } else if (!a.buyPrice && b.buyPrice) {
+      return 1;
+    } else {
+      return a.store.localeCompare(b.store);
+    }
+  }
+};
