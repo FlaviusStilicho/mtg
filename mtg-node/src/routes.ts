@@ -11,8 +11,8 @@ import {
   AddCardCategory,
   RemoveCardCategory,
   UpdateCardOwnedCopies,
-  GetCardPrice,
 } from "./controller/card.controller.ts";
+import { GetCardPrice } from "./controller/cardPrice.controller.ts";
 import {
   UploadDelverFile,
   UploadDelverFileAdditive,

@@ -14,9 +14,6 @@ import {
 } from "mtg-common";
 
 import { MTGCardRepository } from "../repository/MTGCard.repository.ts";
-import { fetchCardBuyPriceFromMagicers } from "../clients/magicers.ts";
-import { fetchCardBuyPriceFromMagickast } from "../clients/magickast.ts";
-import { fetchCardBuyPriceFromScryfall } from "../clients/scryfall.ts";
 
 interface GetCardsQueryParams {
   take: number;
@@ -71,26 +68,6 @@ export const UpdateCardOwnedCopies = async (
   );
   card.ownedCopies = req.body.ownedCopies;
   await MTGCardRepository.saveCard(card);
-};
-
-export const GetCardPrice = async (req: Request, res: Response) => {
-  const cardName: string = req.params.cardName.replace("--", "//");
-  logger.info(`Fetching buy price for ${cardName}`);
-
-  if (["Island", "Swamp", "Forest", "Plains", "Mountain"].includes(cardName)) {
-    res.send([
-      {
-        inStock: false,
-        store: "Magicers",
-        buyPrice: 0,
-      },
-    ]);
-  } else {
-    const magicersPrice = await fetchCardBuyPriceFromMagicers(cardName);
-    const magickastPrice = await fetchCardBuyPriceFromMagickast(cardName);
-    const scryfallPrice = await fetchCardBuyPriceFromScryfall(cardName);
-    res.send([magicersPrice, magickastPrice, scryfallPrice]);
-  }
 };
 
 export const AddCardCategory = async (req: Request, res: Response) => {

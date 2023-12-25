@@ -162,7 +162,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
                             <TableCell>
                               {priceInfo.inStock ? "Yes" : "No"}
                             </TableCell>
-                            <TableCell>{priceInfo.buyPrice}</TableCell>
+                            <TableCell>{priceInfo.buyPrice !== null ? `€ ${priceInfo.buyPrice}` : "N/A"}</TableCell>
                             <TableCell>{priceInfo.store}</TableCell>
                           </TableRow>
                         ))}

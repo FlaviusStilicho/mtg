@@ -58,6 +58,8 @@ export const sortPriceInfo = (a: PriceInformation, b: PriceInformation) => {
       return -1;
     } else if (!a.buyPrice && b.buyPrice) {
       return 1;
+    } else if (a.buyPrice && b.buyPrice) {
+      return a.buyPrice - b.buyPrice;
     } else {
       return a.store.localeCompare(b.store);
     }
