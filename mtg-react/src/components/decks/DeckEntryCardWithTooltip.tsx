@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import ListItem from "@mui/material/ListItem";
 import { imageHeight, imageWidth } from "../../constants";
 import { deckEntryTextBoxStyle } from "../../style/styles";
-import { Button, CardMedia, Tooltip } from "@mui/material";
+import { Button, CardMedia, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip } from "@mui/material";
 import {
   DeckCardEntryDTO,
   DeckDTO,
@@ -101,6 +101,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
           arrow
           placement="left"
           title={
+            <Box>
             <CardMedia
               key={`tooltip-${entry.card.name}`}
               sx={{
@@ -112,6 +113,42 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
               }}
               image={entry.card.versions[0].frontImageUri}
             />
+              {this.props.entry.card.priceInfo && this.props.entry.card.priceInfo.length > 0 && (
+              <TableContainer
+              sx={{
+                backgroundColor: "white",
+                borderRadius: "10px",
+              }}>
+                <Table
+                        sx={{
+                          "& th": {
+                            padding: "8px",
+                          },
+                          "& td": {
+                            padding: "8px",
+                          },
+                        }}
+                      >
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>In Stock</TableCell>
+                      <TableCell>Price</TableCell>
+                      <TableCell>Store</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {this.props.entry.card.priceInfo.map((priceInfo) => (
+                      <TableRow key={priceInfo.store}>
+                        <TableCell>{priceInfo.inStock ? 'Yes' : 'No'}</TableCell>
+                        <TableCell>{priceInfo.buyPrice}</TableCell>
+                        <TableCell>{priceInfo.store}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+                )}
+            </Box>
           }
         >
           <Box
