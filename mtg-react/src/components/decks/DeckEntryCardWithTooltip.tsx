@@ -33,8 +33,8 @@ import { Component } from "react";
 import StarIcon from "@mui/icons-material/Star";
 import {
   getLowestCardPriceStr,
-  sortPriceInfo,
 } from "../../functions/fetchCardPrice";
+import PriceInfoTable from "../collection/CardPriceTable";
 
 export interface DeckEntryComponentProps {
   entry: DeckCardEntryDTO;
@@ -132,50 +132,7 @@ export class DeckEntryComponentWithTooltip extends Component<DeckEntryComponentP
               />
               {this.props.entry.card.priceInfo &&
                 this.props.entry.card.priceInfo.length > 0 && (
-                  <TableContainer
-                    sx={{
-                      backgroundColor: "white",
-                      borderRadius: "10px",
-                      marginTop: "10px",
-                      border: "3px solid black", // Add black border
-                    }}
-                  >
-                    <Table
-                      sx={{
-                        "& th": {
-                          padding: "6px",
-                        },
-                        "& td": {
-                          padding: "6px",
-                        },
-                      }}
-                    >
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>In Stock</TableCell>
-                          <TableCell>Price</TableCell>
-                          <TableCell>Store</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {this.props.entry.card.priceInfo
-                          .sort(sortPriceInfo)
-                          .map((priceInfo) => (
-                            <TableRow key={priceInfo.store}>
-                              <TableCell>
-                                {priceInfo.inStock ? "Yes" : "No"}
-                              </TableCell>
-                              <TableCell>
-                                {priceInfo.buyPrice !== null
-                                  ? `€ ${priceInfo.buyPrice}`
-                                  : "N/A"}
-                              </TableCell>
-                              <TableCell>{priceInfo.store}</TableCell>
-                            </TableRow>
-                          ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                  <PriceInfoTable priceInfo={this.props.entry.card.priceInfo} />
                 )}
             </Box>
           }

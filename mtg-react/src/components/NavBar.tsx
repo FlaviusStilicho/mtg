@@ -46,7 +46,7 @@ export default function NavBar(props: NavBarProps) {
           onChange={props.handleChangeSelectedTab}
         >
           <Tab label="Collection" />
-          <Tab label="Decks" />
+          <Tab label="Deck Edtor" />
         </Tabs>
         <IconButton
           color="inherit"

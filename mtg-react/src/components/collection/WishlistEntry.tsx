@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from "uuid";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { Component } from "react";
+import PriceInfoTable from "./CardPriceTable";
+import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
 
 export interface WishlistEntryProps {
   entry: WishlistEntryDTO;
@@ -39,17 +41,23 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
           arrow
           placement="left"
           title={
-            <CardMedia
-              key={`tooltip-${entry.card.name}`}
-              sx={{
-                height: imageHeight * 0.5,
-                width: imageWidth * 0.5,
-              }}
-              style={{
-                backgroundColor: "White",
-              }}
-              image={entry.card.versions[0].frontImageUri}
-            />
+            <Box>
+              <CardMedia
+                key={`tooltip-${entry.card.name}`}
+                sx={{
+                  height: imageHeight * 0.5,
+                  width: imageWidth * 0.5,
+                }}
+                style={{
+                  backgroundColor: "White",
+                }}
+                image={entry.card.versions[0].frontImageUri}
+              />
+              {entry.card.priceInfo &&
+                this.props.entry.card.priceInfo.length > 0 && (
+                  <PriceInfoTable priceInfo={this.props.entry.card.priceInfo} />
+                )}
+            </Box>
           }
         >
           <Box
@@ -77,11 +85,7 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
               }}
               sx={deckEntryTextBoxStyle}
             >
-              {
-                // entry.card.priceInfo != null
-                // ? `€ ${entry.card.priceInfo.buyPrice}` :
-                "N/A"
-              }
+              { getLowestCardPriceStr(entry.card.priceInfo) }
             </Box>
             <Box
               style={{ textAlign: "left", marginRight: 4, width: "25%" }}

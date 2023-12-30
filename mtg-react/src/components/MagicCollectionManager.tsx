@@ -165,38 +165,38 @@ export class MagicCollectionManager extends Component<
       const colors: Color[] = response.data.data;
       this.setState({ colors });
     });
-    await this.fetchDecks();
+    const decks = await this.fetchDecks();
     axios.get(`http://localhost:8000/wishlist`).then((response) => {
       const wishlistEntries: WishlistEntryDTO[] = response.data;
       this.setState({ wishlistEntries });
 
-      // Promise.all(
-      //   wishlistEntries.map((entry) => {
-      //     return fetchCardBuyPrice(entry.card).then((priceInfo) => {
-      //       entry.card.priceInfo = priceInfo;
-      //       return entry;
-      //     });
-      //   }),
-      // ).then((wishlistEntries) => {
-      //   console.log("collected card prices for wishlist");
-      //   Promise.all(decks).then((decks) => {
-      //     for (const wishlistEntry of wishlistEntries) {
-      //       const inDecks: string[] = findDecksContainCard(
-      //         wishlistEntry.card,
-      //         decks,
-      //       );
-      //       wishlistEntry.inDecks = inDecks;
-      //     }
-      //     // console.log("mapped decks to wishlist entries")
-      //     // console.log(wishlistEntries)
-      //     this.setState({ wishlistEntries: wishlistEntries });
-      //   });
-      // });
+      Promise.all(
+        wishlistEntries.map((entry) => {
+          return fetchCardPrice(entry.card.name).then((priceInfo) => {
+            entry.card.priceInfo = priceInfo;
+            return entry;
+          });
+        }),
+      ).then((wishlistEntries) => {
+        console.log("collected card prices for wishlist");
+        Promise.all(decks).then((decks) => {
+          for (const wishlistEntry of wishlistEntries) {
+            const inDecks: string[] = findDecksContainCard(
+              wishlistEntry.card,
+              decks,
+            );
+            wishlistEntry.inDecks = inDecks;
+          }
+          // console.log("mapped decks to wishlist entries")
+          // console.log(wishlistEntries)
+          this.setState({ wishlistEntries: wishlistEntries });
+        });
+      });
     });
   };
 
-  fetchDecks = async (): Promise<void> => {
-    return axios.get(`http://localhost:8000/decks/`).then((response) => {
+  fetchDecks = async (): Promise<DeckDTO[]> => {
+    return await axios.get(`http://localhost:8000/decks/`).then((response) => {
       const data: ListDecksResponse = response.data;
       const decks = data.decks;
       decks.forEach((deck) => {
@@ -204,6 +204,7 @@ export class MagicCollectionManager extends Component<
       });
       this.setState({ decks });
       console.log("completed fethching decks");
+      return decks;
     });
   };
 

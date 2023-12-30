@@ -34,7 +34,9 @@ export async function fetchCardsFromScryfallBatch(
       throw Error("All cards bulk data file not found");
     }
 
-    const raw_cards = await getBatchCardsFromScryfall(allCardsFileMetadata.download_uri);
+    const raw_cards = await getBatchCardsFromScryfall(
+      allCardsFileMetadata.download_uri,
+    );
 
     logger.info("Sorting cards");
     raw_cards.sort((a, b) => {
@@ -42,8 +44,6 @@ export async function fetchCardsFromScryfallBatch(
       const dateB = new Date(b.released_at);
       return dateA.getTime() - dateB.getTime();
     });
-
-
 
     const excluded_set_types = new Set([
       "token",
