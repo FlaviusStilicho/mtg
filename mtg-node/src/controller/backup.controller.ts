@@ -24,10 +24,7 @@ interface Backup {
   wishlist: ExportedCard[];
 }
 
-export const CreateBackup = async (
-  req: Request,
-  res: Response,
-) => {
+export const CreateBackup = async (req: Request, res: Response) => {
   const cardsInCollection = await MTGCardRepository.findOwnedCards();
   const decks = await DeckRepository.find();
   const wishlistEntries = await WishlistEntryRepository.find();
@@ -51,9 +48,7 @@ export const CreateBackup = async (
   };
 
   writeFileSync(BACKUP_FILE_PATH, JSON.stringify(backup), "utf-8");
-  const message = `Created backup at ${BACKUP_FILE_PATH}. Exported ${backup.decks.length} decks, ${backup.cards.length} cards, and ${backup.wishlist.length} wishlist entries`
+  const message = `Created backup at ${BACKUP_FILE_PATH}. Exported ${backup.decks.length} decks, ${backup.cards.length} cards, and ${backup.wishlist.length} wishlist entries`;
   logger.info(message);
-  res.send({result: message});
+  res.send({ result: message });
 };
-
-

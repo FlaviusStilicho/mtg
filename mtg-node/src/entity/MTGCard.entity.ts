@@ -9,6 +9,7 @@ import {
   ManyToOne,
   OneToMany,
   FindOptionsUtils,
+  Relation,
 } from "typeorm";
 import { DB } from "../datasource.ts";
 import { MTGCardTag } from "./MTGCardTag.entity.ts";
@@ -74,7 +75,7 @@ export class MTGCard {
     cascade: true,
   })
   @JoinTable()
-  set: MTGSet;
+  set: Relation<MTGSet>;
   @Column({
     default: null,
     nullable: true,
@@ -648,7 +649,7 @@ export class MTGCardVersion {
     cascade: true,
   })
   @JoinTable()
-  set: MTGSet;
+  set: Relation<MTGSet>;
   @Column()
   @Index()
   isPrimaryVersion: boolean;
@@ -668,7 +669,7 @@ export class MTGCardVersion {
     rulingsUri: string,
     scryfallUri: string,
     frontImageUri: string,
-    set: MTGSet,
+    set: Relation<MTGSet>,
     isPrimaryVersion: boolean,
     standardLegal: boolean,
     commanderLegal: boolean,
