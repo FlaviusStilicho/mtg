@@ -37,6 +37,7 @@ import TabPanel from "./TabPanel";
 import { WishlistDrawer, WishlistProps } from "./collection/WishlistDrawer";
 import { Alert, Snackbar } from "@mui/material";
 import { fetchCardPrice } from "../functions/fetchCardPrice";
+import DeckOverview from "./collection/DeckOverview";
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133];
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"];
@@ -50,7 +51,8 @@ const pageSize = 60;
 
 export enum EnabledTab {
   COLLECTION,
-  DECK,
+  DECK_EDITOR,
+  DECK_OVERVIEW,
 }
 
 export interface CollectionManagerProps {}
@@ -747,7 +749,7 @@ export class MagicCollectionManager extends Component<
 
     const deckGridProps: CardGridProps = {
       cards: this.state.cards,
-      enabledTab: EnabledTab.DECK,
+      enabledTab: EnabledTab.DECK_EDITOR,
       selectedDeck: this.state.selectedDeck,
       selectedDeckId: this.state.selectedDeckId,
       selectedDeckEntries: this.state.selectedDeckEntries,
@@ -795,6 +797,11 @@ export class MagicCollectionManager extends Component<
                 <CardGrid {...deckGridProps} />
               </Box>
               <DeckManagerDrawer {...deckManagerProps} />
+            </TabPanel>
+            <TabPanel value={this.state.selectedTab} index={2}>
+              <Box width="100%">
+                <DeckOverview />
+              </Box>
             </TabPanel>
             <Snackbar
               anchorOrigin={{ vertical: "top", horizontal: "center" }}

@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { Component } from "react";
-import PriceInfoTable from "./CardPriceTable";
+import PriceInfoTable from "./PriceInfoTable";
 import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
 
 export interface WishlistEntryProps {
@@ -85,7 +85,7 @@ export class WishlistEntry extends Component<WishlistEntryProps> {
               }}
               sx={deckEntryTextBoxStyle}
             >
-              { getLowestCardPriceStr(entry.card.priceInfo) }
+              {getLowestCardPriceStr(entry.card.priceInfo)}
             </Box>
             <Box
               style={{ textAlign: "left", marginRight: 4, width: "25%" }}

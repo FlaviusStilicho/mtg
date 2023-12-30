@@ -46,7 +46,8 @@ export default function NavBar(props: NavBarProps) {
           onChange={props.handleChangeSelectedTab}
         >
           <Tab label="Collection" />
-          <Tab label="Deck Edtor" />
+          <Tab label="Deck Editor" />
+          <Tab label="Deck Overview" />
         </Tabs>
         <IconButton
           color="inherit"
@@ -60,17 +61,6 @@ export default function NavBar(props: NavBarProps) {
           <UploadFileIcon />
           <Typography sx={{ padding: 1 }}>Upload collection</Typography>
         </IconButton>
-        {props.selectedTab === 1 && (
-          <IconButton
-            color="inherit"
-            aria-label="open deck manager"
-            edge="end"
-            onClick={props.handleDeckManagerOpenClose}
-          >
-            <MenuOpenIcon />
-            <Typography sx={{ padding: 1 }}>Deck Manager</Typography>
-          </IconButton>
-        )}
         {props.selectedTab === 0 && (
           <IconButton
             color="inherit"
@@ -84,7 +74,18 @@ export default function NavBar(props: NavBarProps) {
             </Typography>
           </IconButton>
         )}
-        <UploadCollectionWindow {...uploadCollectionWindowProps} />)
+        {props.selectedTab === 1 && (
+          <IconButton
+            color="inherit"
+            aria-label="open deck manager"
+            edge="end"
+            onClick={props.handleDeckManagerOpenClose}
+          >
+            <MenuOpenIcon />
+            <Typography sx={{ padding: 1 }}>Deck Manager</Typography>
+          </IconButton>
+        )}
+        <UploadCollectionWindow {...uploadCollectionWindowProps} />
       </Toolbar>
     </AppBar>
   );

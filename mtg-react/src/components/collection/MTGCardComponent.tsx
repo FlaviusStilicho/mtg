@@ -238,7 +238,7 @@ export class MTGCardComponent extends Component<
             flipCard={this.flipCard}
           />
         )}
-        {this.props.enabledTab === EnabledTab.DECK && (
+        {this.props.enabledTab === EnabledTab.DECK_EDITOR && (
           <MTGCardDeckCounterBox {...deckCounterBoxProps} />
         )}
         {

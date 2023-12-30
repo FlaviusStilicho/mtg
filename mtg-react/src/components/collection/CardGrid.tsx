@@ -73,7 +73,7 @@ export class CardGrid extends Component<CardGridProps, CardGridState> {
     // console.log("rendering grid")
     var gridActualWidth: number;
     if (
-      this.props.enabledTab === EnabledTab.DECK &&
+      this.props.enabledTab === EnabledTab.DECK_EDITOR &&
       this.props.deckManagerOpened
     ) {
       gridActualWidth = this.state.gridMaxWidth - drawerWidth;

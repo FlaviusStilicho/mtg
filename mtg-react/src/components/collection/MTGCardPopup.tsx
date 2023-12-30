@@ -10,7 +10,7 @@ import {
 import { Component } from "react";
 import { largeFlipButtonStyle } from "../../style/styles";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import StarIcon from "@mui/icons-material/Star";
 import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import { MTGCardDTO, MTGCardVersionDTO } from "mtg-common";
 import {
@@ -20,6 +20,7 @@ import {
   variantImageSizeFactor,
 } from "../../constants";
 import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
+import PriceInfoTable from "./PriceInfoTable";
 
 export interface MTGCardPopupProps {
   primaryImage: string;
@@ -35,12 +36,10 @@ export interface MTGCardPopupProps {
 
 export class MTGCardPopup extends Component<MTGCardPopupProps> {
   shouldComponentUpdate(nextProps: MTGCardPopupProps) {
-    return (
-      this.props.primaryImage !== nextProps.primaryImage ||
-      this.props.opened !== nextProps.opened ||
-      this.props.card.priceInfo !== nextProps.card.priceInfo ||
-      this.props.sellPrice !== nextProps.sellPrice
-    );
+    if (this.props.opened || nextProps.opened) {
+      return true;
+    }
+    return false;
   }
 
   escFunction = (event: any): void => {
@@ -56,6 +55,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
   }
 
   render() {
+    console.log(`rendering popup for ${this.props.card.name}`);
     return (
       <Dialog
         open={this.props.opened}
@@ -168,7 +168,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
               )}
               <Button
                 variant="contained"
-                startIcon={<ShoppingCartIcon />}
+                startIcon={<StarIcon />}
                 name="buy-button"
                 sx={{ margin: 2 }}
                 disabled={this.props.card.priceInfo == null}
@@ -177,9 +177,9 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                   this.props.updateCardCopiesInWishlist(this.props.card, true);
                 }}
               >
-                {getLowestCardPriceStr(this.props.card.priceInfo)}
+                Wishlist
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 startIcon={<CurrencyExchangeIcon />}
                 name="sell-button"
@@ -190,8 +190,14 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                 }}
               >
                 {this.props.sellPrice}
-              </Button>
+              </Button> */}
             </Box>
+          </ListItem>
+          <ListItem>
+            {this.props.card.priceInfo &&
+              this.props.card.priceInfo.length > 0 && (
+                <PriceInfoTable priceInfo={this.props.card.priceInfo} />
+              )}
           </ListItem>
         </List>
       </Dialog>

@@ -26,7 +26,7 @@ export const getLowestCardPrice = (
   if (prices.length === 0) {
     return null;
   } else {
-    console.log("Lowest price: " + Math.min(...prices));
+    // console.log("Lowest price: " + Math.min(...prices));
     return Math.min(...prices);
   }
 };
