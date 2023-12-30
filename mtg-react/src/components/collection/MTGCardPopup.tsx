@@ -11,7 +11,6 @@ import { Component } from "react";
 import { largeFlipButtonStyle } from "../../style/styles";
 import AutorenewIcon from "@mui/icons-material/Autorenew";
 import StarIcon from "@mui/icons-material/Star";
-import CurrencyExchangeIcon from "@mui/icons-material/CurrencyExchange";
 import { MTGCardDTO, MTGCardVersionDTO } from "mtg-common";
 import {
   imageHeight,
@@ -19,7 +18,6 @@ import {
   popupImageSizeFactor,
   variantImageSizeFactor,
 } from "../../constants";
-import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
 import PriceInfoTable from "./PriceInfoTable";
 
 export interface MTGCardPopupProps {
@@ -55,7 +53,7 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
   }
 
   render() {
-    console.log(`rendering popup for ${this.props.card.name}`);
+    // console.log(`rendering popup for ${this.props.card.name}`);
     return (
       <Dialog
         open={this.props.opened}

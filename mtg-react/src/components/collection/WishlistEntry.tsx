@@ -9,7 +9,7 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
 import { Component } from "react";
 import PriceInfoTable from "./PriceInfoTable";
-import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
+import { getLowestCardPriceStr } from "../../functions/cardPrice";
 
 export interface WishlistEntryProps {
   entry: WishlistEntryDTO;

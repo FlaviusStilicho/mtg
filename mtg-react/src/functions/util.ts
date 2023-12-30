@@ -9,7 +9,7 @@ import {
   CardComponentProps,
   CardComponentState,
 } from "../components/collection/MTGCardComponent";
-import { getLowestCardPrice, isCardInStock } from "./fetchCardPrice";
+import { getLowestCardPrice, isCardInStock } from "./cardPrice";
 
 export const isBasicLand = (card: MTGCardDTO): boolean => {
   return card.type.startsWith("Basic Land");

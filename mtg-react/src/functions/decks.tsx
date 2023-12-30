@@ -1,4 +1,17 @@
-import { NewDeckEntryDTO } from "mtg-common";
+import axios from "axios";
+import { DeckDTO, ListDecksResponse, NewDeckEntryDTO } from "mtg-common";
+
+export async function fetchDecks(): Promise<DeckDTO[]> {
+  return await axios.get(`http://localhost:8000/decks/`).then((response) => {
+    const data: ListDecksResponse = response.data;
+    const decks = data.decks;
+    decks.forEach((deck) => {
+      if (deck["cardEntries"] === undefined) deck["cardEntries"] = [];
+    });
+    console.log("completed fetching decks");
+    return decks;
+  });
+};
 
 export async function parseMTGGoldfishFile(
   file: File,

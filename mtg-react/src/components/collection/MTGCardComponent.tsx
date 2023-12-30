@@ -23,7 +23,7 @@ import { MTGCardCollectionCounterBox } from "./MTGCardCollectionCounterBox";
 import { MTGCardPopup } from "./MTGCardPopup";
 import { CardImageProps, MTGCardImage } from "./MTGCardImage";
 import { shouldCardComponentUpdate } from "../../functions/util";
-import { fetchCardPrice } from "../../functions/fetchCardPrice";
+import { fetchCardPrice } from "../../functions/cardPrice";
 export interface CardComponentProps {
   card: MTGCardDTO;
   enabledTab: EnabledTab;

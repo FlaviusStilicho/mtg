@@ -1,18 +1,15 @@
 import Box from "@mui/material/Box";
-import { MenuItem } from "@mui/material";
 import { DeckDTO } from "mtg-common";
 import { getCommander, getDeckColorIdentity } from "../../functions/util";
 import ColorIcon from "../ColorIcon";
-import { deckNameFontSize } from "./DeckManagerDrawer";
 
-export function renderDeckName(deck: DeckDTO) {
+export function renderDeckName(deck: DeckDTO, fontSize: number) {
   const commander = getCommander(deck);
   var deckColorIdentity = getDeckColorIdentity(deck);
   return (
-    <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id}>
       <Box
         sx={{
-          fontSize: deckNameFontSize,
+          fontSize: fontSize,
           display: "flex",
           flexWrap: "wrap",
           gap: 1,
@@ -28,6 +25,5 @@ export function renderDeckName(deck: DeckDTO) {
         </Box>
         {commander ? `${deck.name} [${commander.name}]` : deck.name}
       </Box>
-    </MenuItem>
   );
 }

@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { memo, useState } from "react";
 import axios from "axios";
-import { parseMTGGoldfishFile } from "../../../functions/parseNewDeck";
+import { parseMTGGoldfishFile } from "../../../functions/decks";
 import { UploadDeckDTO } from "mtg-common";
 
 export interface CreateDeckWindowProps {

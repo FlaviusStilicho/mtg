@@ -18,7 +18,7 @@ import {
   wishlistSortFnAlphabetical,
   wishlistSortFnPrice,
 } from "../../functions/util";
-import { renderDeckName } from "../decks/renderDeckName";
+import { renderDeckName } from "../deckEditor/renderDeckName";
 
 export interface WishlistProps {
   wishlistOpened: boolean;
@@ -37,6 +37,8 @@ interface WishlistState {
   sortMethod: SortMethod;
   sortFn: (a: WishlistEntryDTO, b: WishlistEntryDTO) => number;
 }
+
+const deckNameFontSize = 10;
 
 export class WishlistDrawer extends Component<WishlistProps, WishlistState> {
   constructor(props: WishlistProps) {
@@ -180,7 +182,7 @@ export class WishlistDrawer extends Component<WishlistProps, WishlistState> {
         >
           {key === "unused"
             ? "Unused"
-            : renderDeckName(findDeckByName(key, this.props.decks))}
+            : renderDeckName(findDeckByName(key, this.props.decks), deckNameFontSize)}
         </div>
         {wishlistEntries.map((entry) => (
           <WishlistEntry

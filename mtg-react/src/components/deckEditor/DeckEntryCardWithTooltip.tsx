@@ -31,7 +31,7 @@ import ArchiveIcon from "@mui/icons-material/Archive";
 import UnarchiveIcon from "@mui/icons-material/Unarchive";
 import { Component } from "react";
 import StarIcon from "@mui/icons-material/Star";
-import { getLowestCardPriceStr } from "../../functions/fetchCardPrice";
+import { getLowestCardPriceStr } from "../../functions/cardPrice";
 import PriceInfoTable from "../collection/PriceInfoTable";
 
 export interface DeckEntryComponentProps {

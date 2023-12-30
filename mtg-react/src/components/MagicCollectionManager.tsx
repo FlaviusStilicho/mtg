@@ -20,11 +20,10 @@ import { CardGridProps } from "./collection/CardGrid";
 import { Component, SyntheticEvent } from "react";
 import {
   CardQueryParameters,
-  ListDecksResponse,
   UpdateCardOwnedCopiesQueryParams,
 } from "mtg-common";
 import { debounce } from "lodash";
-import DeckManagerDrawer, { DeckManagerProps } from "./decks/DeckManagerDrawer";
+import DeckManagerDrawer, { DeckManagerProps } from "./deckEditor/DeckManagerDrawer";
 import { searchBarDrawerWidth } from "../constants";
 import {
   isBasicLand,
@@ -36,8 +35,9 @@ import { DeckFormat } from "../enum";
 import TabPanel from "./TabPanel";
 import { WishlistDrawer, WishlistProps } from "./collection/WishlistDrawer";
 import { Alert, Snackbar } from "@mui/material";
-import { fetchCardPrice } from "../functions/fetchCardPrice";
-import DeckOverview from "./collection/DeckOverview";
+import { fetchCardPrice } from "../functions/cardPrice";
+import DeckOverview from "../overview/DeckOverview";
+import { fetchDecks } from "../functions/decks";
 
 const currentStandardSets = [19, 21, 46, 62, 87, 108, 120, 133];
 const raritiesList = ["Common", "Uncommon", "Rare", "Mythic"];
@@ -130,7 +130,7 @@ export class MagicCollectionManager extends Component<
       cards: [],
       deckManagerOpened: true,
       decks: [],
-      selectedDeckId: 99998,
+      selectedDeckId: 9999,
       selectedDeck: null,
       selectedDeckEntries: [],
       selectedDeckNotes: "",
@@ -167,7 +167,7 @@ export class MagicCollectionManager extends Component<
       const colors: Color[] = response.data.data;
       this.setState({ colors });
     });
-    const decks = await this.fetchDecks();
+    const decks = await this.refreshDecks();
     axios.get(`http://localhost:8000/wishlist`).then((response) => {
       const wishlistEntries: WishlistEntryDTO[] = response.data;
       this.setState({ wishlistEntries });
@@ -197,17 +197,10 @@ export class MagicCollectionManager extends Component<
     });
   };
 
-  fetchDecks = async (): Promise<DeckDTO[]> => {
-    return await axios.get(`http://localhost:8000/decks/`).then((response) => {
-      const data: ListDecksResponse = response.data;
-      const decks = data.decks;
-      decks.forEach((deck) => {
-        if (deck["cardEntries"] === undefined) deck["cardEntries"] = [];
-      });
-      this.setState({ decks });
-      console.log("completed fethching decks");
-      return decks;
-    });
+  refreshDecks = async (): Promise<DeckDTO[]> => {
+    const decks = await fetchDecks() 
+    this.setState({ decks });
+    return decks;
   };
 
   fetchCards(
@@ -710,7 +703,7 @@ export class MagicCollectionManager extends Component<
 
     const deckManagerProps: DeckManagerProps = {
       deckManagerOpened: this.state.deckManagerOpened,
-      fetchDecks: this.fetchDecks,
+      fetchDecks: this.refreshDecks,
       decks: this.state.decks,
       selectedDeck: this.state.selectedDeck,
       selectedDeckId: this.state.selectedDeckId,

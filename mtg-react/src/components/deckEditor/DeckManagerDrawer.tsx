@@ -21,6 +21,7 @@ import {
   Button,
   CardMedia,
   IconButton,
+  MenuItem,
   Select,
   Typography,
 } from "@mui/material";
@@ -91,7 +92,7 @@ import {
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
 
-export const deckNameFontSize = 10;
+const deckNameFontSize = 10;
 
 export interface DeckManagerProps extends MuiAppBarProps {
   deckManagerOpened?: boolean;
@@ -425,7 +426,10 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               onChange={props.handleChangeSelectedDeck}
             >
               {props.decks.map((deck) => {
-                return renderDeckName(deck);
+                  return (
+                  <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id}>
+                    {renderDeckName(deck, deckNameFontSize)}
+                  </MenuItem>)
               })}
             </Select>
           </ListItem>

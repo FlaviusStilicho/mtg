@@ -6,7 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { PriceInformation } from "mtg-common";
 import React from "react";
-import { sortPriceInfo } from "../../functions/fetchCardPrice";
+import { sortPriceInfo } from "../../functions/cardPrice";
 
 interface PriceInfoTableProps {
   priceInfo: PriceInformation[];

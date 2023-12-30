@@ -10,7 +10,7 @@ import { SyntheticEvent } from "react";
 import {
   UploadCollectionWindow,
   UploadCollectionWindowProps,
-} from "./decks/windows/UploadCollectionWindow";
+} from "./deckEditor/windows/UploadCollectionWindow";
 
 export interface NavBarProps {
   selectedTab: number;
