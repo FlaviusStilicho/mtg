@@ -23,7 +23,9 @@ import {
   UpdateCardOwnedCopiesQueryParams,
 } from "mtg-common";
 import { debounce } from "lodash";
-import DeckManagerDrawer, { DeckManagerProps } from "./deckEditor/DeckManagerDrawer";
+import DeckManagerDrawer, {
+  DeckManagerProps,
+} from "./deckEditor/DeckManagerDrawer";
 import { searchBarDrawerWidth } from "../constants";
 import {
   isBasicLand,
@@ -198,7 +200,7 @@ export class MagicCollectionManager extends Component<
   };
 
   refreshDecks = async (): Promise<DeckDTO[]> => {
-    const decks = await fetchDecks() 
+    const decks = await fetchDecks();
     this.setState({ decks });
     return decks;
   };
@@ -425,13 +427,26 @@ export class MagicCollectionManager extends Component<
       }
     };
 
-    const saveDeck = () => {
-      doSaveDeck(this.state.selectedDeckEntries, this.state.selectedDeckNotes);
+    // const saveCurrentDeck = () => {
+    //   saveDeck(this.state.selectedDeckEntries, this.state.selectedDeckNotes);
+    // };
+
+    const saveDeck = (deck: DeckDTO) => {
+      // console.log(`Saving deck ${deck.name}`);
+      // make a clone, submit it without version data
+      const deckClone = JSON.parse(JSON.stringify(deck));
+      for (let i = 0; i < deck.cardEntries.length; i++) {
+        deckClone.cardEntries[i].card.versions = [];
+      }
+
+      axios.put(`http://localhost:8000/deck/`, deckClone).then((response) => {
+        console.log(`updated deck ${deckClone.name}!`);
+      });
     };
 
-    const doSaveDeck = (entries: DeckCardEntryDTO[], notes: string) => {
-      console.log("Saving deck");
+    const saveCurrentDeck = (entries: DeckCardEntryDTO[], notes: string) => {
       const deck = getDeck(this.state.selectedDeckId);
+      // console.log(`Saving deck ${deck.name}`);
       deck.cardEntries = entries;
       deck.notes = notes;
 
@@ -493,7 +508,7 @@ export class MagicCollectionManager extends Component<
       // console.log(currentEntriesList)
       // console.log(newEntriesList)
       this.setState({ selectedDeckEntries: newEntriesList });
-      doSaveDeck(newEntriesList, this.state.selectedDeckNotes);
+      saveCurrentDeck(newEntriesList, this.state.selectedDeckNotes);
     };
 
     const updateDeckNotes = (text: string, deckId: number) => {
@@ -501,7 +516,7 @@ export class MagicCollectionManager extends Component<
       const deck = getDeck(deckId);
       // deck.notes = text
       console.log(`Updated notes for deck ${deck.name} to ${text}`);
-      doSaveDeck(this.state.selectedDeckEntries, text);
+      saveCurrentDeck(this.state.selectedDeckEntries, text);
     };
 
     const updateCardCopiesInDeck = (
@@ -713,7 +728,7 @@ export class MagicCollectionManager extends Component<
       updateDeckEntries,
       updateDeckNotes,
       updateCardCopiesInDeck,
-      saveDeck,
+      // saveDeck: saveCurrentDeck,
       isCardInWishlist,
       updateCardCopiesInWishlist,
       wishlistEntries: this.state.wishlistEntries,
@@ -793,7 +808,7 @@ export class MagicCollectionManager extends Component<
             </TabPanel>
             <TabPanel value={this.state.selectedTab} index={2}>
               <Box width="100%">
-                <DeckOverview />
+                <DeckOverview saveDeck={saveDeck} />
               </Box>
             </TabPanel>
             <Snackbar

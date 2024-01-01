@@ -37,6 +37,8 @@ export interface DeckDTO {
     notes: string | null
     format: string;
     cardEntries: DeckCardEntryDTO[];
+    isActive: boolean
+    lastEdited: Date
 }
 export interface DeckCardEntryDTO {
     id: number | undefined;

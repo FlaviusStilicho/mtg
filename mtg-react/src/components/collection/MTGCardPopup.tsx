@@ -120,9 +120,9 @@ export class MTGCardPopup extends Component<MTGCardPopupProps> {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "flex-start",
-                  fontSize: "1.2em", // Increase the font size as desired
-                  fontWeight: "bold", // Make the text bold
-                  color: "white", // Set the text color to white
+                  fontSize: "1.2em",
+                  fontWeight: "bold",
+                  color: "white",
                 }}
               >
                 {this.props.card.name}

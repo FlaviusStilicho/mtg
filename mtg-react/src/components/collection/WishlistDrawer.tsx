@@ -18,7 +18,7 @@ import {
   wishlistSortFnAlphabetical,
   wishlistSortFnPrice,
 } from "../../functions/util";
-import { renderDeckName } from "../deckEditor/renderDeckName";
+import DeckNameBox from "../deckEditor/DeckNameBox";
 
 export interface WishlistProps {
   wishlistOpened: boolean;
@@ -180,9 +180,16 @@ export class WishlistDrawer extends Component<WishlistProps, WishlistState> {
         <div
           style={{ marginTop: "4px", marginBottom: "4px", marginLeft: "10px" }}
         >
-          {key === "unused"
-            ? "Unused"
-            : renderDeckName(findDeckByName(key, this.props.decks), deckNameFontSize)}
+          {key === "unused" ? (
+            "Unused"
+          ) : (
+            <DeckNameBox
+              deck={findDeckByName(key, this.props.decks)}
+              fontSize={deckNameFontSize}
+              interactive={false}
+              toggleDeckActive={() => {}}
+            />
+          )}
         </div>
         {wishlistEntries.map((entry) => (
           <WishlistEntry

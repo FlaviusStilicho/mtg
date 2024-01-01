@@ -37,6 +37,20 @@ export class Deck {
     default: DeckFormat.STANDARD,
   })
   format: DeckFormat;
+
+  @Column({
+    default: false,
+  })
+  isActive: boolean;
+
+  @Column({
+    type: "timestamp",
+    nullable: true,
+    default: "2023-01-01 00:00:00",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
+  lastEdited: Date;
+
   @OneToMany(() => DeckCardEntry, (entry) => entry.deck, {
     eager: true,
     cascade: true,
@@ -86,12 +100,14 @@ export class Deck {
     notes: string = null,
     format: string,
     cardEntries: DeckCardEntry[],
+    isActive: boolean,
   ) {
     this.id = id;
     this.name = name;
     this.notes = notes;
     this.format = format as DeckFormat;
     this.cardEntries = cardEntries;
+    this.isActive = isActive;
   }
 
   toDTO(): DeckDTO {
@@ -103,6 +119,8 @@ export class Deck {
       cardEntries: this.cardEntries
         ? this.cardEntries.map((entry) => entry.toDTO())
         : [],
+      isActive: this.isActive,
+      lastEdited: this.lastEdited,
     };
     return dto;
   }
@@ -126,6 +144,7 @@ export class Deck {
         dto.notes,
         dto.format,
         entries,
+        dto.isActive,
       );
     });
   }
@@ -166,6 +185,7 @@ export class Deck {
       this.notes,
       this.format,
       this.cardEntries.map((entry) => entry.copy()),
+      false,
     );
     deck.cardEntries.map((entry) => (entry.deck = deck));
     return deck;

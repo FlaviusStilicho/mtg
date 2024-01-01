@@ -82,7 +82,6 @@ import {
 } from "./windows/CompareDeckWindow";
 import { DevotionCountersBox } from "./DevotionCountersBox";
 import { SelectChangeEvent } from "@mui/material/Select";
-import { renderDeckName } from "./renderDeckName";
 import RarityIcon from "../RarityIcon";
 import {
   Accordion,
@@ -91,6 +90,7 @@ import {
   TextField,
 } from "@mui/material";
 import { ExpandMore } from "@mui/icons-material";
+import DeckNameBox from "./DeckNameBox";
 
 const deckNameFontSize = 10;
 
@@ -110,7 +110,7 @@ export interface DeckManagerProps extends MuiAppBarProps {
     increment: number,
     isSideboard: boolean,
   ) => void;
-  saveDeck: () => void;
+  // saveDeck: () => void;
   isCardInWishlist: (card: MTGCardDTO) => boolean;
   updateCardCopiesInWishlist: (card: MTGCardDTO, add: boolean) => void;
   wishlistEntries: WishlistEntryDTO[];
@@ -426,10 +426,16 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
               onChange={props.handleChangeSelectedDeck}
             >
               {props.decks.map((deck) => {
-                  return (
+                return (
                   <MenuItem key={`${deck.id}-${Date.now()}`} value={deck.id}>
-                    {renderDeckName(deck, deckNameFontSize)}
-                  </MenuItem>)
+                    <DeckNameBox
+                      deck={deck}
+                      fontSize={deckNameFontSize}
+                      interactive={false}
+                      toggleDeckActive={() => {}}
+                    />
+                  </MenuItem>
+                );
               })}
             </Select>
           </ListItem>
@@ -719,7 +725,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
           <Divider />
           {props.selectedDeck ? (
             <div>
-              <ListItem>
+              {/* <ListItem>
                 <Button
                   color="inherit"
                   aria-label="save deck"
@@ -732,7 +738,7 @@ export default function DeckManagerDrawer(props: DeckManagerProps) {
                 >
                   <SaveIcon /> Save Changes
                 </Button>
-              </ListItem>
+              </ListItem> */}
               <ListItem>
                 <Button
                   color="inherit"

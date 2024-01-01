@@ -17,19 +17,28 @@ import { CopyDeckRequest } from "mtg-common";
 import { UploadDeckDTO } from "mtg-common";
 import { MTGCardRepository } from "../repository/MTGCard.repository.ts";
 
+var DECK_CACHE = [];
+
 export const ListDecks = async (
   req: Request,
   res: Response<ListDecksResponse>,
 ) => {
-  await DeckRepository.findAndCount().then((result) => {
-    const decks = result[0].map((deck) => deck.toDTO());
-    const total = result[1];
-    logger.info(`Found ${total} decks.`);
+  if (DECK_CACHE.length > 0) {
     res.send({
-      decks,
-      total,
+      decks: DECK_CACHE,
+      total: DECK_CACHE.length,
     });
-  });
+  } else {
+    await DeckRepository.findAndCount().then((result) => {
+      const decks = result[0].map((deck) => deck.toDTO());
+      const total = result[1];
+      logger.info(`Found ${total} decks.`);
+      res.send({
+        decks,
+        total,
+      });
+    });
+  }
 };
 
 export const ListDeckNames = async (
@@ -115,6 +124,8 @@ export const UpdateDeck = async (
   req: Request<{}, {}, DeckDTO, {}>,
   res: Response,
 ) => {
+  DECK_CACHE = [];
+
   Deck.fromDTO(req.body).then((deck) =>
     DeckRepository.save(deck).then((deck) => {
       logger.info(`Saved changes to deck ${deck.name}.`);
@@ -169,7 +180,7 @@ export const UploadDeck = async (
     ),
   );
 
-  const deck = new Deck(null, dto.name, null, dto.format, entries);
+  const deck = new Deck(null, dto.name, null, dto.format, entries, false);
   DeckRepository.save(deck)
     .then((newDeck) => {
       deck.cardEntries.map((entry) => (entry.deck = newDeck));

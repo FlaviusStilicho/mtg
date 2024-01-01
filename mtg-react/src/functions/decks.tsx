@@ -11,7 +11,7 @@ export async function fetchDecks(): Promise<DeckDTO[]> {
     console.log("completed fetching decks");
     return decks;
   });
-};
+}
 
 export async function parseMTGGoldfishFile(
   file: File,
